@@ -13,6 +13,7 @@ namespace Common
         public static int SUCCESS_GET = 1;
 
         public static int WARINING_NO_DATA = -1;
+
         public static int DUPLICATE = -2;
     }
 }

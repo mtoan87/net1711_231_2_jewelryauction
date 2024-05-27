@@ -1,5 +1,6 @@
 ﻿using JewelryAuctionBusiness;
-
+using JewelryAuctionData.DTO;
+using JewelryAuctionData.DTO.Customer;
 using JewelryAuctionData.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -50,20 +51,46 @@ namespace JewelryAuctionWebAPI.Controllers
         }
         [HttpPost]
         [Route("CreateCustomer")]
-        public async Task<IActionResult> CreateCustomer(Customer createCustomer)
+        public async Task<IActionResult> CreateCustomer(CreateCustomerDTO createCustomer)
         {
-            var result = new Customer
+            var result = await _customerBusiness.CreateCustomer(createCustomer);
+            if (result.Status > 0 && result != null)
             {
-                CustomerId = createCustomer.CustomerId,
-                CustomerName = createCustomer.CustomerName,
-                Email = createCustomer.Email,
-                Address = createCustomer.Address,
-                Phone = createCustomer.Phone,
-                Gender = createCustomer.Gender,
+                return Ok(result.Data);
 
-            };
-             _customerBusiness.CreateCustomer(result);
-            return Ok("Account created successfully.");
+            }
+            else
+            {
+                return BadRequest(result?.Message);
+            }
+        }
+        [HttpPut]
+        [Route("UpdateCustomer")]
+        public async Task<IActionResult> UpdateCustomer(UpdateCustomerDTO updateCustomer)
+        {
+            var rs = await _customerBusiness.UpdateCustomer(updateCustomer);
+            if(rs.Status > 0 && rs != null)
+            {
+                return Ok(rs.Data);
+            }
+            else
+            {
+                return BadRequest(rs?.Message);
+            }
+        }
+        [HttpDelete]
+        [Route("DeleteCustomer")]
+        public async Task<IActionResult> DeleteCustomer(int customerId)
+        {
+            var rs = await _customerBusiness.DeleteCustomer(customerId);
+            if (rs.Status > 0 && rs != null)
+            {
+                return Ok(rs.Data);
+            }
+            else
+            {
+                return BadRequest(rs?.Message);
+            }
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Common;
+using JewelryAuctionData;
 using JewelryAuctionData.DAO;
-
+using JewelryAuctionData.DTO;
+using JewelryAuctionData.DTO.Customer;
 using JewelryAuctionData.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,18 +18,19 @@ namespace JewelryAuctionBusiness
     public class CustomerBusiness 
 
     {
-        private readonly CustomerDAO _DAO;
-
+        private readonly UnitOfWork _unitOfWork;
+        
       
         public CustomerBusiness()
         {
-            _DAO = new CustomerDAO();
+            _unitOfWork = new UnitOfWork();
         }
         public async Task<JewelryAuctionResult> GetAll()
         {
             try
             {
-                var customer = await _DAO.GetAllAsync();
+                var customer = await _unitOfWork.CustomerRepository.GetAllAsync();
+
                 if(customer == null)
                 {
                     return new JewelryAuction(Const.WARINING_NO_DATA, "Get customer list fail!");
@@ -40,12 +43,11 @@ namespace JewelryAuctionBusiness
                 return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
             }
         }
-
         public async Task<JewelryAuctionResult> GetById(int code)
         {
             try
             {
-                var customer = await _DAO.GetByIdAsync(code);
+                var customer = await _unitOfWork.CustomerRepository.GetByIdAsync(code);
                 if (customer == null)
                 {
                     return new JewelryAuction(Const.WARINING_NO_DATA, "No customer date by  code!");
@@ -61,29 +63,79 @@ namespace JewelryAuctionBusiness
             }
         
         }
-        public async Task<JewelryAuctionResult> CreateCustomer(Customer createCustomer)
+        public async Task<JewelryAuctionResult> CreateCustomer(CreateCustomerDTO createCustomer)
         {
             try
             {
-
-                var customer = await _DAO.CreateAsync(createCustomer);
+                var newCustomer = new Customer
+                {
+                    CustomerId = createCustomer.CustomerId,
+                    CustomerName = createCustomer.CustomerName,
+                    Email = createCustomer.Email,
+                    Phone = createCustomer.Phone,
+                    Address = createCustomer.Address,
+                    Gender = createCustomer.Gender,
+                };
+               var customer = await _unitOfWork.CustomerRepository.CreateAsync(newCustomer);
                 
 
                 if (customer == null) 
                 {
-                    return new JewelryAuction(Const.DUPLICATE,"Duplicated Id");
+                    return new JewelryAuction(Const.WARINING_NO_DATA," Error!");
                 }
                 else
                 {
-                    return new JewelryAuction(Const.SUCCESS_GET, "Creat success", customer);
+                    return new JewelryAuction(Const.SUCCESS_GET, "Creat success!", customer);
                 }
             }
             catch (Exception ex) {
                 return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
             }
         }
+        public async Task<JewelryAuctionResult> DeleteCustomer(int customerId)
+        {
+            try
+            {
+                var customer = await _unitOfWork.CustomerRepository.GetByIdAsync(customerId);
+                if (customer == null)
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "Customer not found.");
+                }
 
-        
+                await _unitOfWork.CustomerRepository.RemoveAsync(customer);
+                return new JewelryAuction(Const.SUCCESS_GET, "Customer deleted successfully.");
+            }
+            catch (Exception ex)
+            {
+                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
+        public async Task<JewelryAuctionResult> UpdateCustomer(UpdateCustomerDTO updateCustomer)
+        {
+            try
+            {
+                var customer = await _unitOfWork.CustomerRepository.GetByIdAsync(updateCustomer.CustomerId);
+                if (customer == null)
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "Customer not found.");
+                }
+
+                customer.CustomerName = updateCustomer.CustomerName;
+                customer.Email = updateCustomer.Email;
+                customer.Phone = updateCustomer.Phone;
+                customer.Address = updateCustomer.Address;
+                customer.Gender = updateCustomer.Gender;
+
+                 _unitOfWork.CustomerRepository.UpdateAsync(customer);
+                return new JewelryAuction(Const.SUCCESS_GET, "Customer updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
+
+
     }
     
 

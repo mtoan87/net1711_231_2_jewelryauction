@@ -1,20 +1,17 @@
 ﻿using JewelryAuctionData.Base;
 using JewelryAuctionData.Models;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JewelryAuctionData.DAO
+namespace JewelryAuctionData.Repository
 {
-    public class CustomerDAO : BaseDAO<Customer>
+    public class CustomerRepository : GenericRepository<Customer>
     {
-        public CustomerDAO() { 
-
+        public CustomerRepository() 
+        {
         }
-        
-
     }
 }
