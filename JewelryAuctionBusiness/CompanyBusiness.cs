@@ -29,7 +29,7 @@ namespace JewelryAuctionBusiness
         {
             try
             {
-                var company = await _DAO.GetAllAsync();
+                var company = await _unitOfWork.CompanyRepository.GetAllAsync();
                 if (company == null)
                 {
                     return new JewelryAuction(Const.WARINING_NO_DATA, "Get company list fail!");
@@ -50,7 +50,7 @@ namespace JewelryAuctionBusiness
         {
             try
             {
-                var company = await _DAO.GetByIdAsync(code);
+                var company = await _unitOfWork.CompanyRepository.GetByIdAsync(code);
                 if (company == null)
                 {
                     return new JewelryAuction(Const.WARINING_NO_DATA, "No company date by  code!");
