@@ -86,5 +86,15 @@ namespace JewelryAuctionData.Base
         {
             return await _dbSet.FindAsync(code);
         }
+        public int Save()
+        {
+            return _context.SaveChanges();
+        }
+
+        public async Task<int> SaveAsync()
+        {
+            return await _context.SaveChangesAsync();
+        }
+
     }
 }

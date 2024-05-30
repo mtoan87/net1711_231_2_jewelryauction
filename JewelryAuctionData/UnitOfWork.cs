@@ -18,6 +18,7 @@ namespace JewelryAuctionData
         {
         }
 
+        
         public CustomerRepository CustomerRepository
         {
             get
