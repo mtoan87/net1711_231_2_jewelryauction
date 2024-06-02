@@ -9,6 +9,7 @@ using JewelryAuctionData.Models;
 using JewelryAuctionData;
 using JewelryAuctionBusiness;
 using Newtonsoft.Json;
+using JewelryAuctionData.DTO;
 
 namespace JewelryAuctionWebApp.Controllers
 {
@@ -17,7 +18,7 @@ namespace JewelryAuctionWebApp.Controllers
 
         private string apiUrl = "https://localhost:44357/api/Customer/";
 
-
+        
         
         public CustomersController()
         {
@@ -28,7 +29,6 @@ namespace JewelryAuctionWebApp.Controllers
         {
             return View();
         }
-
 
         [HttpGet]
         public async Task<List<Customer>> GetAll()
@@ -55,6 +55,13 @@ namespace JewelryAuctionWebApp.Controllers
                 throw new Exception(ex.Message);
             }
         }
+
+        [HttpGet]
+        public IActionResult Add()
+        {
+            return PartialView("add", new Customer());
+        }
+
 
     }
 }

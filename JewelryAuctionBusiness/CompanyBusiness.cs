@@ -73,7 +73,7 @@ namespace JewelryAuctionBusiness
             {
                 var newCompany = new Company
                 {
-                    CompanyId = createCompany.CompanyId,
+                    
                     CompanyName = createCompany.CompanyName,
                     Address = createCompany.Address,
                     Description = createCompany.Description,

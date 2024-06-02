@@ -8,7 +8,7 @@ namespace JewelryAuctionData.DTO.Company
 {
     public class CreateCompanyDTO
     {
-        public int CompanyId { get; set; }
+        
 
         public string? CompanyName { get; set; }
 
