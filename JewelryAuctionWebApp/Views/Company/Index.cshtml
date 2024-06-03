@@ -1,14 +1,12 @@
-﻿@model IEnumerable<JewelryAuctionData.Models.Customer>
+﻿@model IEnumerable<JewelryAuctionData.Models.Company>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-
 <div class="row">
     <div class="col-md-10">
-        <h3 class="display-8">Customer List</h3>
+        <h3 class="display-8">Company List</h3>
     </div>
     <div class="col-md-2 text-end">
         <button type="button" class="btn btn-primary" onclick="add();">
@@ -22,53 +20,48 @@
         <table class="table table-striped table-bordered table-hover">
             <thead>
                 <tr class="card-header">
-                    <th class="card-title text-center">CustomerId</th>
-                    <th class="card-title text-center">Name</th>
-                    <th class="card-title text-center">Address</th>
-                    <th class="card-title text-center">Phone</th>
+                    <th class="card-title text-center">CompanyId</th>
+                    <th class="card-title text-center">CompanyName</th>
                     <th class="card-title text-center">Email</th>
-                    <th class="card-title text-center">Gender</th>
+                    <th class="card-title text-center">Address</th>
+                    <th class="card-title text-center">Description</th>
                     <th class="card-title text-center"></th>
                     <th class="card-title text-center"></th>
                 </tr>
             </thead>
-            <tbody class="tblCustomerList">
+            <tbody class="tblCompanyList">
             </tbody>
         </table>
     </div>
 </div>
 
-<div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
+<div class="modal fade" id="companyModal" tabindex="-1" aria-labelledby="companyModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frm", id = "frm" }))
             {
                 @Html.AntiForgeryToken()
                 <div class="modal-header">
-                    <h5 class="modal-title" id="customerModalLabel">Customers</h5>
+                    <h5 class="modal-title" id="companyModalLabel">Company</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="hidden" id="customerId" name="customerId">
+                    <input type="hidden" id="companyId" name="companyId">
                     <div class="form-group">
-                        <label for="customerName">Customer Name:</label>
-                        <input type="text" class="form-control" id="customerName" name="customerName" required>
+                        <label for="companyName">Company Name:</label>
+                        <input type="text" class="form-control" id="companyName" name="companyName" required>
                     </div>
                     <div class="form-group">
                         <label for="address">Address:</label>
                         <input type="text" class="form-control" id="address" name="address" required>
                     </div>
                     <div class="form-group">
-                        <label for="phone">Phone:</label>
-                        <input type="text" class="form-control" id="phone" name="phone" required>
+                        <label for="description">Description:</label>
+                        <input type="text" class="form-control" id="description" name="description" required>
                     </div>
                     <div class="form-group">
                         <label for="email">Email:</label>
                         <input type="text" class="form-control" id="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="gender">Gender:</label>
-                        <input type="text" class="form-control" id="gender" name="gender" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -85,49 +78,49 @@
         $(document).ready(function () {
             loadData();
             $("#btSave").click(function () {
-                var customerId = $("#customerId").val();
-                var customerData = {
-                    customerName: $("#customerName").val(),
+                var companyId = $("#companyId").val();
+                var companyData = {
+                    companyName: $("#companyName").val(),
                     address: $("#address").val(),
-                    phone: $("#phone").val(),
+                    description: $("#description").val(),
                     email: $("#email").val(),
-                    gender: $("#gender").val(),
                 };
-                if (customerId) {
-                    customerData.customerId = customerId;
+
+                if (companyId) {
+                    companyData.companyId = companyId; // Make sure companyId is added to companyData
                     $.ajax({
                         type: 'POST',
-                        url: '@Url.Action("Update", "Customers")',
+                        url: '@Url.Action("Update", "Company")',
                         contentType: 'application/json',
-                        data: JSON.stringify(customerData),
+                        data: JSON.stringify(companyData),
                         success: function (result) {
                             if (result.status === 1) {
-                                $('#customerModal').modal('hide');
+                                $('#companyModal').modal('hide');
                                 loadData();
                             }
                             alert(result.message);
                         },
                         error: function (xhr, status, error) {
-                            console.error("An error occurred while updating the Customer:", error);
-                            alert("An error occurred while updating the Customer.");
+                            console.error("An error occurred while updating the Company:", error);
+                            alert("An error occurred while updating the Company.");
                         }
                     });
                 } else {
                     $.ajax({
                         type: 'POST',
-                        url: '@Url.Action("Create", "Customers")',
+                        url: '@Url.Action("Create", "Company")',
                         contentType: 'application/json',
-                        data: JSON.stringify(customerData),
+                        data: JSON.stringify(companyData),
                         success: function (result) {
                             if (result.status === 1) {
-                                $('#customerModal').modal('hide');
+                                $('#companyModal').modal('hide');
                                 loadData();
                             }
                             alert(result.message);
                         },
                         error: function (xhr, status, error) {
-                            console.error("An error occurred while saving the Customer:", error);
-                            alert("An error occurred while saving the Customer.");
+                            console.error("An error occurred while saving the Company:", error);
+                            alert("An error occurred while saving the Company.");
                         }
                     });
                 }
@@ -136,7 +129,7 @@
 
         function loadData() {
             $.ajax({
-                url: '@Url.Action("GetAll", "Customers")',
+                url: '@Url.Action("GetAll", "Company")',
                 type: "GET",
                 contentType: "application/json;charset=utf-8",
                 dataType: "json",
@@ -144,17 +137,16 @@
                     var html = '';
                     $.each(result, function (key, item) {
                         html += '<tr>';
-                        html += '<td>' + item.customerId + '</td>';
-                        html += '<td>' + item.customerName + '</td>';
+                        html += '<td>' + item.companyId + '</td>';
+                        html += '<td>' + item.companyName + '</td>';
                         html += '<td>' + item.address + '</td>';
-                        html += '<td>' + item.phone + '</td>';
+                        html += '<td>' + item.description + '</td>';
                         html += '<td>' + item.email + '</td>';
-                        html += '<td>' + item.gender + '</td>';
-                        html += '<td><button type="button" class="btn btn-primary" onclick="edit(' + item.customerId + ')">Edit</button></td>';
-                        html += '<td><button type="button" class="btn btn-danger" onclick="deleteCustomer(' + item.customerId + ')">Delete</button></td>';
+                        html += '<td><button type="button" class="btn btn-primary" onclick="edit(' + item.companyId + ')">Edit</button></td>';
+                        html += '<td><button type="button" class="btn btn-danger" onclick="deleteCompany(' + item.companyId + ')">Delete</button></td>';
                         html += '</tr>';
                     });
-                    $('.tblCustomerList').html(html);
+                    $('.tblCompanyList').html(html);
                 },
                 error: function (xhr, error) {
                     alert(xhr.statusText);
@@ -163,45 +155,41 @@
         }
 
         function add() {
-            $("#customerModalContent").html("");
-            $("#customerModalLabel").html("Add New");
-            // Clear form fields
-            $('#customerId').val('');
-            $('#customerName').val('');
+            $("#companyModalLabel").html("Add New");
+            $('#companyId').val('');
+            $('#companyName').val('');
             $('#address').val('');
-            $('#phone').val('');
+            $('#description').val('');
             $('#email').val('');
-            $('#gender').val('');
-            $('#customerModal').modal('show');
+            $('#companyModal').modal('show');
         }
 
-        function edit(customerId) {
+        function edit(companyId) {
             $.ajax({
-                url: '@Url.Action("GetCustomerById", "Customers")' + '?customerId=' + customerId,
+                url: '@Url.Action("GetCompanyById", "Company")' + '?companyId=' + companyId,
                 type: "GET",
                 contentType: 'application/json',
                 success: function (result) {
-                    $('#customerId').val(result.customerId);
-                    $('#customerName').val(result.customerName);
+                    $('#companyId').val(result.companyId);
+                    $('#companyName').val(result.companyName);
                     $('#address').val(result.address);
-                    $('#phone').val(result.phone);
+                    $('#description').val(result.description);
                     $('#email').val(result.email);
-                    $('#gender').val(result.gender);
-                    $('#customerModalLabel').html('Edit Customer');
-                    $('#customerModal').modal('show');
+                    $('#companyModalLabel').html('Edit Company');
+                    $('#companyModal').modal('show');
                 },
                 error: function (xhr, status, error) {
-                    console.error("An error occurred while fetching customer details:", error);
-                    alert("An error occurred while fetching customer details.");
+                    console.error("An error occurred while fetching company details:", error);
+                    alert("An error occurred while fetching company details.");
                 }
             });
         }
 
-        function deleteCustomer(customerId) {
-            if (confirm('Are you sure you want to delete this customer?')) {
+        function deleteCompany(companyId) {
+            if (confirm('Are you sure you want to delete this company?')) {
                 $.ajax({
                     type: 'DELETE',
-                    url: '@Url.Action("Delete", "Customers")' + '?customerId=' + customerId,
+                    url: '@Url.Action("Delete", "Company")' + '?companyId=' + companyId,
                     contentType: 'application/json',
                     success: function (result) {
                         if (result.status === 1) {
@@ -210,8 +198,8 @@
                         alert(result.message);
                     },
                     error: function (xhr, status, error) {
-                        console.error("An error occurred while deleting the customer:", error);
-                        alert("An error occurred while deleting the customer.");
+                        console.error("An error occurred while deleting the company:", error);
+                        alert("An error occurred while deleting the company.");
                     }
                 });
             }

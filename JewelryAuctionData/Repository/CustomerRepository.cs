@@ -13,5 +13,9 @@ namespace JewelryAuctionData.Repository
         public CustomerRepository() 
         {
         }
+        public CustomerRepository(Net17112312JewelryAuctionContext context) => _context = context;
+        
+            
+        
     }
 }

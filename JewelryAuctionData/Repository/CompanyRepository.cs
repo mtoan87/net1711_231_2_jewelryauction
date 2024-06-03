@@ -12,5 +12,9 @@ namespace JewelryAuctionData.Repository
     {
         public CompanyRepository() {
         }
+        public CompanyRepository(Net17112312JewelryAuctionContext context) => _context = context;
+
+
+
     }
 }

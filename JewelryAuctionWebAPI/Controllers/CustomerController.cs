@@ -64,7 +64,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return BadRequest(result?.Message);
             }
         }
-        [HttpPut]
+        [HttpPost]
         [Route("UpdateCustomer")]
         public async Task<IActionResult> UpdateCustomer(UpdateCustomerDTO updateCustomer)
         {
