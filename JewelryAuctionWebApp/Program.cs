@@ -28,4 +28,8 @@ app.MapControllerRoute(
      name: "GetCustomerById",
      pattern: "{controller=Customers}/{action=GetCustomerById}/{paymentId?}");
 
+app.MapControllerRoute(
+     name: "GetPaymentById",
+     pattern: "{controller=Payments}/{action=GetPaymentById}/{paymentId?}");
+
 app.Run();

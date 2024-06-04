@@ -1,0 +1,241 @@
+﻿@model IEnumerable<JewelryAuctionData.Models.Payment>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<div class="row">
+    <div class="col-md-10">
+        <h3 class="display-8">Payment List</h3>
+    </div>
+    <div class="col-md-2 text-end">
+        <button type="button" class="btn btn-primary" onclick="add();">
+            Add
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr class="card-header">
+                    <th class="card-title text-center">PaymentId</th>
+                    <th class="card-title text-center">CustomerId</th>
+                    <th class="card-title text-center">AuctionResultId</th>
+                    <th class="card-title text-center">Status</th>
+                    <th class="card-title text-center">PaymentMethod</th>
+                    <th class="card-title text-center">Date</th>
+                    <th class="card-title text-center">JewelryId</th>
+                    <th class="card-title text-center">Fee</th>
+                    <th class="card-title text-center">PercentFee</th>
+                    <th class="card-title text-center">Price</th>
+                    <th class="card-title text-center">TotalPrice</th>
+                    <th class="card-title text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="tblPaymentList">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="topUpModal" tabindex="-1" aria-labelledby="topUpModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frm", id = "frm" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="topUpModalLabel">Add New Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="paymentId" name="paymentId">
+                    <div class="form-group">
+                        <label for="customerId">Customer ID:</label>
+                        <input type="number" class="form-control" id="customerId" name="customerId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="auctionResultId">Auction Result ID:</label>
+                        <input type="number" class="form-control" id="auctionResultId" name="auctionResultId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status:</label>
+                        <input type="text" class="form-control" id="status" name="status" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="paymentMethod">Payment Method:</label>
+                        <input type="text" class="form-control" id="paymentMethod" name="paymentMethod" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Date:</label>
+                        <input type="datetime-local" class="form-control" id="date" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="jewelryId">Jewelry ID:</label>
+                        <input type="number" class="form-control" id="jewelryId" name="jewelryId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fee">Fee:</label>
+                        <input type="number" class="form-control" id="fee" name="fee" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="percentFee">Percent Fee:</label>
+                        <input type="number" class="form-control" id="percentFee" name="percentFee" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Price:</label>
+                        <input type="number" class="form-control" id="price" name="price" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="totalPrice">Total Price:</label>
+                        <input type="number" class="form-control" id="totalPrice" name="totalPrice" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btSave" type="button" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        var action = "Create"; // Mặc định là tạo mới
+
+        $(document).ready(function () {
+            loadData();
+
+            $("#btSave").click(function () {
+                var newPayment = {
+                    paymentId: $("#paymentId").val(),
+                    customerId: $("#customerId").val(),
+                    auctionResultId: $("#auctionResultId").val(),
+                    status: $("#status").val(),
+                    paymentMethod: $("#paymentMethod").val(),
+                    date: $("#date").val(),
+                    jewelryId: $("#jewelryId").val(),
+                    fee: $("#fee").val(),
+                    percentFee: $("#percentFee").val(),
+                    price: $("#price").val(),
+                    totalPrice: $("#totalPrice").val()
+                };
+
+                $.ajax({
+                    type: action === "Create" ? 'POST' : 'POST',
+                    url: action === "Create" ? '@Url.Action("Create", "Payments")' : '@Url.Action("Update", "Payments")',
+                    contentType: 'application/json',
+                    data: JSON.stringify(newPayment),
+                    success: function (result) {
+                        if (result.status === 1) {
+                            $('#topUpModal').modal('hide');
+                            loadData();
+                        }
+                        alert(result.message);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("An error occurred while saving the Payment:", error);
+                        alert("An error occurred while saving the Payment.");
+                    }
+                });
+            });
+        });
+
+        function loadData() {
+            $.ajax({
+                url: '@Url.Action("GetAll", "Payments")',
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    var html = '';
+                    $.each(result, function (key, item) {
+                        html += '<tr>';
+                        html += '<td>' + item.paymentId + '</td>';
+                        html += '<td>' + item.customerId + '</td>';
+                        html += '<td>' + item.auctionResultId + '</td>';
+                        html += '<td>' + item.status + '</td>';
+                        html += '<td>' + item.paymentMethod + '</td>';
+                        html += '<td>' + item.date + '</td>';
+                        html += '<td>' + item.jewelryId + '</td>';
+                        html += '<td>' + item.fee + '</td>';
+                        html += '<td>' + item.percentFee + '</td>';
+                        html += '<td>' + item.price + '</td>';
+                        html += '<td>' + item.totalPrice + '</td>';
+                        html += '<td><button type="button" class="btn btn-primary" onclick="editPayment(' + item.paymentId + ')">Edit</button></td>';
+                        html += '<td><button type="button" class="btn btn-danger" onclick="deletePayment(' + item.paymentId + ')">Delete</button></td>';
+                        html += '</tr>';
+                    });
+                    $('.tblPaymentList').html(html);
+                },
+                error: function (xhr, error) {
+                    alert(xhr.statusText);
+                }
+            });
+        }
+
+        function add() {
+            action = "Create"; // Đặt hành động là tạo mới
+            $("#paymentId").val(0); // Đặt ID của thanh toán là 0
+            $('#frm')[0].reset(); // Đặt lại form
+            $('#topUpModalLabel').html("Add New Payment"); // Đặt lại tiêu đề modal
+            $('#btSave').html("Save"); // Đặt lại văn bản của nút "Save"
+            $('#topUpModal').modal('show'); // Hiển thị modal
+        }
+
+        function editPayment(paymentId) {
+            action = "Update"; // Đặt hành động là cập nhật
+            $.ajax({
+                url: '@Url.Action("GetPaymentById", "Payments")' + '?paymentId=' + paymentId,
+                type: "GET",
+                contentType: 'application/json',
+                success: function (result) {
+                    $('#paymentId').val(result.paymentId);
+                    $('#customerId').val(result.customerId);
+                    $('#auctionResultId').val(result.auctionResultId);
+                    $('#status').val(result.status);
+                    $('#paymentMethod').val(result.paymentMethod);
+                    $('#date').val(result.date);
+                    $('#jewelryId').val(result.jewelryId);
+                    $('#fee').val(result.fee);
+                    $('#percentFee').val(result.percentFee);
+                    $('#price').val(result.price);
+                    $('#totalPrice').val(result.totalPrice);
+
+                    $('#topUpModalLabel').html("Edit Payment"); // Đặt lại tiêu đề modal
+                    $('#btSave').html("Save"); // Đặt lại văn bản của nút "Save"
+                    $('#topUpModal').modal('show'); // Hiển thị modal
+                },
+                error: function (xhr, status, error) {
+                    console.error("An error occurred while fetching payment details:", error);
+                    alert("An error occurred while fetching payment details.");
+                }
+            });
+        }
+
+        function deletePayment(paymentId) {
+            if (confirm('Are you sure you want to delete this payment?')) {
+                $.ajax({
+                    type: 'DELETE',
+                    url: '@Url.Action("Delete", "Payments")' + '?paymentId=' + paymentId,
+                    contentType: 'application/json',
+                    success: function (result) {
+                        if (result.status === 1) {
+                            loadData();
+                        }
+                        alert(result.message);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("An error occurred while deleting the Payment:", error);
+                        alert("An error occurred while deleting the Payment.");
+                    }
+                });
+            }
+        }
+    </script>
+}
