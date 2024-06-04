@@ -1,5 +1,4 @@
 ﻿using JewelryAuctionBusiness;
-using JewelryAuctionData.DTO;
 using JewelryAuctionData.DTO.Customer;
 using JewelryAuctionData.Models;
 using Microsoft.AspNetCore.Mvc;

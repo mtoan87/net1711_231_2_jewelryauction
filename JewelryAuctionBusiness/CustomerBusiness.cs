@@ -1,7 +1,6 @@
 ﻿using Common;
 using JewelryAuctionData;
 using JewelryAuctionData.DAO;
-using JewelryAuctionData.DTO;
 using JewelryAuctionData.DTO.Customer;
 using JewelryAuctionData.Models;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace JewelryAuctionBusiness
 {
-    
+
     public class CustomerBusiness 
 
     {
@@ -68,8 +67,7 @@ namespace JewelryAuctionBusiness
             try
             {
                 var newCustomer = new Customer
-                {
-                    CustomerId = createCustomer.CustomerId,
+                {           
                     CustomerName = createCustomer.CustomerName,
                     Email = createCustomer.Email,
                     Phone = createCustomer.Phone,
