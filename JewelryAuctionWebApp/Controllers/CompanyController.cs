@@ -7,7 +7,7 @@ namespace JewelryAuctionWebApp.Controllers
 {
     public class CompanyController : Controller
     {
-        private string apiUrl = "https://localhost:44357/api/Company/";
+        private string apiUrl = "https://localhost:7169/api/Company/";
 
         public IActionResult Index()
         {

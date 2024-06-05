@@ -1,42 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using JewelryAuctionData.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using JewelryAuctionData.Models;
-using JewelryAuctionData;
-using JewelryAuctionBusiness;
 using Newtonsoft.Json;
-using JewelryAuctionData.DTO;
 using System.Text;
 
 namespace JewelryAuctionWebApp.Controllers
 {
-    public class CustomersController : Controller
+    public class AuctionResultController : Controller
     {
+        private readonly string apiUrl = "https://localhost:7169/api/AuctionResult/";
 
-        private string apiUrl = "https://localhost:7169/api/Customer/";
-
-        
-        
-        public CustomersController()
+        public AuctionResultController()
         {
-           
         }
 
-        public IActionResult index()
+        public IActionResult Index()
         {
             return View();
         }
 
         [HttpGet]
-        public async Task<List<Customer>> GetAll()
+        public async Task<IActionResult> GetAll()
         {
             try
             {
-                var result = new List<Customer>();
+                var result = new List<AuctionResult>();
                 using (var httpClient = new HttpClient())
                 {
                     using (var response = await httpClient.GetAsync(apiUrl + "GetAll"))
@@ -44,40 +31,38 @@ namespace JewelryAuctionWebApp.Controllers
                         if (response.IsSuccessStatusCode)
                         {
                             var content = await response.Content.ReadAsStringAsync();
-                            result = JsonConvert.DeserializeObject<List<Customer>>(content);
+                            result = JsonConvert.DeserializeObject<List<AuctionResult>>(content);
                         }
                     }
                 }
 
-                return result;
+                return Json(result);
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                return BadRequest(ex.Message);
             }
         }
 
-       
-
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Customer newPayment)
+        public async Task<IActionResult> Create([FromBody] AuctionResult newAuctionResult)
         {
             try
             {
                 using (var httpClient = new HttpClient())
                 {
-                    var jsonContent = new StringContent(JsonConvert.SerializeObject(newPayment), Encoding.UTF8, "application/json");
-                    using (var response = await httpClient.PostAsync(apiUrl + "CreateCustomer", jsonContent))
+                    var jsonContent = new StringContent(JsonConvert.SerializeObject(newAuctionResult), Encoding.UTF8, "application/json");
+                    using (var response = await httpClient.PostAsync(apiUrl + "CreateAuctionResult", jsonContent))
                     {
                         if (response.IsSuccessStatusCode)
                         {
                             var content = await response.Content.ReadAsStringAsync();
-                            return Json(new { status = 1, message = "Customer created successfully." });
+                            return Json(new { status = 1, message = "Auction Result created successfully." });
                         }
                         else
                         {
                             var content = await response.Content.ReadAsStringAsync();
-                            return Json(new { status = 0, message = "Failed to create customer." });
+                            return Json(new { status = 0, message = "Failed to create Auction Result." });
                         }
                     }
                 }
@@ -89,24 +74,24 @@ namespace JewelryAuctionWebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update([FromBody] Customer updatedPayment)
+        public async Task<IActionResult> Update([FromBody] AuctionResult updatedAuctionResult)
         {
             try
             {
                 using (var httpClient = new HttpClient())
                 {
-                    var jsonContent = new StringContent(JsonConvert.SerializeObject(updatedPayment), Encoding.UTF8, "application/json");
-                    using (var response = await httpClient.PostAsync(apiUrl + "UpdateCustomer", jsonContent))
+                    var jsonContent = new StringContent(JsonConvert.SerializeObject(updatedAuctionResult), Encoding.UTF8, "application/json");
+                    using (var response = await httpClient.PostAsync(apiUrl + "UpdateAuctionResult", jsonContent))
                     {
                         if (response.IsSuccessStatusCode)
                         {
                             var content = await response.Content.ReadAsStringAsync();
-                            return Json(new { status = 1, message = "Customer updated successfully." });
+                            return Json(new { status = 1, message = "Auction Result updated successfully." });
                         }
                         else
                         {
                             var content = await response.Content.ReadAsStringAsync();
-                            return Json(new { status = 0, message = "Failed to update customer." });
+                            return Json(new { status = 0, message = "Failed to update Auction Result." });
                         }
                     }
                 }
@@ -117,18 +102,18 @@ namespace JewelryAuctionWebApp.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetCustomerById(int customerId)
+        public async Task<IActionResult> GetAuctionResultById(int AuctionResultId)
         {
             try
             {
                 using (var httpClient = new HttpClient())
                 {
-                    var response = await httpClient.GetAsync(apiUrl + "GetById?id=" + customerId);
+                    var response = await httpClient.GetAsync(apiUrl + "GetById?id=" + AuctionResultId);
                     if (response.IsSuccessStatusCode)
                     {
                         var content = await response.Content.ReadAsStringAsync();
-                        var payment = JsonConvert.DeserializeObject<Customer>(content);
-                        return Json(payment);
+                        var AuctionResult = JsonConvert.DeserializeObject<AuctionResult>(content);
+                        return Json(AuctionResult);
                     }
                     else
                     {
@@ -143,20 +128,20 @@ namespace JewelryAuctionWebApp.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete(int customerId)
+        public async Task<IActionResult> Delete(int AuctionResultId)
         {
             try
             {
                 using (var httpClient = new HttpClient())
                 {
-                    var response = await httpClient.DeleteAsync(apiUrl + "DeleteCustomer?customerId=" + customerId);
+                    var response = await httpClient.DeleteAsync(apiUrl + "DeleteAuctionResult?auctionResultId=" + AuctionResultId);
                     if (response.IsSuccessStatusCode)
                     {
-                        return Json(new { status = 1, message = "Customer deleted successfully." });
+                        return Json(new { status = 1, message = "Auction Result deleted successfully." });
                     }
                     else
                     {
-                        return Json(new { status = 0, message = "Failed to delete payment." });
+                        return Json(new { status = 0, message = "Failed to delete Auction Result." });
                     }
                 }
             }
