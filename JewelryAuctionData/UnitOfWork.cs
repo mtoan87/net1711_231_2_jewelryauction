@@ -15,6 +15,8 @@ namespace JewelryAuctionData
         private CustomerRepository _customerRepository;
         private CompanyRepository _companyRepository;
         private PaymentRepository _paymentRepository;
+        private JewelryRepository _jewelryRepository;
+        private AuctionResultRepository _auctionResultRepository;
         public UnitOfWork() 
         {
             _context ??= new Net17112312JewelryAuctionContext();
@@ -40,6 +42,20 @@ namespace JewelryAuctionData
             get
             {
                 return _paymentRepository ??= new Repository.PaymentRepository(_context);
+            }
+        }
+        public JewelryRepository JewelryRepository
+        {
+            get
+            {
+                return _jewelryRepository ??= new Repository.JewelryRepository(_context);
+            }
+        }
+        public AuctionResultRepository AuctionResultRepository
+        {
+            get
+            {
+                return _auctionResultRepository ??= new Repository.AuctionResultRepository(_context);
             }
         }
     }
