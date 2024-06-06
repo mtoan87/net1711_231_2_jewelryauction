@@ -1,6 +1,6 @@
 ﻿using Common;
 using JewelryAuctionData;
-using JewelryAuctionData.DAO;
+
 using JewelryAuctionData.DTO;
 using JewelryAuctionData.DTO.Company;
 using JewelryAuctionData.DTO.Customer;

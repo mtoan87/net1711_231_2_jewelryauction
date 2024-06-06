@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JewelryAuctionData.DTO
+namespace JewelryAuctionData.DTO.Customer
 {
     public class CreateCustomerDTO
     {
-        
+
         public string? CustomerName { get; set; }
 
         public string? Address { get; set; }
