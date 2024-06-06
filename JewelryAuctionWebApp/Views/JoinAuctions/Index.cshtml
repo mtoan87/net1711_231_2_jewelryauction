@@ -1,0 +1,203 @@
+﻿@model IEnumerable<JewelryAuctionData.Models.JoinAuction>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Join Auction Management</h1>
+
+<div class="row">
+    <div class="col-md-10">
+        <h3 class="display-8">All auction can join list</h3>
+    </div>
+    <div class="col-md-2 text-end">
+        <button type="button" class="btn btn-primary" onclick="create();">
+            Create
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr class="card-header">
+                    <th class="card-title text-center">JoinAuctionId</th>
+                    <th class="card-title text-center">CustomerId</th>
+                    <th class="card-title text-center">AuctionDetailId</th>
+                    <th class="card-title text-center">StartTime</th>
+                    <th class="card-title text-center">EndTime</th>
+                    <th class="card-title text-center">Host</th>
+                </tr>
+            </thead>
+            <tbody class="tblJoinAuctions">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="joinAuctionModal" tabindex="-1" aria-labelledby="joinAuctionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frm", id = "frm" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="joinAuctionModalLabel">Add New Auction</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!--<div id="joinAuctionModalContent"></div>-->
+                    <input type="hidden" id="joinAuctionId" name="joinAuctionId">
+                    <div class="form-group">
+                        <label for="customerId">Customer ID:</label>
+                        <input type="number" class="form-control" id="customerId" name="customerId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="auctionDetailId">Auction Detail ID:</label>
+                        <input type="number" class="form-control" id="auctionDetailId" name="auctionDetailId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="startTime">Start Time</label>
+                        <input type="datetime-local" class="form-control" id="startTime" name="startTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endTime">End Time</label>
+                        <input type="datetime-local" class="form-control" id="endTime" name="endTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="host">Host</label>
+                        <input type="text" class="form-control" id="host" name="host" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btSave" type="button" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        var action = "Create"; // Mặc định là tạo mới
+
+        $(document).ready(function () {
+            loadData();
+
+            $("#btSave").click(function () {
+                var joinAuction = {
+                    JoinAuctionId: $("#joinAuctionId").val(),
+                    CustomerId: $("#customerId").val(),
+                    AuctionDetailId: $("#auctionDetailId").val(),
+                    StartTime: $("#startTime").val(),
+                    EndTime: $("#endTime").val(),
+                    Host: $("#host").val()
+                };
+
+                $.ajax({
+                    type: action === "Create" ? 'POST' : 'POST',
+                    url: action === "Create" ? '@Url.Action("Create", "JoinAuctions")' : '@Url.Action("Update", "JoinAuctions")',
+                    contentType: 'application/json',
+                    data: JSON.stringify(joinAuction),
+                    success: function (result) {
+                        if (result.status === 1) {
+                            $('#joinAuctionModal').modal('hide');
+                            loadData();
+                        }
+                        alert(result.message);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("An error occurred while saving the Auction:", error);
+                        alert("An error occurred while saving the Auction.");
+                    }
+                });
+            });
+        });
+
+        function loadData() {
+            $.ajax({
+                url: '@Url.Action("GetAll", "JoinAuctions")',
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    var html = '';
+                    $.each(result, function (key, item) {
+                        html += '<tr>';
+                        html += '<td>' + item.joinAuctionId + '</td>';
+                        html += '<td>' + item.customerId + '</td>';
+                        html += '<td>' + item.auctionDetailId + '</td>';
+                        html += '<td>' + item.startTime + '</td>';
+                        html += '<td>' + item.endTime + '</td>';
+                        html += '<td>' + item.host + '</td>';
+
+                        html += '<td><button type="button" class="btn btn-primary" onclick="editAuction(' + item.joinAuctionId + ')">Edit</button></td>';
+                        html += '<td><button type="button" class="btn btn-danger" onclick="deleteAuction(' + item.joinAuctionId + ')">Delete</button></td>';
+                        html += '</tr>';
+                    });
+                    $('.tblJoinAuctions').html(html);
+                },
+                error: function (xhr, error) {
+                    alert(xhr.statusText);
+                }
+            });
+        }
+
+        function create() {
+            action = "Create"; // Đặt hành động là tạo mới
+            $("#joinAuctionId").val(0); // Đặt ID của thanh toán là 0
+            $('#frm')[0].reset(); // Đặt lại form
+            $('#joinAuctionModalLabel').html("Add New Auction"); // Đặt lại tiêu đề modal
+            $('#btSave').html("Save"); // Đặt lại văn bản của nút "Save"
+            $('#joinAuctionModal').modal('show'); // Hiển thị modal
+        }
+
+        function editAuction(joinAuctionId) {
+            action = "Update";
+            $.ajax({
+                url: '@Url.Action("GetJoinAuctionById", "JoinAuctions")' + '?joinAuctionId=' + joinAuctionId,
+                type: "GET",
+                contentType: 'application/json',
+                success: function (result) {
+                    $("#joinAuctionId").val(result.joinAuctionId),
+                        $("#customerId").val(result.customerId),
+                        $("#auctionDetailId").val(result.auctionDetailId),
+                        $("#startTime").val(result.startTime),
+                        $("#endTime").val(result.endTime),
+                        $("#host").val(result.host)
+
+                    $('#joinAuctionModalLabel').html("Edit auction information");
+                    $('#btSave').html("Save");
+                    $('#joinAuctionModal').modal('show');
+                },
+                error: function (xhr, status, error) {
+                    console.error("An error occurred while updating the Auction:", error);
+                    alert("An error occurred while updating the Auction.");
+                }
+            });
+        }
+
+        function deleteAuction(joinAuctionId) {
+            if (confirm('Are you sure you want to delete this auction?')) {
+                $.ajax({
+                    type: 'DELETE',
+                    url: '@Url.Action("Delete", "JoinAuctions")' + '?joinAuctionId=' + joinAuctionId,
+                    contentType: 'application/json',
+                    success: function (result) {
+                        if (result.status === 1) {
+                            loadData();
+                        }
+                        alert(result.message);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("An error occurred while deleting the Auction:", error);
+                        alert("An error occurred while deleting the Auction.");
+                    }
+                });
+            }
+        }
+    </script>
+}
