@@ -34,7 +34,8 @@ public partial class Net17112312JewelryAuctionContext : DbContext
     public virtual DbSet<RequestAuctionDetail> RequestAuctionDetails { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=(local);uid=sa;pwd=1234567890;database=Net1711_231_2_JewelryAuction;TrustServerCertificate=True;");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=(local);uid=sa;pwd=12345;database=NET1711_231_2_JewelryAuction;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -42,7 +43,6 @@ public partial class Net17112312JewelryAuctionContext : DbContext
         {
             entity.ToTable("AuctionResult");
 
-            entity.Property(e => e.AuctionResultId).ValueGeneratedNever();
             entity.Property(e => e.Date).HasColumnType("datetime");
             entity.Property(e => e.Status).HasMaxLength(50);
 
@@ -55,7 +55,6 @@ public partial class Net17112312JewelryAuctionContext : DbContext
         {
             entity.ToTable("Bid");
 
-            entity.Property(e => e.BidId).ValueGeneratedNever();
             entity.Property(e => e.DateTime).HasColumnType("datetime");
 
             entity.HasOne(d => d.JoinAuction).WithMany(p => p.Bids)
@@ -67,7 +66,6 @@ public partial class Net17112312JewelryAuctionContext : DbContext
         {
             entity.ToTable("Company");
 
-            entity.Property(e => e.CompanyId).ValueGeneratedNever();
             entity.Property(e => e.Address).HasMaxLength(50);
             entity.Property(e => e.CompanyName).HasMaxLength(50);
             entity.Property(e => e.Description).HasMaxLength(50);
@@ -78,7 +76,6 @@ public partial class Net17112312JewelryAuctionContext : DbContext
         {
             entity.ToTable("Customer");
 
-            entity.Property(e => e.CustomerId).ValueGeneratedNever();
             entity.Property(e => e.Address).HasMaxLength(50);
             entity.Property(e => e.CustomerName).HasMaxLength(50);
             entity.Property(e => e.Email).HasMaxLength(50);
@@ -90,7 +87,6 @@ public partial class Net17112312JewelryAuctionContext : DbContext
         {
             entity.ToTable("Jewelry");
 
-            entity.Property(e => e.JewelryId).ValueGeneratedNever();
             entity.Property(e => e.JewelryName).HasMaxLength(50);
             entity.Property(e => e.Material).HasMaxLength(50);
             entity.Property(e => e.Size).HasMaxLength(50);
@@ -101,7 +97,6 @@ public partial class Net17112312JewelryAuctionContext : DbContext
         {
             entity.ToTable("JoinAuction");
 
-            entity.Property(e => e.JoinAuctionId).ValueGeneratedNever();
             entity.Property(e => e.EndTime).HasColumnType("datetime");
             entity.Property(e => e.Host).HasMaxLength(50);
             entity.Property(e => e.StartTime).HasColumnType("datetime");
@@ -115,7 +110,6 @@ public partial class Net17112312JewelryAuctionContext : DbContext
         {
             entity.ToTable("Payment");
 
-            entity.Property(e => e.PaymentId).ValueGeneratedNever();
             entity.Property(e => e.Date).HasColumnType("datetime");
             entity.Property(e => e.PaymentMethod).HasMaxLength(50);
             entity.Property(e => e.Status).HasMaxLength(50);
@@ -129,7 +123,6 @@ public partial class Net17112312JewelryAuctionContext : DbContext
         {
             entity.ToTable("RequestAuction");
 
-            entity.Property(e => e.RequestAuctionId).ValueGeneratedNever();
             entity.Property(e => e.AuctionName).HasMaxLength(50);
             entity.Property(e => e.EndTime).HasColumnType("datetime");
             entity.Property(e => e.StartTime).HasColumnType("datetime");
@@ -143,8 +136,6 @@ public partial class Net17112312JewelryAuctionContext : DbContext
         modelBuilder.Entity<RequestAuctionDetail>(entity =>
         {
             entity.ToTable("RequestAuctionDetail");
-
-            entity.Property(e => e.RequestAuctionDetailId).ValueGeneratedNever();
 
             entity.HasOne(d => d.Jewelry).WithMany(p => p.RequestAuctionDetails)
                 .HasForeignKey(d => d.JewelryId)

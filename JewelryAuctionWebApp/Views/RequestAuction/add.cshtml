@@ -1,0 +1,62 @@
+﻿@model JewelryAuctionData.Models.RequestAuction
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div class="form-group row">
+    <div class="col-md-6">
+        @Html.HiddenFor(model => model.RequestAuctionId, new { htmlAttributes = new { @class = "form-control" } })
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-md-6">
+        <label for="AuctionName">Auction Name</label>
+        @Html.EditorFor(model => model.AuctionName, new { htmlAttributes = new { @class = "form-control" } })
+    </div>
+    <div class="col-md-6">
+        <label for="CustomerId">Customer ID</label>
+        @Html.EditorFor(model => model.CustomerId, new { htmlAttributes = new { @class = "form-control" } })
+    </div>
+    <div class="col-md-6">
+        <label for="Status">Status</label>
+        @Html.EditorFor(model => model.Status, new { htmlAttributes = new { @class = "form-control" } })
+    </div>
+    <div class="col-md-6">
+        <label for="StartTime">Start Time</label>
+        <div class="input-group date" id="startTimePicker">
+            @Html.EditorFor(model => model.StartTime, new { htmlAttributes = new { @class = "form-control", @id = "StartTime" } })
+            <div class="input-group-append">
+                <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <label for="EndTime">End Time</label>
+        <div class="input-group date" id="endTimePicker">
+            @Html.EditorFor(model => model.EndTime, new { htmlAttributes = new { @class = "form-control", @id = "EndTime" } })
+            <div class="input-group-append">
+                <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#startTimePicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            });
+
+            $('#endTimePicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            });
+        });
+    </script>
+}
+

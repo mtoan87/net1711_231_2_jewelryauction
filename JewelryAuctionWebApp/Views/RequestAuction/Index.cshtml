@@ -1,0 +1,212 @@
+﻿@model IEnumerable<JewelryAuctionData.Models.RequestAuction>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<div class="row">
+    <div class="col-md-10">
+        <h3 class="display-8">Request Auction List</h3>
+    </div>
+    <div class="col-md-2 text-end">
+        <button type="button" class="btn btn-primary" onclick="add();">
+            Add
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr class="card-header">
+                    <th class="card-title text-center">RequestAuctionId</th>
+                    <th class="card-title text-center">AuctionName</th>
+                    <th class="card-title text-center">CustomerId</th>
+                    <th class="card-title text-center">Status</th>
+                    <th class="card-title text-center">StartTime</th>
+                    <th class="card-title text-center">EndTime</th>
+                    <th class="card-title text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="tblRequestAuction">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="requestAuctionModal" tabindex="-1" aria-labelledby="requestAuctionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frm", id = "frm" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="requestAuctionModalLabel">Request Auction</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="requestAuctionModalContent"></div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btSave" type="button" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            loadData();
+            });
+        
+
+            function loadData() {
+                $.ajax({
+                    url: '@Url.Action("GetAll", "RequestAuction")',
+                    type: "GET",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        var html = '';
+                        $.each(result, function (key, item) {
+                            html += '<tr>';
+                            html += '<td>' + item.requestAuctionId + '</td>';
+                            html += '<td>' + item.auctionName + '</td>';
+                            html += '<td>' + item.customerId + '</td>';
+                            html += '<td>' + item.status + '</td>';
+                            html += '<td>' + item.startTime + '</td>';
+                            html += '<td>' + item.endTime + '</td>';
+                            html += '<td><a href="#" onclick="return edit(' + item.requestAuctionId + ')">Edit</a> | <a href="#" onclick="delele(' + item.requestAuctionId + ')">Delete</a></td>';
+                            html += '</tr>';
+                        });
+                        $('.tblRequestAuction').html(html);
+                    },
+                    error: function (xhr, error) {
+                        alert(xhr.statusText);
+                    }
+                });
+            }
+
+            function add() {
+                $("#requestAuctionModalContent").html("");
+                $("#requestAuctionModalLabel").html("Add New");
+
+                $.ajax({
+                    url: '@Url.Action("Add", "RequestAuction")',
+                    type: "GET",
+                    success: function (result) {
+                        $("#requestAuctionModalContent").html(result);
+                        $('#requestAuctionModal').modal('show');
+                        $("#btSave").off("click").on("click", function () {
+                            create();
+                        });
+                    },
+                    error: function (message) {
+                        alert(message);
+                    }
+                });
+            }
+
+            function edit(id) {
+                $("#requestAuctionModalContent").html("");
+                $("#requestAuctionModalLabel").html(`Edit Auction [${id}]`);
+
+                $.ajax({
+                    url: '@Url.Action("Edit", "RequestAuction")' + '/' + id,
+                    type: "GET",
+                    success: function (result) {
+                        $("#requestAuctionModalContent").html(result);
+                        $('#requestAuctionModal').modal('show');
+                        $("#btSave").off("click").on("click", function () {
+                            update(id);
+                        });
+                    },
+                    error: function (message) {
+                        alert(message);
+                    }
+                });
+            }
+
+            function delele(id) {
+                var result = confirm(`Are you sure to delete auction [${id}]?`);
+                if (result) {
+                    $.ajax({
+                        url: '@Url.Action("Delete", "RequestAuction")' + '/' + id,
+                        type: "DELETE",
+                        contentType: 'application/json;charset=utf-8',
+                        dataType: "json",
+                        success: function (result) {
+                            loadData();
+                            alert(`Deleted auction [${id}] successfully!`);
+                        },
+                        error: function (message) {
+                            console.log(message);
+                            alert(`Something went wrong!`);
+                        }
+                    });
+                }
+            }
+
+            function create() {
+                var data = {
+                    AuctionName: $("#AuctionName").val(),
+                    CustomerId: $("#CustomerId").val(),
+                    Status: $("#Status").val(),
+                    StartTime: $("#StartTime").val(),
+                    EndTime: $("#EndTime").val(),
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("Create", "RequestAuction")',
+                    contentType: 'application/json;charset=utf-8',
+                    dataType: "json",
+                    data: JSON.stringify(data),
+                    success: function (result) {                      
+                        $('#requestAuctionModal').modal('hide');
+                        loadData();                       
+                        alert("Created new request auction successfully!");
+                    },
+                    error: function (xhr, error) {
+                        console.log(xhr);
+                        alert(`Something went wrong!`);
+                    }
+                });
+            }
+
+            function update(id) {
+                var data = {
+                    RequestAuctionId: id,
+                    AuctionName: $("#AuctionName").val(),
+                    CustomerId: $("#CustomerId").val(),
+                    Status: $("#Status").val(),
+                    StartTime: $("#StartTime").val(),
+                    EndTime: $("#EndTime").val(),
+                };
+
+                $.ajax({
+                    type: 'PUT',
+                    url: '@Url.Action("Update", "RequestAuction")/' + id,
+                    contentType: 'application/json;charset=utf-8',
+                    dataType: "json",
+                    data: JSON.stringify(data),
+                    success: function (result) {
+                        $('#requestAuctionModal').modal('hide');
+                        loadData();                        
+                        alert(`Updated auction id:${id} successfully!`);
+                    },
+                    error: function (xhr, error) {
+                        console.log(xhr);
+                        alert(`Something went wrong!`);
+                    }
+                });
+            }
+
+    </script>
+}
