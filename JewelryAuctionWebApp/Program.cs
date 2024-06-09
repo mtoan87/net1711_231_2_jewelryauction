@@ -25,8 +25,6 @@ app.MapControllerRoute(
 
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-    pattern: "{controller=Customers}/{action=Index}/{id?}");
-
 app.MapControllerRoute(
      name: "GetCustomerById",
      pattern: "{controller=Customers}/{action=GetCustomerById}/{customerId?}");

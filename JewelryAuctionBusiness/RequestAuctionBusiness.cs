@@ -72,11 +72,11 @@ namespace JewelryAuctionBusiness
                 var result = await _unitOfWork.RequestAuctionRepository.CreateAsync(newAuction);
                 if (result > 0)
                 {
-                    return new JewelryAuction(Const.SUCCESS_CREATE, "Create request auction success", createAuction);
+                    return new JewelryAuction(Const.SUCCESS_GET, "Create request auction success", createAuction);
                 }
                 else
                 {
-                    return new JewelryAuction(Const.ERROR_CREATE, "Create request auction failed");
+                    return new JewelryAuction(Const.ERROR_EXCEPTION, "Create request auction failed");
                 }
             }
             catch (Exception ex)
@@ -96,7 +96,7 @@ namespace JewelryAuctionBusiness
                 auction.StartTime = updateAuction.StartTime;
                 auction.EndTime = updateAuction.EndTime;
                 await _unitOfWork.RequestAuctionRepository.UpdateAsync(auction);
-                return new JewelryAuction(Const.SUCCESS_UPDATE, "Update request auction success", auction);
+                return new JewelryAuction(Const.SUCCESS_GET, "Update request auction success", auction);
             }
             catch (Exception ex)
             {
@@ -117,11 +117,11 @@ namespace JewelryAuctionBusiness
                 var result = await _unitOfWork.RequestAuctionRepository.RemoveAsync(requestAuction);
                 if (result)
                 {
-                    return new JewelryAuction(Const.SUCCESS_DELETE, "Delete request auction success");
+                    return new JewelryAuction(Const.SUCCESS_GET, "Delete request auction success");
                 }
                 else
                 {
-                    return new JewelryAuction(Const.ERROR_DELETE, "Delete request auction failed");
+                    return new JewelryAuction(Const.ERROR_EXCEPTION, "Delete request auction failed");
                 }
             }
             catch (Exception ex)

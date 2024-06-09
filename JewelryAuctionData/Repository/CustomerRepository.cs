@@ -10,7 +10,7 @@ namespace JewelryAuctionData.Repository
 {
     public class CustomerRepository : GenericRepository<Customer>
     {
-        public CustomerRepository() 
+        public CustomerRepository()
         {
         }
         public CustomerRepository(Net17112312JewelryAuctionContext context) => _context = context;

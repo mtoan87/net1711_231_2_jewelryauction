@@ -8,7 +8,7 @@ namespace JewelryAuctionWebApp.Controllers
 {
     public class RequestAuctionDetailController : Controller
     {
-        private string apiUrl = "https://localhost:7169/api/RequestAuctionDetail/";
+        private string apiUrl = "https://localhost:44357/api/RequestAuctionDetail/";
         public RequestAuctionDetailController()
         {
         }

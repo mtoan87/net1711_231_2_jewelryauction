@@ -71,11 +71,11 @@ namespace JewelryAuctionBusiness
                 var result = await _unitOfWork.RequestAuctionDetailRepository.CreateAsync(newDetail);
                 if (result > 0)
                 {
-                    return new JewelryAuction(Const.SUCCESS_CREATE, "Create request auction detail success", newDetail);
+                    return new JewelryAuction(Const.SUCCESS_GET, "Create request auction detail success", newDetail);
                 }
                 else
                 {
-                    return new JewelryAuction(Const.ERROR_CREATE, "Create request auction detail failed");
+                    return new JewelryAuction(Const.ERROR_EXCEPTION, "Create request auction detail failed");
                 }
             }
             catch (Exception ex)
@@ -93,7 +93,7 @@ namespace JewelryAuctionBusiness
                 detail.JewelryId = updateDetail.JewelryId;
                 detail.RequestAuctionId = updateDetail.RequestAuctionId;
                 await _unitOfWork.RequestAuctionDetailRepository.UpdateAsync(detail);
-                return new JewelryAuction(Const.SUCCESS_UPDATE, "Update request auction detail success", detail);
+                return new JewelryAuction(Const.SUCCESS_GET, "Update request auction detail success", detail);
             }
             catch (Exception ex)
             {
@@ -114,11 +114,11 @@ namespace JewelryAuctionBusiness
                 var result = await _unitOfWork.RequestAuctionDetailRepository.RemoveAsync(requestAuctionDetail);
                 if (result)
                 {
-                    return new JewelryAuction(Const.SUCCESS_DELETE, "Delete request auction detail success");
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "Delete request auction detail success");
                 }
                 else
                 {
-                    return new JewelryAuction(Const.ERROR_DELETE, "Delete request auction detail failed");
+                    return new JewelryAuction(Const.ERROR_EXCEPTION, "Delete request auction detail failed");
                 }
             }
             catch (Exception ex)
