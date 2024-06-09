@@ -1,5 +1,6 @@
 ﻿using JewelryAuctionData.Base;
 using JewelryAuctionData.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,14 +9,12 @@ using System.Threading.Tasks;
 
 namespace JewelryAuctionData.Repository
 {
-    public class CustomerRepository : GenericRepository<Customer>
+    public class JoinAuctionRepository : GenericRepository<JoinAuction>
     {
-        public CustomerRepository() 
+        public JoinAuctionRepository()
         {
+
         }
-        public CustomerRepository(Net17112312JewelryAuctionContext context) => _context = context;
-        
-            
-        
+        public JoinAuctionRepository(Net17112312JewelryAuctionContext context) => _context = context;
     }
 }

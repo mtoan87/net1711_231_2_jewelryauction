@@ -1,0 +1,207 @@
+﻿@model IEnumerable<JewelryAuctionData.Models.Jewelry>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<div class="row">
+    <div class="col-md-10">
+        <h3 class="display-8">Jewelry List</h3>
+    </div>
+    <div class="col-md-2 text-end">
+        <button type="button" class="btn btn-primary" onclick="add();">
+            Add
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr class="card-header">
+                    <th class="card-title text-center">JewelryId</th>
+                    <th class="card-title text-center">JewelryName</th>
+                    <th class="card-title text-center">Material</th>
+                    <th class="card-title text-center">Size</th>
+                    <th class="card-title text-center">Weight</th>
+                    <th class="card-title text-center">CustomerId</th>
+                    
+                </tr>
+            </thead>
+            <tbody class="tblJewelryList">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="topUpModal" tabindex="-1" aria-labelledby="topUpModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frm", id = "frm" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="topUpModalLabel">Add New Jewelry</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="jewelryId" name="jewelryId">
+                   
+                    <div class="form-group">
+                        <label for="jewelryName">Jewelry Name:</label>
+                        <input type="text" class="form-control" id="jewelryName" name="jewelryName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="material">Material:</label>
+                        <input type="text" class="form-control" id="material" name="material" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="size">Size:</label>
+                        <input type="text" class="form-control" id="size" name="size" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="weight">Weight:</label>
+                        <input type="text" class="form-control" id="weight" name="weight" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customerId">Customer ID:</label>
+                        <input type="number" class="form-control" id="customerId" name="customerId" required>
+                    </div>
+                    
+                    
+                </div>
+                <div class="modal-footer">
+                    <button id="btSave" type="button" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        var action = "Create"; // Mặc định là tạo mới
+
+        $(document).ready(function () {
+            loadData();
+
+            $("#btSave").click(function () {
+                var newJewelry = {
+                    jewelryId: $("#jewelryId").val(),
+                    jewelryName: $("#jewelryName").val(),
+                    material: $("#material").val(),
+                    size: $("#size").val(),
+                    weight: $("#weight").val(),
+                    customerId: $("#customerId").val(),
+                    
+                };
+
+                $.ajax({
+                    type: action === "Create" ? 'POST' : 'POST',
+                    url: action === "Create" ? '@Url.Action("Create", "Jewelry")' : '@Url.Action("Update", "Jewelry")',
+                    contentType: 'application/json',
+                    data: JSON.stringify(newJewelry),
+                    success: function (result) {
+                        if (result.status === 1) {
+                            $('#topUpModal').modal('hide');
+                            loadData();
+                        }
+                        alert(result.message);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("An error occurred while saving the Jewelry:", error);
+                        alert("An error occurred while saving the Jewelry.");
+                    }
+                });
+            });
+        });
+
+        function loadData() {
+            $.ajax({
+                url: '@Url.Action("GetAll", "Jewelry")',
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    var html = '';
+                    $.each(result, function (key, item) {
+                        html += '<tr>';
+                        html += '<td>' + item.jewelryId + '</td>';
+                        html += '<td>' + item.jewelryName + '</td>';
+                        html += '<td>' + item.material + '</td>';
+                        html += '<td>' + item.size + '</td>';
+                        html += '<td>' + item.weight + '</td>';
+                        html += '<td>' + item.customerId + '</td>';
+
+                        html += '<td><button type="button" class="btn btn-primary" onclick="editJewelry(' + item.jewelryId + ')">Edit</button></td>';
+                        html += '<td><button type="button" class="btn btn-danger" onclick="deleteJewelry(' + item.jewelryId + ')">Delete</button></td>';
+                        html += '</tr>';
+                    });
+                    $('.tblJewelryList').html(html);
+                },
+                error: function (xhr, error) {
+                    alert(xhr.statusText);
+                }
+            });
+        }
+
+        function add() {
+            action = "Create"; // Đặt hành động là tạo mới
+            $("#jewelryId").val(0); // Đặt ID của thanh toán là 0
+            $('#frm')[0].reset(); // Đặt lại form
+            $('#topUpModalLabel').html("Add New Jewelry"); // Đặt lại tiêu đề modal
+            $('#btSave').html("Save"); // Đặt lại văn bản của nút "Save"
+            $('#topUpModal').modal('show'); // Hiển thị modal
+        }
+
+        function editJewelry(JewelryId) {
+            action = "Update"; // Đặt hành động là cập nhật
+            $.ajax({
+                url: '@Url.Action("GetJewelryById", "Jewelry")' + '?jewelryId=' + JewelryId,
+                type: "GET",
+                contentType: 'application/json',
+                success: function (result) {
+                    $('#jewelryId').val(result.jewelryId);
+                    $('#jewelryName').val(result.jewelryName);
+                    $('#material').val(result.material);
+                    $('#size').val(result.size);
+                    $('#weight').val(result.weight);
+                    $('#customerId').val(result.customerId);
+
+
+                    $('#topUpModalLabel').html("Edit Jewelry"); // Đặt lại tiêu đề modal
+                    $('#btSave').html("Save"); // Đặt lại văn bản của nút "Save"
+                    $('#topUpModal').modal('show'); // Hiển thị modal
+                },
+                error: function (xhr, status, error) {
+                    console.error("An error occurred while fetching Jewelrys details:", error);
+                    alert("An error occurred while fetching Jewelrys details.");
+                }
+            });
+        }
+
+        function deleteJewelry(JewelryId) {
+            if (confirm('Are you sure you want to delete this Jewelry?')) {
+                $.ajax({
+                    type: 'DELETE',
+                    url: '@Url.Action("Delete", "Jewelry")' + '?jewelryId=' + JewelryId,
+                    contentType: 'application/json',
+                    success: function (result) {
+                        if (result.status === 1) {
+                            loadData();
+                        }
+                        alert(result.message);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("An error occurred while deleting the Jewelry:", error);
+                        alert("An error occurred while deleting the Jewelry.");
+                    }
+                });
+            }
+        }
+    </script>
+}

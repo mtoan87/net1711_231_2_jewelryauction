@@ -11,18 +11,19 @@ namespace JewelryAuctionData.Base
 {
     public class GenericRepository<T> where T : class
     {
-        protected Net17112312JewelryAuctionContext _context;
-        public GenericRepository()
-        {
-            _context ??= new Net17112312JewelryAuctionContext();
+  
+
+        
+
+      
+ 
         }
-
-        #region Separating asign entity and save operators
-
         public GenericRepository(Net17112312JewelryAuctionContext context)
         {
             _context = context;
         }
+
+        #region Separating asign entity and save operators
 
         public void PrepareCreate(T entity)
         {
@@ -44,6 +45,14 @@ namespace JewelryAuctionData.Base
         {
             return _context.SaveChanges();
         }
+
+        public async Task<int> SaveAsync()
+        {
+            return await _context.SaveChangesAsync();
+        }
+
+        #endregion Separating asign entity and save operators
+
 
         public async Task<int> SaveAsync()
         {

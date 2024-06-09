@@ -1,32 +1,31 @@
 ﻿using JewelryAuctionBusiness;
-using JewelryAuctionData.DTO;
-using JewelryAuctionData.DTO.Customer;
+using JewelryAuctionData.DTO.AuctionResult;
+using JewelryAuctionData.DTO.Jewelry;
 using JewelryAuctionData.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JewelryAuctionWebAPI.Controllers
 {
-
     [Route("api/[controller]")]
     [ApiController]
-    public class CustomerController : ControllerBase
+    public class AuctionResultController : ControllerBase
     {
-        private readonly CustomerBusiness _customerBusiness;
+        private readonly AuctionResultBusiness _auctionResultBusiness;
 
-        public CustomerController()
+        public AuctionResultController()
         {
-            _customerBusiness = new CustomerBusiness();
+            _auctionResultBusiness = new AuctionResultBusiness();
         }
 
         [HttpGet]
         [Route("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _customerBusiness.GetAll();
+            var result = await _auctionResultBusiness.GetAll();
             if (result != null && result.Status > 0)
             {
-                var customer = result.Data as List<Customer>;
-                return Ok(customer);
+                var AuctionResult = result.Data as List<AuctionResult>;
+                return Ok(AuctionResult);
             }
             else
             {
@@ -37,7 +36,7 @@ namespace JewelryAuctionWebAPI.Controllers
         [Route("GetById")]
         public async Task<IActionResult> GetById(int id)
         {
-            var result = await _customerBusiness.GetById(id);
+            var result = await _auctionResultBusiness.GetById(id);
             if (result.Status > 0 && result != null)
             {
 
@@ -50,10 +49,10 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
         [HttpPost]
-        [Route("CreateCustomer")]
-        public async Task<IActionResult> CreateCustomer(CreateCustomerDTO createCustomer)
+        [Route("CreateAuctionResult")]
+        public async Task<IActionResult> CreateAuctionResult(CreateAuctionResultDTO createAuctionResult)
         {
-            var result = await _customerBusiness.CreateCustomer(createCustomer);
+            var result = await _auctionResultBusiness.CreateAuctionResult(createAuctionResult);
             if (result.Status > 0 && result != null)
             {
                 return Ok(result.Data);
@@ -65,11 +64,11 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
         [HttpPost]
-        [Route("UpdateCustomer")]
-        public async Task<IActionResult> UpdateCustomer(UpdateCustomerDTO updateCustomer)
+        [Route("UpdateAuctionResult")]
+        public async Task<IActionResult> UpdateJewelry(UpdateAuctionResultDTO updateAuctionResult)
         {
-            var rs = await _customerBusiness.UpdateCustomer(updateCustomer);
-            if(rs.Status > 0 && rs != null)
+            var rs = await _auctionResultBusiness.UpdateAuctionResult(updateAuctionResult);
+            if (rs.Status > 0 && rs != null)
             {
                 return Ok(rs.Data);
             }
@@ -79,10 +78,10 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
         [HttpDelete]
-        [Route("DeleteCustomer")]
-        public async Task<IActionResult> DeleteCustomer(int customerId)
+        [Route("DeleteAuctionResult")]
+        public async Task<IActionResult> DeleteAuctionResult(int AuctionResultId)
         {
-            var rs = await _customerBusiness.DeleteCustomer(customerId);
+            var rs = await _auctionResultBusiness.DeleteAuctionResult(AuctionResultId);
             if (rs.Status > 0 && rs != null)
             {
                 return Ok(rs.Data);
@@ -94,5 +93,3 @@ namespace JewelryAuctionWebAPI.Controllers
         }
     }
 }
-    
-

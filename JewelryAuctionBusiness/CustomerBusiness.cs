@@ -69,7 +69,7 @@ namespace JewelryAuctionBusiness
             {
                 var newCustomer = new Customer
                 {
-                    CustomerId = createCustomer.CustomerId,
+                    
                     CustomerName = createCustomer.CustomerName,
                     Email = createCustomer.Email,
                     Phone = createCustomer.Phone,

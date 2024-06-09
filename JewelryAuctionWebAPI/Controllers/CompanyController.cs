@@ -26,7 +26,7 @@ namespace JewelryAuctionWebAPI.Controllers
             var result = await _companyBusiness.GetAll();
             if (result != null && result.Status > 0)
             {
-                var customer = result.Data as List<Customer>;
+                var customer = result.Data as List<Company>;
                 return Ok(customer);
             }
             else
@@ -66,9 +66,9 @@ namespace JewelryAuctionWebAPI.Controllers
                 return BadRequest(result?.Message);
             }
         }
-        [HttpPut]
+        [HttpPost]
         [Route("UpdateCompany")]
-        public async Task<IActionResult> UpdateCustomer(UpdateCompanyDTO updateCompany)
+        public async Task<IActionResult> UpdateCompany(UpdateCompanyDTO updateCompany)
         {
             var rs = await _companyBusiness.UpdateCompany(updateCompany);
             if (rs.Status > 0 && rs != null)
@@ -82,7 +82,7 @@ namespace JewelryAuctionWebAPI.Controllers
         }
         [HttpDelete]
         [Route("DeleteCompany")]
-        public async Task<IActionResult> DeleteCustomer(int companyId)
+        public async Task<IActionResult> DeleteCompany(int companyId)
         {
             var rs = await _companyBusiness.DeleteCompany(companyId);
             if (rs.Status > 0 && rs != null)

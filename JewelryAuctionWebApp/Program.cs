@@ -22,5 +22,28 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
+
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+    pattern: "{controller=Customers}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+     name: "GetCustomerById",
+     pattern: "{controller=Customers}/{action=GetCustomerById}/{customerId?}");
+
+app.MapControllerRoute(
+     name: "GetPaymentById",
+     pattern: "{controller=Payments}/{action=GetPaymentById}/{paymentId?}");
+
+app.MapControllerRoute(
+     name: "GetJewelryById",
+     pattern: "{controller=Jewelry}/{action=GetJewelryById}/{jewelryId?}");
+
+app.MapControllerRoute(
+     name: "GetAuctionResultById",
+     pattern: "{controller=AuctionResult}/{action=GetAuctionResultById}/{auctionResultId?}");
+
+
+
+
 app.Run();

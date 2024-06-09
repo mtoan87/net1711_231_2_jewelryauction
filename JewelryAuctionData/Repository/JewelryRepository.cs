@@ -8,14 +8,13 @@ using System.Threading.Tasks;
 
 namespace JewelryAuctionData.Repository
 {
-    public class CustomerRepository : GenericRepository<Customer>
+    public class JewelryRepository : GenericRepository<Jewelry>
     {
-        public CustomerRepository() 
+        public JewelryRepository() { }
+
+        public JewelryRepository(Net17112312JewelryAuctionContext context)
         {
+            _context = context;
         }
-        public CustomerRepository(Net17112312JewelryAuctionContext context) => _context = context;
-        
-            
-        
     }
 }

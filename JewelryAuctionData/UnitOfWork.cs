@@ -14,25 +14,61 @@ namespace JewelryAuctionData
 
         private CustomerRepository _customerRepository;
         private CompanyRepository _companyRepository;
+
         private RequestAuctionRepository _requestAuction;
         private RequestAuctionDetailRepository _requestAuctionDetail;
+
+        private PaymentRepository _paymentRepository;
+        private JewelryRepository _jewelryRepository;
+        private AuctionResultRepository _auctionResultRepository;
+        private JoinAuctionRepository _joinAuctionRepository;
+
         public UnitOfWork() 
         {
             _context ??= new Net17112312JewelryAuctionContext();
         }
 
+        
         public CustomerRepository CustomerRepository
         {
             get
             {
-                return _customerRepository ??= new Repository.CustomerRepository();
+                return _customerRepository ??= new Repository.CustomerRepository(_context);
             }
         }
         public CompanyRepository CompanyRepository
         {
             get
             {
-                return _companyRepository ??= new Repository.CompanyRepository();
+                return _companyRepository ??= new Repository.CompanyRepository(_context);
+            }
+        }
+        public PaymentRepository PaymentRepository
+        {
+            get
+            {
+                return _paymentRepository ??= new Repository.PaymentRepository(_context);
+            }
+        }
+        public JewelryRepository JewelryRepository
+        {
+            get
+            {
+                return _jewelryRepository ??= new Repository.JewelryRepository(_context);
+            }
+        }
+        public AuctionResultRepository AuctionResultRepository
+        {
+            get
+            {
+                return _auctionResultRepository ??= new Repository.AuctionResultRepository(_context);
+            }
+        }
+        public JoinAuctionRepository joinAuctionRepository
+        {
+            get
+            {
+                return _joinAuctionRepository ??= new Repository.JoinAuctionRepository(_context);
             }
         }
         public RequestAuctionRepository RequestAuctionRepository
