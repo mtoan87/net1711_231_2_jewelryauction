@@ -1,4 +1,5 @@
-﻿using JewelryAuctionData.Models;
+﻿using JewelryAuctionData.DTO;
+using JewelryAuctionData.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,13 +11,12 @@ namespace JewelryAuctionData.Base
 {
     public class GenericRepository<T> where T : class
     {
-        protected Net17112312JewelryAuctionContext _context;
+  
+
         
 
       
-        public GenericRepository()
-        {
-            _context ??= new Net17112312JewelryAuctionContext();
+ 
         }
         public GenericRepository(Net17112312JewelryAuctionContext context)
         {
@@ -45,6 +45,14 @@ namespace JewelryAuctionData.Base
         {
             return _context.SaveChanges();
         }
+
+        public async Task<int> SaveAsync()
+        {
+            return await _context.SaveChangesAsync();
+        }
+
+        #endregion Separating asign entity and save operators
+
 
         public async Task<int> SaveAsync()
         {
