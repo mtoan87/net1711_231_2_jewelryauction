@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JewelryAuctionBusiness\JewelryAuctionBusiness.csproj" />
-    <ProjectReference Include="..\JewelryAuctionData\JewelryAuctionData.csproj" />
   </ItemGroup>
 
 </Project>
