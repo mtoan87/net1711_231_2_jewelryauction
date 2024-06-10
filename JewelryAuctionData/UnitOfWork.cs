@@ -14,11 +14,16 @@ namespace JewelryAuctionData
 
         private CustomerRepository _customerRepository;
         private CompanyRepository _companyRepository;
+
+        private RequestAuctionRepository _requestAuction;
+        private RequestAuctionDetailRepository _requestAuctionDetail;
+
         private PaymentRepository _paymentRepository;
         private JewelryRepository _jewelryRepository;
         private AuctionResultRepository _auctionResultRepository;
         private JoinAuctionRepository _joinAuctionRepository;
         private BidRepository _bidRepository;
+
         public UnitOfWork() 
         {
             _context ??= new Net17112312JewelryAuctionContext();
@@ -67,11 +72,26 @@ namespace JewelryAuctionData
                 return _joinAuctionRepository ??= new Repository.JoinAuctionRepository(_context);
             }
         }
+
         public BidRepository bidRepository
         {
             get
             {
                 return _bidRepository ??= new Repository.BidRepository(_context);
+
+        public RequestAuctionRepository RequestAuctionRepository
+        {
+            get
+            {
+                return _requestAuction ??= new RequestAuctionRepository(_context);
+            }
+        }
+
+        public RequestAuctionDetailRepository RequestAuctionDetailRepository
+        {
+            get
+            {
+                return _requestAuctionDetail ??= new RequestAuctionDetailRepository(_context);
             }
         }
     }

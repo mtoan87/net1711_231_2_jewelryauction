@@ -13,7 +13,7 @@ namespace JewelryAuctionWebApp.Controllers
 {
     public class JoinAuctionsController : Controller
     {
-        private string apiUrl = "https://localhost:7169/api/JoinAuction/";
+        private string apiUrl = "https://localhost:44357/api/JoinAuction/";
 
         public IActionResult Index()
         {

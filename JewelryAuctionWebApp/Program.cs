@@ -22,7 +22,8 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Customers}/{action=Index}/{id?}");
+
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
      name: "GetCustomerById",
@@ -39,6 +40,7 @@ app.MapControllerRoute(
 app.MapControllerRoute(
      name: "GetAuctionResultById",
      pattern: "{controller=AuctionResult}/{action=GetAuctionResultById}/{auctionResultId?}");
+
 
 
 

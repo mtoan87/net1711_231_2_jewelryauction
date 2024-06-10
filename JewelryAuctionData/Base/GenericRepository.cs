@@ -1,4 +1,5 @@
-﻿using JewelryAuctionData.Models;
+﻿using JewelryAuctionData.DTO;
+using JewelryAuctionData.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,9 +12,9 @@ namespace JewelryAuctionData.Base
     public class GenericRepository<T> where T : class
     {
         protected Net17112312JewelryAuctionContext _context;
-        
 
-      
+
+
         public GenericRepository()
         {
             _context ??= new Net17112312JewelryAuctionContext();

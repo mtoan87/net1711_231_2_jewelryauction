@@ -1,7 +1,5 @@
 ﻿using Common;
 using JewelryAuctionData;
-using JewelryAuctionData.DAO;
-using JewelryAuctionData.DTO;
 using JewelryAuctionData.DTO.Customer;
 using JewelryAuctionData.Models;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace JewelryAuctionBusiness
 {
-    
+
     public class CustomerBusiness 
 
     {
