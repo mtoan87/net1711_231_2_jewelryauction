@@ -78,6 +78,8 @@ namespace JewelryAuctionData
             get
             {
                 return _bidRepository ??= new Repository.BidRepository(_context);
+            }
+        }
 
         public RequestAuctionRepository RequestAuctionRepository
         {

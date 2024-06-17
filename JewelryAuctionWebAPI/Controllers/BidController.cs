@@ -51,6 +51,23 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("Search")]
+        public async Task<IActionResult> Search(string search)
+        {
+            var result = await bidBusiness.Search(search);
+
+            if (result.Status > 0 && result != null)
+            {
+                var bids = result.Data as List<Bid>;
+                return Ok(bids);
+            }
+            else
+            {
+                return NotFound(result.Message);
+            }
+        }
+
         [HttpPost]
         [Route("Create")]
         public async Task<IActionResult> CreateBid(CreateBidDTO createBid)

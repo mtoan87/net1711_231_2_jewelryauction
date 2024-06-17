@@ -7,7 +7,7 @@ namespace JewelryAuctionWebApp.Controllers
 {
     public class AuctionResultController : Controller
     {
-        private readonly string apiUrl = "https://localhost:44357/api/AuctionResult/";
+        private readonly string apiUrl = "https://localhost:7169/api/AuctionResult/";
 
         public AuctionResultController()
         {

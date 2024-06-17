@@ -60,6 +60,30 @@ namespace JewelryAuctionBusiness
             }
         }
 
+        public async Task<JewelryAuctionResult> Search(string search)
+        {
+            try
+            {
+                var joinAuctions = await _unitOfWork.joinAuctionRepository.GetByConditionAsync(
+                    a => a.Host.Contains(search) ||
+                    a.JoinAuctionName.Contains(search) || 
+                    a.JoinAuctionStatus.Contains(search));
+
+                if (joinAuctions == null || !joinAuctions.Any())
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No auction found with the given search term");
+                }
+                else
+                {
+                    return new JewelryAuction(Const.SUCCESS_GET, "Auction search success", joinAuctions);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
+
         public async Task<JewelryAuctionResult> CreateJoinAuction(CreateJoinAuctionDTO createJoinAuction)
         {
             try
@@ -71,6 +95,10 @@ namespace JewelryAuctionBusiness
                     StartTime = createJoinAuction.StartTime,
                     EndTime = createJoinAuction.EndTime,
                     Host = createJoinAuction.Host,
+                    JoinAuctionName = createJoinAuction.JoinAuctionName,
+                    JoinAuctionDescription = createJoinAuction.JoinAuctionDescription,
+                    JoinAuctionStatus = createJoinAuction.JoinAuctionStatus,
+                    IsLive = createJoinAuction.IsLive
                 };
                 var result = await _unitOfWork.joinAuctionRepository.CreateAsync(joinAuction);
 
@@ -104,8 +132,12 @@ namespace JewelryAuctionBusiness
                 joinAuction.StartTime = updateJoinAuction.StartTime;
                 joinAuction.EndTime = updateJoinAuction.EndTime;
                 joinAuction.Host = updateJoinAuction.Host;
+                joinAuction.JoinAuctionName = updateJoinAuction.JoinAuctionName;
+                joinAuction.JoinAuctionDescription = updateJoinAuction.JoinAuctionDescription;
+                joinAuction.JoinAuctionStatus = updateJoinAuction.JoinAuctionStatus;
+                joinAuction.IsLive = updateJoinAuction.IsLive;
 
-                _unitOfWork.joinAuctionRepository.UpdateAsync(joinAuction);
+                await _unitOfWork.joinAuctionRepository.UpdateAsync(joinAuction);
                 return new JewelryAuction(Const.SUCCESS_GET, "Auction updated successfully.");
             }
             catch (Exception ex)

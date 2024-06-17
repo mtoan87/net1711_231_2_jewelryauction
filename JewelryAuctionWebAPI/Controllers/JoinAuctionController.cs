@@ -49,6 +49,23 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("Search")]
+        public async Task<IActionResult> Search(string search)
+        {
+            var result = await joinAuctionBusiness.Search(search);
+
+            if (result.Status > 0 && result != null)
+            {
+                var joinAuctions = result.Data as List<JoinAuction>;
+                return Ok(joinAuctions);
+            }
+            else
+            {
+                return NotFound(result.Message);
+            }
+        }
+
         [HttpPost]
         [Route("Create")]
         public async Task<IActionResult> CreateJoinAuction(CreateJoinAuctionDTO createJoinAuction)

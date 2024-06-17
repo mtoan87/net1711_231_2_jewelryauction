@@ -19,5 +19,13 @@ namespace JewelryAuctionData.DTO.JoinAuction
         public DateTime? EndTime { get; set; }
 
         public string? Host { get; set; }
+
+        public string? JoinAuctionName { get; set; }
+
+        public string? JoinAuctionDescription { get; set; }
+
+        public string? JoinAuctionStatus { get; set; }
+
+        public string? IsLive { get; set; }
     }
 }

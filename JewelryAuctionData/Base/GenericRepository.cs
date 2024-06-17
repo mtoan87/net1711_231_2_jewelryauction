@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -132,6 +133,11 @@ namespace JewelryAuctionData.Base
         public async Task<T> GetByIdAsync(Guid code)
         {
             return await _context.Set<T>().FindAsync(code);
+        }
+
+        public async Task<List<T>> GetByConditionAsync(Expression<Func<T, bool>> expression)
+        {
+            return await _context.Set<T>().Where(expression).ToListAsync();
         }
     }
 }

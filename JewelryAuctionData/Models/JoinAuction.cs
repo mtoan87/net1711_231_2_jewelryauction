@@ -17,6 +17,14 @@ public partial class JoinAuction
 
     public string? Host { get; set; }
 
+    public string? JoinAuctionName { get; set; }
+
+    public string? JoinAuctionDescription { get; set; }
+
+    public string? JoinAuctionStatus { get; set; }
+
+    public string? IsLive { get; set; }
+
     public virtual ICollection<Bid> Bids { get; set; } = new List<Bid>();
 
     public virtual Customer? Customer { get; set; }

@@ -6,12 +6,22 @@
 
 <h1>Bid</h1>
 
+<div class="col-md-10">
+    <h3 class="display-8">All bid list</h3>
+</div>
+
 <div class="row">
-    <div class="col-md-10">
-        <h3 class="display-8">All auction can join list</h3>
+    <div class="col-md-2 text-start">
+        <input type="text" id="searchInput" placeholder="Search bid" title="Type in a name" style="margin-right: 5px;">
     </div>
+    <div class="col-md-2 text-start">
+        <button type="button" class="btn btn-primary" onclick="search()">
+            Search
+        </button>
+    </div>
+    <div class="col-md-6"></div> <!-- Tao khoang trong -->
     <div class="col-md-2 text-end">
-        <button type="button" class="btn btn-primary" onclick="create();">
+        <button type="button" class="btn btn-primary" onclick="create()">
             Create
         </button>
     </div>
@@ -25,9 +35,14 @@
                     <th class="card-title text-center">BidId</th>
                     <th class="card-title text-center">CustomerId</th>
                     <th class="card-title text-center">JoinAuctionId</th>
-                    <th class="card-title text-center">MinPrice</th>
-                    <th class="card-title text-center">MaxPrice</th>
+                    <th class="card-title text-center">BidAmount</th>
                     <th class="card-title text-center">DateTime</th>
+                    <th class="card-title text-center">JewelryId</th>
+                    <th class="card-title text-center">BidderName</th>
+                    <th class="card-title text-center">JoinAuctionName</th>
+                    <th class="card-title text-center">JoinAuctionDescription</th>
+                    <th class="card-title text-center">BidStatus</th>
+                    <th class="card-title text-center">IsWining</th>
                 </tr>
             </thead>
             <tbody class="tblBids">
@@ -59,16 +74,36 @@
                         <input type="number" class="form-control" id="joinAuctionId" name="joinAuctionId" required>
                     </div>
                     <div class="form-group">
-                        <label for="minPrice">Min Price:</label>
-                        <input type="number" class="form-control" id="minPrice" name="minPrice" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="maxPrice">Max Price:</label>
-                        <input type="number" class="form-control" id="maxPrice" name="maxPrice" required>
+                        <label for="bidAmount">Bid Amount:</label>
+                        <input type="number" class="form-control" id="bidAmount" name="bidAmount" required>
                     </div>
                     <div class="form-group">
                         <label for="dateTime">Date time</label>
                         <input type="datetime-local" class="form-control" id="dateTime" name="dateTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="jewelryId">JewelryId</label>
+                        <input type="number" class="form-control" id="jewelryId" name="jewelryId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bidderName">Bidder Name</label>
+                        <input type="text" class="form-control" id="bidderName" name="bidderName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="joinAuctionName">Auction Name</label>
+                        <input type="text" class="form-control" id="joinAuctionName" name="joinAuctionName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="joinAuctionDescription">Join Auction Description</label>
+                        <input type="text" class="form-control" id="joinAuctionDescription" name="joinAuctionDescription" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bidStatus">Bid Status</label>
+                        <input type="text" class="form-control" id="bidStatus" name="bidStatus" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="isWining">Is Wining</label>
+                        <input type="text" class="form-control" id="isWining" name="isWining" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -92,9 +127,14 @@
                     BidId: $("#bidId").val(),
                     CustomerId: $("#customerId").val(),
                     JoinAuctionId: $("#joinAuctionId").val(),
-                    MinPrice: $("#minPrice").val(),
-                    MaxPrice: $("#maxPrice").val(),
-                    DateTime: $("#dateTime").val()
+                    BidAmount: $("#bidAmount").val(),
+                    DateTime: $("#dateTime").val(),
+                    JewelryId: $("#jewelryId").val(),
+                    BidderName: $("#bidderName").val(),
+                    JoinAuctionName: $("#joinAuctionName").val(),
+                    JoinAuctionDescription: $("#joinAuctionDescription").val(),
+                    BidStatus: $("#bidStatus").val(),
+                    IsWining: $("#isWining").val()
                 };
 
                 $.ajax({
@@ -117,6 +157,46 @@
             });
         });
 
+        function search() {
+            var searchInput = $('#searchInput').val().trim();
+            if (searchInput === '') {
+                loadData();
+            } else {
+                $.ajax({
+                    url: '@Url.Action("Search", "Bids")',
+                    type: "GET",
+                    data: { search: searchInput },
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        var html = '';
+                        $.each(result, function (key, item) {
+                            html += '<tr>';
+                            html += '<td>' + item.bidId + '</td>';
+                            html += '<td>' + item.customerId + '</td>';
+                            html += '<td>' + item.joinAuctionId + '</td>';
+                            html += '<td>' + item.bidAmount + '</td>';
+                            html += '<td>' + item.dateTime + '</td>';
+                            html += '<td>' + item.jewelryId + '</td>';
+                            html += '<td>' + item.bidderName + '</td>';
+                            html += '<td>' + item.joinAuctionName + '</td>';
+                            html += '<td>' + item.joinAuctionDescription + '</td>';
+                            html += '<td>' + item.bidStatus + '</td>';
+                            html += '<td>' + item.isWining + '</td>';
+
+                            html += '<td><button type="button" class="btn btn-primary" onclick="editBid(' + item.bidId + ')">Edit</button></td>';
+                            html += '<td><button type="button" class="btn btn-danger" onclick="deleteBid(' + item.bidId + ')">Delete</button></td>';
+                            html += '</tr>';
+                        });
+                        $('.tblBids').html(html);
+                    },
+                    error: function (xhr, error) {
+                        alert(xhr.statusText);
+                    }
+                });
+            }
+        }
+
         function loadData() {
             $.ajax({
                 url: '@Url.Action("GetAll", "Bids")',
@@ -130,9 +210,14 @@
                         html += '<td>' + item.bidId + '</td>';
                         html += '<td>' + item.customerId + '</td>';
                         html += '<td>' + item.joinAuctionId + '</td>';
-                        html += '<td>' + item.minPrice + '</td>';
-                        html += '<td>' + item.maxPrice + '</td>';
+                        html += '<td>' + item.bidAmount + '</td>';
                         html += '<td>' + item.dateTime + '</td>';
+                        html += '<td>' + item.jewelryId + '</td>';
+                        html += '<td>' + item.bidderName + '</td>';
+                        html += '<td>' + item.joinAuctionName + '</td>';
+                        html += '<td>' + item.joinAuctionDescription + '</td>';
+                        html += '<td>' + item.bidStatus + '</td>';
+                        html += '<td>' + item.isWining + '</td>';
 
                         html += '<td><button type="button" class="btn btn-primary" onclick="editBid(' + item.bidId + ')">Edit</button></td>';
                         html += '<td><button type="button" class="btn btn-danger" onclick="deleteBid(' + item.bidId + ')">Delete</button></td>';
@@ -165,10 +250,14 @@
                     $("#bidId").val(result.bidId),
                         $("#customerId").val(result.customerId),
                         $("#joinAuctionId").val(result.joinAuctionId),
-                        $("#minPrice").val(result.minPrice),
-                        $("#maxPrice").val(result.maxPrice),
-                        $("#dateTime").val(result.dateTime)
-
+                        $("#bidAmount").val(result.bidAmount),
+                        $("#dateTime").val(result.dateTime),
+                        $("#jewelryId").val(result.jewelryId),
+                        $("#bidderName").val(result.bidderName),
+                        $("#joinAuctionName").val(result.joinAuctionName),
+                        $("#joinAuctionDescription").val(result.joinAuctionDescription),
+                        $("#bidStatus").val(result.bidStatus),
+                        $("#isWining").val(result.isWining)
 
                     $('#bidModalLabel').html("Edit bid information");
                     $('#btSave').html("Save");
