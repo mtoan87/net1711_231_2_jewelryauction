@@ -13,7 +13,7 @@ namespace JewelryAuctionWebApp.Controllers
 {
     public class JoinAuctionsController : Controller
     {
-        private string apiUrl = "https://localhost:44357/api/JoinAuction/";
+        private string apiUrl = "https://localhost:7169/api/JoinAuction/";
 
         public IActionResult Index()
         {
@@ -76,11 +76,31 @@ namespace JewelryAuctionWebApp.Controllers
             }
         }
 
-        //[HttpGet]
-        //public IActionResult Create()
-        //{
-        //    return PartialView("Create", new JoinAuction());
-        //}
+        [HttpGet]
+        public async Task<IActionResult> Search(string search)
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var response = await httpClient.GetAsync(apiUrl + "Search?search=" + search);           
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var content = await response.Content.ReadAsStringAsync();
+                            var joinAuction = JsonConvert.DeserializeObject<List<JoinAuction>>(content);
+                            return Json(joinAuction);
+                        }
+                        else
+                        {
+                            return Json(null);
+                        }
+                    }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] JoinAuction joinAuction)

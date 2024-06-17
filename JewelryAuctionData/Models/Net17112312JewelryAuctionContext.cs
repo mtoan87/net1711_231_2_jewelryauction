@@ -35,9 +35,7 @@ public partial class Net17112312JewelryAuctionContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-
         => optionsBuilder.UseSqlServer("Server=(local);uid=sa;pwd=1234567890;database=Net1711_231_2_JewelryAuction;TrustServerCertificate=True;");
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -46,18 +44,37 @@ public partial class Net17112312JewelryAuctionContext : DbContext
             entity.ToTable("AuctionResult");
 
             entity.Property(e => e.Date).HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(200);
+            entity.Property(e => e.Detail).HasMaxLength(200);
             entity.Property(e => e.Status).HasMaxLength(50);
+
+            entity.HasOne(d => d.Bid).WithMany(p => p.AuctionResults)
+                .HasForeignKey(d => d.BidId)
+                .HasConstraintName("FK_AuctionResult_Bid");
 
             entity.HasOne(d => d.Customer).WithMany(p => p.AuctionResults)
                 .HasForeignKey(d => d.CustomerId)
                 .HasConstraintName("FK_AuctionResult_Customer");
+
+            entity.HasOne(d => d.Jewelry).WithMany(p => p.AuctionResults)
+                .HasForeignKey(d => d.JewelryId)
+                .HasConstraintName("FK_AuctionResult_Jewelry");
         });
 
         modelBuilder.Entity<Bid>(entity =>
         {
             entity.ToTable("Bid");
 
+            entity.Property(e => e.BidStatus).HasMaxLength(100);
+            entity.Property(e => e.BidderName).HasMaxLength(100);
             entity.Property(e => e.DateTime).HasColumnType("datetime");
+            entity.Property(e => e.IsWining).HasMaxLength(100);
+            entity.Property(e => e.JoinAuctionDescription).HasMaxLength(100);
+            entity.Property(e => e.JoinAuctionName).HasMaxLength(100);
+
+            entity.HasOne(d => d.Jewelry).WithMany(p => p.Bids)
+                .HasForeignKey(d => d.JewelryId)
+                .HasConstraintName("FK_Bid_Jewelry");
 
             entity.HasOne(d => d.JoinAuction).WithMany(p => p.Bids)
                 .HasForeignKey(d => d.JoinAuctionId)
@@ -72,6 +89,10 @@ public partial class Net17112312JewelryAuctionContext : DbContext
             entity.Property(e => e.CompanyName).HasMaxLength(50);
             entity.Property(e => e.Description).HasMaxLength(50);
             entity.Property(e => e.Email).HasMaxLength(50);
+            entity.Property(e => e.EstablishmentDate).HasColumnType("datetime");
+            entity.Property(e => e.Industry).HasMaxLength(50);
+            entity.Property(e => e.Location).HasMaxLength(100);
+            entity.Property(e => e.PhoneNumber).HasMaxLength(50);
         });
 
         modelBuilder.Entity<Customer>(entity =>
@@ -80,8 +101,12 @@ public partial class Net17112312JewelryAuctionContext : DbContext
 
             entity.Property(e => e.Address).HasMaxLength(50);
             entity.Property(e => e.CustomerName).HasMaxLength(50);
+            entity.Property(e => e.DoB).HasColumnType("datetime");
             entity.Property(e => e.Email).HasMaxLength(50);
             entity.Property(e => e.Gender).HasMaxLength(50);
+            entity.Property(e => e.Nationality).HasMaxLength(100);
+            entity.Property(e => e.Ocupation).HasMaxLength(100);
+            entity.Property(e => e.Password).HasMaxLength(100);
             entity.Property(e => e.Phone).HasMaxLength(50);
         });
 
@@ -89,9 +114,13 @@ public partial class Net17112312JewelryAuctionContext : DbContext
         {
             entity.ToTable("Jewelry");
 
+            entity.Property(e => e.Description).HasMaxLength(50);
             entity.Property(e => e.JewelryName).HasMaxLength(50);
             entity.Property(e => e.Material).HasMaxLength(50);
+            entity.Property(e => e.Quantitative).HasMaxLength(50);
             entity.Property(e => e.Size).HasMaxLength(50);
+            entity.Property(e => e.Status).HasMaxLength(50);
+            entity.Property(e => e.Type).HasMaxLength(50);
             entity.Property(e => e.Weight).HasMaxLength(50);
         });
 
@@ -101,6 +130,10 @@ public partial class Net17112312JewelryAuctionContext : DbContext
 
             entity.Property(e => e.EndTime).HasColumnType("datetime");
             entity.Property(e => e.Host).HasMaxLength(50);
+            entity.Property(e => e.IsLive).HasMaxLength(50);
+            entity.Property(e => e.JoinAuctionDescription).HasMaxLength(200);
+            entity.Property(e => e.JoinAuctionName).HasMaxLength(100);
+            entity.Property(e => e.JoinAuctionStatus).HasMaxLength(100);
             entity.Property(e => e.StartTime).HasColumnType("datetime");
 
             entity.HasOne(d => d.Customer).WithMany(p => p.JoinAuctions)

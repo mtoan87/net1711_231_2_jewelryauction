@@ -4,14 +4,24 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Join Auction Management</h1>
+<h1>Auction Management</h1>
+
+<div class="col-md-10">
+    <h3 class="display-8">All auction list</h3>
+</div>
 
 <div class="row">
-    <div class="col-md-10">
-        <h3 class="display-8">All auction can join list</h3>
+    <div class="col-md-2 text-start">
+        <input type="text" id="searchInput" placeholder="Search Auction" title="Type in a name" style="margin-right: 5px;">
     </div>
+    <div class="col-md-2 text-start">
+        <button type="button" class="btn btn-primary" onclick="search()">
+            Search
+        </button>
+    </div>
+    <div class="col-md-6"></div> <!-- Tao khoang trong -->
     <div class="col-md-2 text-end">
-        <button type="button" class="btn btn-primary" onclick="create();">
+        <button type="button" class="btn btn-primary" onclick="create()">
             Create
         </button>
     </div>
@@ -28,6 +38,10 @@
                     <th class="card-title text-center">StartTime</th>
                     <th class="card-title text-center">EndTime</th>
                     <th class="card-title text-center">Host</th>
+                    <th class="card-title text-center">JoinAuctionName</th>
+                    <th class="card-title text-center">JoinAuctionDescription</th>
+                    <th class="card-title text-center">JoinAuctionStatus</th>
+                    <th class="card-title text-center">IsLive</th>
                 </tr>
             </thead>
             <tbody class="tblJoinAuctions">
@@ -70,6 +84,22 @@
                         <label for="host">Host</label>
                         <input type="text" class="form-control" id="host" name="host" required>
                     </div>
+                    <div class="form-group">
+                        <label for="joinAuctionName">Join Auction Name</label>
+                        <input type="text" class="form-control" id="joinAuctionName" name="joinAuctionName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="joinAuctionDescription">Join Auction Description</label>
+                        <input type="text" class="form-control" id="joinAuctionDescription" name="joinAuctionDescription" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="joinAuctionStatus">Join Auction Status</label>
+                        <input type="text" class="form-control" id="joinAuctionStatus" name="joinAuctionStatus" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="isLive">Is Live</label>
+                        <input type="text" class="form-control" id="isLive" name="isLive" required>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button id="btSave" type="button" class="btn btn-primary">Save</button>
@@ -94,7 +124,11 @@
                     AuctionDetailId: $("#auctionDetailId").val(),
                     StartTime: $("#startTime").val(),
                     EndTime: $("#endTime").val(),
-                    Host: $("#host").val()
+                    Host: $("#host").val(),
+                    JoinAuctionName: $("#joinAuctionName").val(),
+                    JoinAuctionDescription: $("#joinAuctionDescription").val(),
+                    JoinAuctionStatus: $("#joinAuctionStatus").val(),
+                    IsLive: $("#isLive").val()
                 };
 
                 $.ajax({
@@ -117,6 +151,45 @@
             });
         });
 
+        function search() {
+            var searchInput = $('#searchInput').val().trim();
+            if (searchInput === '') {
+                loadData();
+            } else {
+                $.ajax({
+                    url: '@Url.Action("Search", "JoinAuctions")',
+                    type: "GET",
+                    data: { search: searchInput },
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        var html = '';
+                        $.each(result, function (key, item) {
+                            html += '<tr>';
+                            html += '<td>' + item.joinAuctionId + '</td>';
+                            html += '<td>' + item.customerId + '</td>';
+                            html += '<td>' + item.auctionDetailId + '</td>';
+                            html += '<td>' + item.startTime + '</td>';
+                            html += '<td>' + item.endTime + '</td>';
+                            html += '<td>' + item.host + '</td>';
+                            html += '<td>' + item.joinAuctionName + '</td>';
+                            html += '<td>' + item.joinAuctionDescription + '</td>';
+                            html += '<td>' + item.joinAuctionStatus + '</td>';
+                            html += '<td>' + item.isLive + '</td>';
+
+                            html += '<td><button type="button" class="btn btn-primary" onclick="editAuction(' + item.joinAuctionId + ')">Edit</button></td>';
+                            html += '<td><button type="button" class="btn btn-danger" onclick="deleteAuction(' + item.joinAuctionId + ')">Delete</button></td>';
+                            html += '</tr>';
+                        });
+                        $('.tblJoinAuctions').html(html);
+                    },
+                    error: function (xhr, error) {
+                        alert(xhr.statusText);
+                    }
+                });
+            }
+        }
+
         function loadData() {
             $.ajax({
                 url: '@Url.Action("GetAll", "JoinAuctions")',
@@ -133,6 +206,10 @@
                         html += '<td>' + item.startTime + '</td>';
                         html += '<td>' + item.endTime + '</td>';
                         html += '<td>' + item.host + '</td>';
+                        html += '<td>' + item.joinAuctionName + '</td>';
+                        html += '<td>' + item.joinAuctionDescription + '</td>';
+                        html += '<td>' + item.joinAuctionStatus + '</td>';
+                        html += '<td>' + item.isLive + '</td>';
 
                         html += '<td><button type="button" class="btn btn-primary" onclick="editAuction(' + item.joinAuctionId + ')">Edit</button></td>';
                         html += '<td><button type="button" class="btn btn-danger" onclick="deleteAuction(' + item.joinAuctionId + ')">Delete</button></td>';
@@ -167,7 +244,11 @@
                         $("#auctionDetailId").val(result.auctionDetailId),
                         $("#startTime").val(result.startTime),
                         $("#endTime").val(result.endTime),
-                        $("#host").val(result.host)
+                        $("#host").val(result.host),
+                        $("#joinAuctionName").val(result.joinAuctionName),
+                        $("#joinAuctionDescription").val(result.joinAuctionDescription),
+                        $("#joinAuctionStatus").val(result.joinAuctionStatus),
+                        $("#isLive").val(result.isLive)
 
                     $('#joinAuctionModalLabel').html("Edit auction information");
                     $('#btSave').html("Save");
