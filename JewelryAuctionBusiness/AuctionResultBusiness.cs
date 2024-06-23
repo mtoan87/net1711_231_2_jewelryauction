@@ -61,6 +61,31 @@ namespace JewelryAuctionBusiness
             }
 
         }
+
+        public async Task<JewelryAuctionResult> Search(string search)
+        {
+            try
+            {
+                var joinAuctions = await _unitOfWork.AuctionResultRepository.GetByConditionAsync(
+                    a => a.Jewelry.JewelryName.Contains(search) ||
+                    a.Customer.CustomerName.Contains(search) ||
+                    a.StartingPrice.ToString().Contains(search));
+
+                if (joinAuctions == null || !joinAuctions.Any())
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No auction found with the given search term");
+                }
+                else
+                {
+                    return new JewelryAuction(Const.SUCCESS_GET, "Auction search success", joinAuctions);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
+
         public async Task<JewelryAuctionResult> CreateAuctionResult(CreateAuctionResultDTO createAuctionResult)
         {
             try
@@ -74,7 +99,13 @@ namespace JewelryAuctionBusiness
                     Price = createAuctionResult.Price,
                     CustomerId = createAuctionResult.CustomerId,
                     JoinAuctionId = createAuctionResult.JoinAuctionId,
-                    
+                    Detail = createAuctionResult.Detail,
+                    Description = createAuctionResult.Description,
+                    StartingPrice = createAuctionResult.StartingPrice,
+                    JewelryId = createAuctionResult.JewelryId,
+                    BidId = createAuctionResult.BidId,
+
+
                 };
                 var payment = await _unitOfWork.AuctionResultRepository.CreateAsync(newAuctionResult);
 
@@ -126,7 +157,11 @@ namespace JewelryAuctionBusiness
                 auctionResult.Price = updateAuctionResult.Price;              
                 auctionResult.CustomerId = updateAuctionResult.CustomerId;
                 auctionResult.JoinAuctionId = updateAuctionResult.JoinAuctionId;
-               
+                auctionResult.Detail = updateAuctionResult.Detail;
+                auctionResult.Description = updateAuctionResult.Description;
+                auctionResult.StartingPrice = updateAuctionResult.StartingPrice;
+                auctionResult.JewelryId = updateAuctionResult.JewelryId;
+                auctionResult.BidId = updateAuctionResult.BidId;
 
                 _unitOfWork.AuctionResultRepository.UpdateAsync(auctionResult);
                 return new JewelryAuction(Const.SUCCESS_GET, "Auction Result updated successfully.");

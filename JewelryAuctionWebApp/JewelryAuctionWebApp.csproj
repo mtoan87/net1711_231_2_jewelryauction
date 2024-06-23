@@ -8,6 +8,12 @@
 
   <ItemGroup>
 
+    <PackageReference Include="FirebaseAuthentication.net" Version="4.1.0" />
+
+    <PackageReference Include="FirebaseStorage.net" Version="1.0.3" />
+
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter" Version="8.0.4" />
@@ -21,6 +27,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JewelryAuctionWebAPI\JewelryAuctionWebAPI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
 </Project>

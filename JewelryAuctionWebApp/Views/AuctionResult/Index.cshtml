@@ -4,12 +4,23 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Auction Result</h1>
+
+<div class="col-md-10">
+    <h3 class="display-8">Auction Result List</h3>
+</div>
 
 <div class="row">
-    <div class="col-md-10">
-        <h3 class="display-8">Auction Result List</h3>
+    <div class="col-md-2 text-start">
+        <input type="text" id="searchInput" placeholder="Search Auction Result" title="Type in a name" style="margin-right: 5px;">
     </div>
+    <div class="col-md-2 text-start">
+        <button type="button" class="btn btn-primary" onclick="search()">
+            Search
+        </button>
+    </div>
+    <div class="col-md-6"></div> <!-- Tao khoang trong -->
+
     <div class="col-md-2 text-end">
         <button type="button" class="btn btn-primary" onclick="add();">
             Add
@@ -28,6 +39,11 @@
                     <th class="card-title text-center">Price</th>
                     <th class="card-title text-center">CustomerId</th>
                     <th class="card-title text-center">JoinAuctionId</th>
+                    <th class="card-title text-center">Detail</th>
+                    <th class="card-title text-center">Description</th>
+                    <th class="card-title text-center">StartingPrice</th>
+                    <th class="card-title text-center">JewelryId</th>
+                    <th class="card-title text-center">BidId</th>
                     <th class="card-title text-center"></th>
                     <th class="card-title text-center"></th>
                 </tr>
@@ -71,6 +87,26 @@
                         <label for="joinAuctionId">Join Auction ID:</label>
                         <input type="number" class="form-control" id="joinAuctionId" name="joinAuctionId" required>
                     </div>
+                    <div class="form-group">
+                        <label for="detail">Detail:</label>
+                        <input type="text" class="form-control" id="detail" name="detail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <input type="text" class="form-control" id="description" name="description" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="startingPrice">Starting Price:</label>
+                        <input type="number" class="form-control" id="startingPrice" name="startingPrice" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="jewelryId">Jewelry ID:</label>
+                        <input type="number" class="form-control" id="jewelryId" name="jewelryId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bidId">Bid ID:</label>
+                        <input type="number" class="form-control" id="bidId" name="bidId" required>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button id="btSave" type="button" class="btn btn-primary">Save</button>
@@ -93,6 +129,11 @@
                     price: $("#price").val(),
                     customerId: $("#customerId").val(),
                     joinAuctionId: $("#joinAuctionId").val(),
+                    detail: $("#detail").val(),
+                    description: $("#description").val(),
+                    startingPrice: $("#startingPrice").val(),
+                    jewelryId: $("#jewelryId").val(),
+                    bidId: $("#bidId").val(),
                 };
                 if (auctionResultId) {
                     auctionResultData.auctionResultId = auctionResultId;
@@ -135,6 +176,45 @@
             });
         });
 
+        function search() {
+            var searchInput = $('#searchInput').val().trim();
+            if (searchInput === '') {
+                loadData();
+            } else {
+                $.ajax({
+                    url: '@Url.Action("Search", "AuctionResult")',
+                    type: "GET",
+                    data: { search: searchInput },
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        var html = '';
+                        $.each(result, function (key, item) {
+                            html += '<tr>';
+                            html += '<td>' + item.auctionResultId + '</td>';
+                            html += '<td>' + item.date + '</td>';
+                            html += '<td>' + item.status + '</td>';
+                            html += '<td>' + item.price + '</td>';
+                            html += '<td>' + item.customerId + '</td>';
+                            html += '<td>' + item.joinAuctionId + '</td>';
+                            html += '<td>' + item.detail + '</td>';
+                            html += '<td>' + item.description + '</td>';
+                            html += '<td>' + item.startingPrice + '</td>';
+                            html += '<td>' + item.jewelryId + '</td>';
+                            html += '<td>' + item.bidId + '</td>';
+                            html += '<td><button type="button" class="btn btn-primary" onclick="edit(' + item.auctionResultId + ')">Edit</button></td>';
+                            html += '<td><button type="button" class="btn btn-danger" onclick="deleteAuctionResult(' + item.auctionResultId + ')">Delete</button></td>';
+                            html += '</tr>';
+                        });
+                        $('.tblAuctionResultList').html(html);
+                    },
+                    error: function (xhr, error) {
+                        alert(xhr.statusText);
+                    }
+                });
+            }
+        }
+
         function loadData() {
             $.ajax({
                 url: '@Url.Action("GetAll", "AuctionResult")',
@@ -151,6 +231,11 @@
                         html += '<td>' + item.price + '</td>';
                         html += '<td>' + item.customerId + '</td>';
                         html += '<td>' + item.joinAuctionId + '</td>';
+                        html += '<td>' + item.detail + '</td>';
+                        html += '<td>' + item.description + '</td>';
+                        html += '<td>' + item.startingPrice + '</td>';
+                        html += '<td>' + item.jewelryId + '</td>';
+                        html += '<td>' + item.bidId + '</td>';
                         html += '<td><button type="button" class="btn btn-primary" onclick="edit(' + item.auctionResultId + ')">Edit</button></td>';
                         html += '<td><button type="button" class="btn btn-danger" onclick="deleteAuctionResult(' + item.auctionResultId + ')">Delete</button></td>';
                         html += '</tr>';
@@ -188,6 +273,11 @@
                     $('#price').val(result.price);
                     $('#customerId').val(result.customerId);
                     $('#joinAuctionId').val(result.joinAuctionId);
+                    $('#detail').val(result.detail);
+                    $('#description').val(result.description);
+                    $('#startingPrice').val(result.startingPrice);
+                    $('#jewelryId').val(result.jewelryId);
+                    $('#bidId').val(result.bidId);
                     $('#auctionResultModalLabel').html('Edit AuctionResult');
                     $('#auctionResultModal').modal('show');
                 },
