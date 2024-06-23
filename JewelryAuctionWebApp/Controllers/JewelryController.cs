@@ -8,12 +8,10 @@ namespace JewelryAuctionWebApp.Controllers
     public class JewelryController : Controller
     {
 
+
         private readonly string apiUrl = "https://localhost:7169/api/Jewelry/";
 
-        public JewelryController()
-        {
-        }
-
+     
         public IActionResult Index()
         {
             return View();
@@ -45,9 +43,36 @@ namespace JewelryAuctionWebApp.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Search(string search)
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var response = await httpClient.GetAsync(apiUrl + "Search?search=" + search);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var bid = JsonConvert.DeserializeObject<List<Jewelry>>(content);
+                        return Json(bid);
+                    }
+                    else
+                    {
+                        return Json(null);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Jewelry newJewelry)
-        {
+        {       
+
             try
             {
                 using (var httpClient = new HttpClient())
@@ -57,6 +82,7 @@ namespace JewelryAuctionWebApp.Controllers
                     {
                         if (response.IsSuccessStatusCode)
                         {
+
                             var content = await response.Content.ReadAsStringAsync();
                             return Json(new { status = 1, message = "Jewelry created successfully." });
                         }
@@ -72,6 +98,8 @@ namespace JewelryAuctionWebApp.Controllers
             {
                 return Json(new { status = 0, message = ex.Message });
             }
+
+
         }
 
         [HttpPost]
@@ -152,4 +180,6 @@ namespace JewelryAuctionWebApp.Controllers
             }
         }
     }
+
+    
 }

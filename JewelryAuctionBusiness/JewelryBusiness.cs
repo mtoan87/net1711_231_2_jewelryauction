@@ -60,6 +60,30 @@ namespace JewelryAuctionBusiness
             }
 
         }
+
+        public async Task<JewelryAuctionResult> Search(string search)
+        {
+            try
+            {
+                var joinAuctions = await _unitOfWork.JewelryRepository.GetByConditionAsync(
+                    a => a.JewelryName.Contains(search) ||
+                    a.Material.Contains(search) ||
+                    a.Type.Contains(search));
+
+                if (joinAuctions == null || !joinAuctions.Any())
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No auction found with the given search term");
+                }
+                else
+                {
+                    return new JewelryAuction(Const.SUCCESS_GET, "Auction search success", joinAuctions);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
         public async Task<JewelryAuctionResult> CreateJewelry(CreateJewelryDTO createJewelry)
         {
             try
@@ -72,7 +96,13 @@ namespace JewelryAuctionBusiness
                     Size = createJewelry.Size,
                     Weight = createJewelry.Weight,
                     CustomerId = createJewelry.CustomerId,
-                    
+                    PictureData = createJewelry.PictureData,
+                    Type = createJewelry.Type,
+                    Quantitative = createJewelry.Quantitative,
+                    Description = createJewelry.Description,
+                    Status = createJewelry.Status,
+                    Picture = createJewelry.Picture,
+
                 };
                 var jewelry = await _unitOfWork.JewelryRepository.CreateAsync(newJewelry);
 
@@ -125,7 +155,13 @@ namespace JewelryAuctionBusiness
                 jewelry.Size = updateJewelry.Size;
                 jewelry.Weight = updateJewelry.Weight;
                 jewelry.JewelryId = updateJewelry.JewelryId;
-              
+                jewelry.PictureData = updateJewelry.PictureData;
+                jewelry.Type = updateJewelry.Type;
+                jewelry.Quantitative = updateJewelry.Quantitative;
+                jewelry.Description = updateJewelry.Description;
+                jewelry.Status = updateJewelry?.Status;
+                jewelry.Picture = updateJewelry.Picture;
+
 
                 _unitOfWork.JewelryRepository.UpdateAsync(jewelry);
                 return new JewelryAuction(Const.SUCCESS_GET, "jewelry updated successfully.");

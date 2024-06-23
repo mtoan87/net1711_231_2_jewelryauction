@@ -48,6 +48,24 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result?.Message);
             }
         }
+
+        [HttpGet]
+        [Route("Search")]
+        public async Task<IActionResult> Search(string search)
+        {
+            var result = await _jewelryBusiness.Search(search);
+
+            if (result.Status > 0 && result != null)
+            {
+                var joinAuctions = result.Data as List<Jewelry>;
+                return Ok(joinAuctions);
+            }
+            else
+            {
+                return NotFound(result.Message);
+            }
+        }
+
         [HttpPost]
         [Route("CreateJewelry")]
         public async Task<IActionResult> CreateJewelry(CreateJewelryDTO createJewelry)

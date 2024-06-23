@@ -17,5 +17,16 @@ namespace JewelryAuctionData.DTO.Jewelry
         public string? Size { get; set; }
         public string? Weight { get; set; }
         public int? CustomerId { get; set; }
+
+        public byte[]? PictureData { get; set; }
+
+        public string? Type { get; set; }
+
+        public string? Quantitative { get; set; }
+
+        public string? Description { get; set; }
+
+        public string? Status { get; set; }
+        public string? Picture { get; set; }
     }
 }
