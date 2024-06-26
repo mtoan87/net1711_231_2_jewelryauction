@@ -1,7 +1,13 @@
 ﻿using JewelryAuctionBusiness;
 using JewelryAuctionData.DTO.Customer;
 using JewelryAuctionData.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace JewelryAuctionWebAPI.Controllers
 {
@@ -11,12 +17,47 @@ namespace JewelryAuctionWebAPI.Controllers
     public class CustomerController : ControllerBase
     {
         private readonly CustomerBusiness _customerBusiness;
-
-        public CustomerController()
+        private readonly IConfiguration _config;
+        
+        public CustomerController(IConfiguration config)
         {
+            
+            _config = config;
             _customerBusiness = new CustomerBusiness();
         }
+        [HttpPost]
+        [Route("Login")]
+        public async Task<IActionResult> Login(LoginDTO login)
+        {
+            var cus = await _customerBusiness.LoginAsync(login.Email, login.Password);
+            if (cus == null)
+                return Unauthorized();
 
+            var token = GenerateJSONWebToken(cus);
+            return Ok(token);
+        }
+
+        private string GenerateJSONWebToken(Customer userInfo)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                _config["Jwt:Issuer"],
+                _config["Jwt:Audience"],
+                new Claim[]
+                {
+                    new(ClaimTypes.Email, userInfo.Email),
+                    new(ClaimTypes.Role, userInfo.Role),
+                    new("customerId", userInfo.CustomerId.ToString()),
+                },
+                expires: DateTime.Now.AddMinutes(120),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetAll")]
         public async Task<IActionResult> GetAll()
@@ -32,6 +73,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result.Message);
             }
         }
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetById")]
         public async Task<IActionResult> GetById(int id)
@@ -48,6 +90,24 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result?.Message);
             }
         }
+        [Authorize(Roles = "Customer")]
+        [HttpGet]
+        [Route("Search")]
+        public async Task<IActionResult> Search(string search)
+        {
+            var result = await _customerBusiness.Search(search);
+
+            if (result.Status > 0 && result != null)
+            {
+                var customers = result.Data as List<Customer>;
+                return Ok(customers);
+            }
+            else
+            {
+                return NotFound(result.Message);
+            }
+        }
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("CreateCustomer")]
         public async Task<IActionResult> CreateCustomer(CreateCustomerDTO createCustomer)
@@ -63,6 +123,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return BadRequest(result?.Message);
             }
         }
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("UpdateCustomer")]
         public async Task<IActionResult> UpdateCustomer(UpdateCustomerDTO updateCustomer)
@@ -77,6 +138,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return BadRequest(rs?.Message);
             }
         }
+        [Authorize(Roles = "Customer")]
         [HttpDelete]
         [Route("DeleteCustomer")]
         public async Task<IActionResult> DeleteCustomer(int customerId)

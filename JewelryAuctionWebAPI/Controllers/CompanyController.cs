@@ -5,6 +5,7 @@ using JewelryAuctionData.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using JewelryAuctionData.DTO.Company;
+using Microsoft.AspNetCore.Authorization;
 
 namespace JewelryAuctionWebAPI.Controllers
 {
@@ -18,7 +19,7 @@ namespace JewelryAuctionWebAPI.Controllers
         {
             _companyBusiness = new CompanyBusiness();
         }
-
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetAll")]
         public async Task<IActionResult> GetAll()
@@ -34,6 +35,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result.Message);
             }
         }
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetById")]
         public async Task<IActionResult> GetById(int id)
@@ -50,7 +52,24 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result?.Message);
             }
         }
+        [Authorize(Roles = "Customer")]
+        [HttpGet]
+        [Route("Search")]
+        public async Task<IActionResult> Search(string search)
+        {
+            var result = await _companyBusiness.Search(search);
 
+            if (result.Status > 0 && result != null)
+            {
+                var company = result.Data as List<Company>;
+                return Ok(company);
+            }
+            else
+            {
+                return NotFound(result.Message);
+            }
+        }
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("CreateCompany")]
         public async Task<IActionResult> CreateCustomer(CreateCompanyDTO createCompany)
@@ -66,6 +85,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return BadRequest(result?.Message);
             }
         }
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("UpdateCompany")]
         public async Task<IActionResult> UpdateCompany(UpdateCompanyDTO updateCompany)
@@ -80,6 +100,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return BadRequest(rs?.Message);
             }
         }
+        [Authorize(Roles = "Customer")]
         [HttpDelete]
         [Route("DeleteCompany")]
         public async Task<IActionResult> DeleteCompany(int companyId)
