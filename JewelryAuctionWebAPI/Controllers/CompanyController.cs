@@ -50,6 +50,22 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result?.Message);
             }
         }
+        [HttpGet]
+        [Route("Search")]
+        public async Task<IActionResult> Search(string search)
+        {
+            var result = await _companyBusiness.Search(search);
+
+            if (result.Status > 0 && result != null)
+            {
+                var company = result.Data as List<Company>;
+                return Ok(company);
+            }
+            else
+            {
+                return NotFound(result.Message);
+            }
+        }
 
         [HttpPost]
         [Route("CreateCompany")]

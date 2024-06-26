@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JewelryAuctionWebAPI", "Jew
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JewelryAuctionWebApp", "JewelryAuctionWebApp\JewelryAuctionWebApp.csproj", "{13358ED4-966B-4228-8B0C-63675EDC8088}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{F7D9B762-9D42-46F0-A14E-15C2D898DF42}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{F7D9B762-9D42-46F0-A14E-15C2D898DF42}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
