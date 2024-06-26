@@ -16,7 +16,7 @@ namespace JewelryAuctionWebAPI.Controllers
         {
             _jewelryBusiness = new JewelryBusiness();
         }
-
+        
         [HttpGet]
         [Route("GetAll")]
         public async Task<IActionResult> GetAll()

@@ -1,6 +1,7 @@
 ﻿using JewelryAuctionBusiness;
 using JewelryAuctionData.DTO.Customer;
 using JewelryAuctionData.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -47,9 +48,8 @@ namespace JewelryAuctionWebAPI.Controllers
                 new Claim[]
                 {
                     new(ClaimTypes.Email, userInfo.Email),
-                    //new(ClaimTypes.Role, userInfo.Ocupation.ToString()),
+                    new(ClaimTypes.Role, userInfo.Ocupation.ToString()),
                     new("customerId", userInfo.CustomerId.ToString()),
-                    new("ocupation", userInfo.Ocupation.ToString()),
                 },
                 expires: DateTime.Now.AddMinutes(120),
                 signingCredentials: credentials
@@ -57,7 +57,7 @@ namespace JewelryAuctionWebAPI.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetAll")]
         public async Task<IActionResult> GetAll()
@@ -73,6 +73,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result.Message);
             }
         }
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetById")]
         public async Task<IActionResult> GetById(int id)
@@ -89,6 +90,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result?.Message);
             }
         }
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("Search")]
         public async Task<IActionResult> Search(string search)
@@ -105,6 +107,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result.Message);
             }
         }
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("CreateCustomer")]
         public async Task<IActionResult> CreateCustomer(CreateCustomerDTO createCustomer)
@@ -120,6 +123,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return BadRequest(result?.Message);
             }
         }
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("UpdateCustomer")]
         public async Task<IActionResult> UpdateCustomer(UpdateCustomerDTO updateCustomer)
@@ -134,6 +138,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return BadRequest(rs?.Message);
             }
         }
+        [Authorize(Roles = "Customer")]
         [HttpDelete]
         [Route("DeleteCustomer")]
         public async Task<IActionResult> DeleteCustomer(int customerId)
