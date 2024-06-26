@@ -1,5 +1,6 @@
 ﻿using JewelryAuctionData.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -44,13 +45,16 @@ namespace JewelryAuctionWebApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Search(string search)
+        public async Task<IActionResult> Search(string searchInput1, string searchInput2, string searchInput3)
+
         {
+            
             try
             {
                 using (var httpClient = new HttpClient())
                 {
-                    var response = await httpClient.GetAsync(apiUrl + "Search?search=" + search);
+                    var response = await httpClient.GetAsync(apiUrl + "Search?search1=" + searchInput1 + "&search2=" + searchInput2 + "&search3="+ searchInput3);
+                    
                     if (response.IsSuccessStatusCode)
                     {
                         var content = await response.Content.ReadAsStringAsync();
