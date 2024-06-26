@@ -51,9 +51,9 @@ namespace JewelryAuctionWebAPI.Controllers
 
         [HttpGet]
         [Route("Search")]
-        public async Task<IActionResult> Search(string search)
+        public async Task<IActionResult> Search(string search1, string search2, string search3)
         {
-            var result = await _jewelryBusiness.Search(search);
+            var result = await _jewelryBusiness.Search(search1, search2, search3);
 
             if (result.Status > 0 && result != null)
             {

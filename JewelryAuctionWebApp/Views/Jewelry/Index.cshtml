@@ -15,9 +15,27 @@
 
 <div class="row">
     <div class="col-md-2">
+        <div></div>
+      </div>
+</div>
+<div class="row">
+    <div class="col-md-2">
         <div>
-            <input type="text" id="searchInput" placeholder="Search Jewelry" title="Type in a name">
+            <input type="text" id="searchInputName" placeholder="Search Jewelry Name" title="Type in a name">
         </div>
+        
+    </div>
+    <div class="col-md-2">
+        <div>
+            <input type="text" id="searchInputMaterial" placeholder="Search Jewelry Material" title="Type in a name">
+        </div>
+
+    </div>
+    <div class="col-md-2">
+        <div>
+            <input type="text" id="searchInputType" placeholder="Search Jewelry Type" title="Type in a name">
+        </div>
+
     </div>
     
     <div class="col-md-3">
@@ -25,7 +43,7 @@
             Search
         </button>
     </div>
-    <div class="col-md-7 text-end">
+    <div class="col-md-3 text-end">
         <button type="button" class="btn btn-primary" onclick="add();">
             Add
         </button>
@@ -200,14 +218,42 @@
 
 
         function search() {
-            var searchInput = $('#searchInput').val().trim();
-            if (searchInput === '') {
+
+            var tmp1 = $('#searchInputName').val().trim();
+
+
+            var tmp2 = $('#searchInputMaterial').val().trim();
+
+
+            var tmp3 = $('#searchInputType').val().trim();
+
+            var search1 = "###";
+            var search2 = "###";
+            var search3 = "###";
+            if (tmp1 !== '') {
+                search1 = tmp1;
+            }
+            if (tmp2 !== '') {
+                search2 = tmp2;
+            }
+            if (tmp3 !== '') {
+                search3 = tmp3;
+            }
+
+            if (tmp1 === '' && tmp2 === '' && tmp3 === '') {
                 loadData();
             } else {
                 $.ajax({
                     url: '@Url.Action("Search", "Jewelry")',
                     type: "GET",
-                    data: { search: searchInput },
+                    data: {
+
+                        search1,
+                        search2,
+                        search3
+                          
+                        
+                    },
                     contentType: "application/json;charset=utf-8",
                     dataType: "json",
                     success: function (result) {

@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JewelryAuctionData.DTO.Jewelry;
+using Microsoft.IdentityModel.Tokens;
+using System.Collections;
 
 namespace JewelryAuctionBusiness
 {
@@ -61,14 +63,18 @@ namespace JewelryAuctionBusiness
 
         }
 
-        public async Task<JewelryAuctionResult> Search(string search)
+        public async Task<JewelryAuctionResult> Search(string search1, string search2, string search3)
         {
             try
             {
                 var joinAuctions = await _unitOfWork.JewelryRepository.GetByConditionAsync(
-                    a => a.JewelryName.Contains(search) ||
-                    a.Material.Contains(search) ||
-                    a.Type.Contains(search));
+                    a => a.JewelryName.Contains(search1) ||
+                    a.Material.Contains(search2) ||
+                    a.Type.Contains(search3));
+                
+
+                
+
 
                 if (joinAuctions == null || !joinAuctions.Any())
                 {
