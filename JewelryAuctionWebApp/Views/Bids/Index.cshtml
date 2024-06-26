@@ -115,6 +115,16 @@
     </div>
 </div>
 
+<!-- Thêm phần điều khiển phân trang -->
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <li class="page-item"><a class="page-link" href="#" onclick="loadData(1)">First</a></li>
+        <li class="page-item"><a class="page-link" href="#" onclick="loadData(currentPage - 1)">Previous</a></li>
+        <li class="page-item"><a class="page-link" href="#" onclick="loadData(currentPage + 1)">Next</a></li>
+        <li class="page-item"><a class="page-link" href="#" onclick="loadData(totalPages)">Last</a></li>
+    </ul>
+</nav>
+
 @section scripts {
     <script type="text/javascript">
         var action = "Create"; 
@@ -197,9 +207,23 @@
             }
         }
 
+        // Hàm để lấy giá trị từ query string
+        function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+
         function loadData() {
+            var joinAuctionId = getParameterByName('joinAuctionId'); // Lấy joinAuctionId từ query string
+            var url = '@Url.Action("GetAll", "Bids")';
+            if (joinAuctionId) {
+                url = '@Url.Action("GetBidsByJoinAuctionId", "Bids")' + '?joinAuctionId=' + joinAuctionId;
+            }
+
             $.ajax({
-                url: '@Url.Action("GetAll", "Bids")',
+                url: url,
                 type: "GET",
                 contentType: "application/json;charset=utf-8",
                 dataType: "json",

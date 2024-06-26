@@ -1,4 +1,5 @@
-﻿using JewelryAuctionBusiness;
+﻿using Common;
+using JewelryAuctionBusiness;
 using JewelryAuctionData.DTO.Bid;
 using JewelryAuctionData.DTO.JoinAuction;
 using JewelryAuctionData.Models;
@@ -49,6 +50,18 @@ namespace JewelryAuctionWebAPI.Controllers
             {
                 return NotFound(result.Message);
             }
+        }
+
+        [HttpGet]
+        [Route("GetBidsByJoinAuctionId")]
+        public async Task<IActionResult> GetBidsByJoinAuctionId(int joinAuctionId)
+        {
+            var result = await bidBusiness.GetBidsByJoinAuctionId(joinAuctionId);
+            if (result.Status == Const.SUCCESS_GET)
+            {
+                return Ok(result.Data);
+            }
+            return NotFound(result.Message);
         }
 
         [HttpGet]

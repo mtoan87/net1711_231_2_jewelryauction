@@ -61,6 +61,26 @@ namespace JewelryAuctionBusiness
             }
         }
 
+        public async Task<JewelryAuctionResult> GetBidsByJoinAuctionId(int joinAuctionId)
+        {
+            try
+            {
+                var bids = await _unitOfWork.bidRepository.GetBidsByJoinAuctionIdAsync(joinAuctionId);
+                if (bids == null || !bids.Any())
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No bids found for this auction");
+                }
+                else
+                {
+                    return new JewelryAuction(Const.SUCCESS_GET, "Bids retrieved successfully", bids);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
+
         public async Task<JewelryAuctionResult> Search(string search)
         {
             try
