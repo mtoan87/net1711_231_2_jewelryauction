@@ -48,7 +48,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 new Claim[]
                 {
                     new(ClaimTypes.Email, userInfo.Email),
-                    new(ClaimTypes.Role, userInfo.Ocupation.ToString()),
+                    new(ClaimTypes.Role, userInfo.Role),
                     new("customerId", userInfo.CustomerId.ToString()),
                 },
                 expires: DateTime.Now.AddMinutes(120),
