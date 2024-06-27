@@ -4,13 +4,46 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Jewelry</h1>
 
 <div class="row">
     <div class="col-md-10">
         <h3 class="display-8">Jewelry List</h3>
     </div>
-    <div class="col-md-2 text-end">
+    
+</div>
+
+<div class="row">
+    <div class="col-md-2">
+        <div></div>
+      </div>
+</div>
+<div class="row">
+    <div class="col-md-2">
+        <div>
+            <input type="text" id="searchInputName" placeholder="Search Jewelry Name" title="Type in a name">
+        </div>
+        
+    </div>
+    <div class="col-md-2">
+        <div>
+            <input type="text" id="searchInputMaterial" placeholder="Search Jewelry Material" title="Type in a name">
+        </div>
+
+    </div>
+    <div class="col-md-2">
+        <div>
+            <input type="text" id="searchInputType" placeholder="Search Jewelry Type" title="Type in a name">
+        </div>
+
+    </div>
+    
+    <div class="col-md-3">
+        <button type="button" class="btn btn-primary" onclick="search()">
+            Search
+        </button>
+    </div>
+    <div class="col-md-3 text-end">
         <button type="button" class="btn btn-primary" onclick="add();">
             Add
         </button>
@@ -28,6 +61,11 @@
                     <th class="card-title text-center">Size</th>
                     <th class="card-title text-center">Weight</th>
                     <th class="card-title text-center">CustomerId</th>
+                    <th class="card-title text-center">Type</th>
+                    <th class="card-title text-center">Quantitative</th>
+                    <th class="card-title text-center">Description</th>
+                    <th class="card-title text-center">Status</th>
+                    <th class="card-title text-center">Picture</th>
                     <th class="card-title text-center"></th>
                     <th class="card-title text-center"></th>
                 </tr>
@@ -41,7 +79,7 @@
 <div class="modal fade" id="topUpModal" tabindex="-1" aria-labelledby="topUpModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frm", id = "frm" }))
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frm", id = "frm",enctype = "multipart/form-data" }))
             {
                 @Html.AntiForgeryToken()
                 <div class="modal-header">
@@ -71,8 +109,28 @@
                         <label for="customerId">Customer ID:</label>
                         <input type="number" class="form-control" id="customerId" name="customerId" required>
                     </div>
-                    
-                    
+                    <div class="form-group">
+                        <label for="type">Type:</label>
+                        <input type="text" class="form-control" id="type" name="type" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantitative">Quantitative:</label>
+                        <input type="text" class="form-control" id="quantitative" name="quantitative" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <input type="text" class="form-control" id="description" name="description" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status:</label>
+                        <input type="text" class="form-control" id="status" name="status" required>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="file" class="form-control" name="pictureData" id="pictureData">
+                        <img id="previewImage" src="" alt="Ảnh được chọn" style="height: 200px; width: 200px; margin: 10px">
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button id="btSave" type="button" class="btn btn-primary">Save</button>
@@ -84,13 +142,44 @@
 </div>
 
 @section scripts {
+
+
     <script type="text/javascript">
         var action = "Create"; // Mặc định là tạo mới
 
         $(document).ready(function () {
+
             loadData();
 
+            const pictureData = document.getElementById('pictureData');
+            const previewImage = document.getElementById('previewImage');
+            var tmp;
+
+            pictureData.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                
+
+                if (file && file.type.startsWith('image/')) {
+                    var reader = new FileReader();
+                    
+                    reader.onload = function (e) {
+                        previewImage.src = e.target.result;
+                        tmp = Convert.FromBase64String(file);
+                        
+                    };
+
+                    reader.readAsDataURL(file);
+                } else {
+                    // Display error message or clear preview if a non-image file is selected
+                    previewImage.src = "";
+                    alert("Please select an image file.");
+                }
+            });
+
             $("#btSave").click(function () {
+
+                
+
                 var newJewelry = {
                     jewelryId: $("#jewelryId").val(),
                     jewelryName: $("#jewelryName").val(),
@@ -98,6 +187,12 @@
                     size: $("#size").val(),
                     weight: $("#weight").val(),
                     customerId: $("#customerId").val(),
+                    pictureData: $("#pictureData").val(),
+                    type: $("#type").val(),
+                    quantitative: $("#quantitative").val(),
+                    description: $("#description").val(),
+                    status: $("#status").val(),
+                    
                     
                 };
 
@@ -121,6 +216,76 @@
             });
         });
 
+
+        function search() {
+
+            var tmp1 = $('#searchInputName').val().trim();
+
+
+            var tmp2 = $('#searchInputMaterial').val().trim();
+
+
+            var tmp3 = $('#searchInputType').val().trim();
+
+            var search1 = "###";
+            var search2 = "###";
+            var search3 = "###";
+            if (tmp1 !== '') {
+                search1 = tmp1;
+            }
+            if (tmp2 !== '') {
+                search2 = tmp2;
+            }
+            if (tmp3 !== '') {
+                search3 = tmp3;
+            }
+
+            if (tmp1 === '' && tmp2 === '' && tmp3 === '') {
+                loadData();
+            } else {
+                $.ajax({
+                    url: '@Url.Action("Search", "Jewelry")',
+                    type: "GET",
+                    data: {
+
+                        search1,
+                        search2,
+                        search3
+                          
+                        
+                    },
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        var html = '';
+                        $.each(result, function (key, item) {
+                            html += '<tr>';
+                            html += '<td>' + item.jewelryId + '</td>';
+                            html += '<td>' + item.jewelryName + '</td>';
+                            html += '<td>' + item.material + '</td>';
+                            html += '<td>' + item.size + '</td>';
+                            html += '<td>' + item.weight + '</td>';
+                            html += '<td>' + item.customerId + '</td>';
+                            html += '<td>' + item.type + '</td>';
+                            html += '<td>' + item.quantitative + '</td>';
+                            html += '<td>' + item.description + '</td>';
+                            html += '<td>' + item.status + '</td>';
+                            html += '<td>' + "" + '</td>';
+
+                            html += '<td><button type="button" class="btn btn-primary" onclick="editJewelry(' + item.jewelryId + ')">Edit</button></td>';
+                            html += '<td><button type="button" class="btn btn-danger" onclick="deleteJewelry(' + item.jewelryId + ')">Delete</button></td>';
+                            html += '</tr>';
+                        });
+                        $('.tblJewelryList').html(html);
+                    },
+                    error: function (xhr, error) {
+                        alert(xhr.statusText);
+                    }
+                });
+            }
+        }
+        
+
         function loadData() {
             $.ajax({
                 url: '@Url.Action("GetAll", "Jewelry")',
@@ -137,6 +302,11 @@
                         html += '<td>' + item.size + '</td>';
                         html += '<td>' + item.weight + '</td>';
                         html += '<td>' + item.customerId + '</td>';
+                        html += '<td>' + item.type + '</td>';
+                        html += '<td>' + item.quantitative + '</td>';
+                        html += '<td>' + item.description + '</td>';
+                        html += '<td>' + item.status + '</td>';
+                        html += '<td>' + "" + '</td>';
 
                         html += '<td><button type="button" class="btn btn-primary" onclick="editJewelry(' + item.jewelryId + ')">Edit</button></td>';
                         html += '<td><button type="button" class="btn btn-danger" onclick="deleteJewelry(' + item.jewelryId + ')">Delete</button></td>';
@@ -172,7 +342,11 @@
                     $('#size').val(result.size);
                     $('#weight').val(result.weight);
                     $('#customerId').val(result.customerId);
-
+                    $('#pictureData').val(result.pictureData);
+                    $('#type').val(result.type);
+                    $('#quantitative').val(result.quantitative);
+                    $('#description').val(result.description);
+                    $('#status').val(result.status);
 
                     $('#topUpModalLabel').html("Edit Jewelry"); // Đặt lại tiêu đề modal
                     $('#btSave').html("Save"); // Đặt lại văn bản của nút "Save"

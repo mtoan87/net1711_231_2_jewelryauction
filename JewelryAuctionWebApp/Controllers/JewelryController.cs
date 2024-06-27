@@ -1,5 +1,6 @@
 ﻿using JewelryAuctionData.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -8,12 +9,10 @@ namespace JewelryAuctionWebApp.Controllers
     public class JewelryController : Controller
     {
 
+
         private readonly string apiUrl = "https://localhost:7169/api/Jewelry/";
 
-        public JewelryController()
-        {
-        }
-
+     
         public IActionResult Index()
         {
             return View();
@@ -45,9 +44,39 @@ namespace JewelryAuctionWebApp.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Search(string searchInput1, string searchInput2, string searchInput3)
+
+        {
+            
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var response = await httpClient.GetAsync(apiUrl + "Search?search1=" + searchInput1 + "&search2=" + searchInput2 + "&search3="+ searchInput3);
+                    
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var bid = JsonConvert.DeserializeObject<List<Jewelry>>(content);
+                        return Json(bid);
+                    }
+                    else
+                    {
+                        return Json(null);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Jewelry newJewelry)
-        {
+        {       
+
             try
             {
                 using (var httpClient = new HttpClient())
@@ -57,6 +86,7 @@ namespace JewelryAuctionWebApp.Controllers
                     {
                         if (response.IsSuccessStatusCode)
                         {
+
                             var content = await response.Content.ReadAsStringAsync();
                             return Json(new { status = 1, message = "Jewelry created successfully." });
                         }
@@ -72,6 +102,8 @@ namespace JewelryAuctionWebApp.Controllers
             {
                 return Json(new { status = 0, message = ex.Message });
             }
+
+
         }
 
         [HttpPost]
@@ -152,4 +184,6 @@ namespace JewelryAuctionWebApp.Controllers
             }
         }
     }
+
+    
 }
