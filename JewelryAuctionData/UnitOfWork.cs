@@ -19,8 +19,10 @@ namespace JewelryAuctionData
         private RequestAuctionDetailRepository _requestAuctionDetail;
 
         private PaymentRepository _paymentRepository;
+
         private JewelryRepository _jewelryRepository;
         private AuctionResultRepository _auctionResultRepository;
+
         private JoinAuctionRepository _joinAuctionRepository;
         private BidRepository _bidRepository;
 

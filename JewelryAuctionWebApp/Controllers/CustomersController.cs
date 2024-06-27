@@ -11,16 +11,21 @@ using JewelryAuctionBusiness;
 using Newtonsoft.Json;
 using JewelryAuctionData.DTO;
 using System.Text;
+using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
+using JewelryAuctionData.DTO.Customer;
+using System.Net.Http;
 
 namespace JewelryAuctionWebApp.Controllers
 {
     public class CustomersController : Controller
     {
 
-        private string apiUrl = "https://localhost:7169/api/Customer/";
+        private static string apiUrl = "https://localhost:7169/api/Customer/";
+   
 
-        
-        
+
+
         public CustomersController()
         {
            
@@ -30,7 +35,31 @@ namespace JewelryAuctionWebApp.Controllers
         {
             return View();
         }
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginDTO loginData)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(loginData);
+            }
+            var httpClient = new HttpClient();
+            var response = await httpClient.PostAsJsonAsync(apiUrl+ "Login", loginData);
 
+            if (response.IsSuccessStatusCode)
+            {
+                var token = await response.Content.ReadAsStringAsync();
+
+                
+                HttpContext.Session.SetString("JWToken", token);
+
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                ViewBag.ErrorMessage = "Invalid login attempt.";
+                return View(loginData);
+            }
+        }
         [HttpGet]
         public async Task<List<Customer>> GetAll()
         {
@@ -50,6 +79,32 @@ namespace JewelryAuctionWebApp.Controllers
                 }
 
                 return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Search(string search)
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var response = await httpClient.GetAsync(apiUrl + "Search?search=" + search);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var customers = JsonConvert.DeserializeObject<List<Customer>>(content);
+                        return Json(customers);
+                    }
+                    else
+                    {
+                        return Json(null);
+                    }
+                }
             }
             catch (Exception ex)
             {

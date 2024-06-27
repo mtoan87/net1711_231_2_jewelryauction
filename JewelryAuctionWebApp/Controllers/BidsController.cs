@@ -77,6 +77,31 @@ namespace JewelryAuctionWebApp.Controllers
         }
 
         [HttpGet]
+        public async Task<List<Bid>> GetBidsByJoinAuctionId(int joinAuctionId)
+        {
+            try
+            {
+                var result = new List<Bid>();
+                using (var httpClient = new HttpClient())
+                {
+                    using (var response = await httpClient.GetAsync(apiUrl + "GetBidsByJoinAuctionId?joinAuctionId=" + joinAuctionId))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var content = await response.Content.ReadAsStringAsync();
+                            result = JsonConvert.DeserializeObject<List<Bid>>(content);
+                        }
+                    }
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Search(string search)
         {
             try

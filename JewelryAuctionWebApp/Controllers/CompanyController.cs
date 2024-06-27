@@ -36,7 +36,31 @@ namespace JewelryAuctionWebApp.Controllers
                 throw new Exception(ex.Message);
             }
         }
-
+        [HttpGet]
+        public async Task<IActionResult> Search(string search)
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var response = await httpClient.GetAsync(apiUrl + "Search?search=" + search);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var company = JsonConvert.DeserializeObject<List<Company>>(content);
+                        return Json(company);
+                    }
+                    else
+                    {
+                        return Json(null);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Company newCompany)
         {

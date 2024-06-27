@@ -64,6 +64,15 @@ namespace JewelryAuctionData.Base
         {
             return await _context.Set<T>().ToListAsync();
         }
+
+        public async Task<List<T>> GetPagedAsync(int pageNumber, int pageSize)
+        {
+            return await _context.Set<T>()
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
         public void Create(T entity)
         {
             _context.Add(entity);
@@ -138,6 +147,16 @@ namespace JewelryAuctionData.Base
         public async Task<List<T>> GetByConditionAsync(Expression<Func<T, bool>> expression)
         {
             return await _context.Set<T>().Where(expression).ToListAsync();
+        }
+
+        public async Task<List<Bid>> GetBidsByJoinAuctionIdAsync(int joinAuctionId)
+        {
+            return await _context.Bids.Where(b => b.JoinAuctionId == joinAuctionId).ToListAsync();
+        }
+
+        public async Task<int> CountAsync()
+        {
+            return await _context.Set<T>().CountAsync();
         }
     }
 }

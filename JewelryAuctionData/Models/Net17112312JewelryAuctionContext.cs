@@ -108,6 +108,7 @@ public partial class Net17112312JewelryAuctionContext : DbContext
             entity.Property(e => e.Ocupation).HasMaxLength(100);
             entity.Property(e => e.Password).HasMaxLength(100);
             entity.Property(e => e.Phone).HasMaxLength(50);
+            entity.Property(e => e.Role).HasMaxLength(100);
         });
 
         modelBuilder.Entity<Jewelry>(entity =>

@@ -23,6 +23,12 @@ namespace JewelryAuctionBusiness
         {
             _unitOfWork = new UnitOfWork();
         }
+        public async Task<Customer> LoginAsync(string email, string password)
+        {
+            return await _unitOfWork.CustomerRepository.LoginAsync(email, password);
+        }
+    
+        
         public async Task<JewelryAuctionResult> GetAll()
         {
             try
@@ -61,6 +67,29 @@ namespace JewelryAuctionBusiness
             }
         
         }
+        public async Task<JewelryAuctionResult> Search(string search)
+        {
+            try
+            {
+                var customers = await _unitOfWork.CustomerRepository.GetByConditionAsync(
+                    a => a.CustomerName.Contains(search) ||
+                    a.Email.Contains(search) ||
+                    a.Nationality.Contains(search));
+
+                if (customers == null || !customers.Any())
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No customer found with the given search term");
+                }
+                else
+                {
+                    return new JewelryAuction(Const.SUCCESS_GET, "Customer search success", customers);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
         public async Task<JewelryAuctionResult> CreateCustomer(CreateCustomerDTO createCustomer)
         {
             try
@@ -73,6 +102,10 @@ namespace JewelryAuctionBusiness
                     Phone = createCustomer.Phone,
                     Address = createCustomer.Address,
                     Gender = createCustomer.Gender,
+                    DoB = createCustomer.DoB,
+                    Ocupation = createCustomer.Ocupation,
+                    Nationality = createCustomer.Nationality,
+                    Password = createCustomer.Password
                 };
                var customer = await _unitOfWork.CustomerRepository.CreateAsync(newCustomer);
                 
@@ -123,8 +156,10 @@ namespace JewelryAuctionBusiness
                 customer.Phone = updateCustomer.Phone;
                 customer.Address = updateCustomer.Address;
                 customer.Gender = updateCustomer.Gender;
-
-                 _unitOfWork.CustomerRepository.UpdateAsync(customer);
+                customer.DoB = updateCustomer.DoB;
+                customer.Ocupation = updateCustomer.Ocupation;
+                customer.Password = updateCustomer.Password;
+                 await _unitOfWork.CustomerRepository.UpdateAsync(customer);
                 return new JewelryAuction(Const.SUCCESS_GET, "Customer updated successfully.");
             }
             catch (Exception ex)

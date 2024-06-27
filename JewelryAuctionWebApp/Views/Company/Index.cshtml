@@ -8,10 +8,21 @@
     <div class="col-md-10">
         <h3 class="display-8">Company List</h3>
     </div>
-    <div class="col-md-2 text-end">
-        <button type="button" class="btn btn-primary" onclick="add();">
-            Add
-        </button>
+    <div class="row">
+        <div class="col-md-2 text-start">
+            <input type="text" id="searchInput" placeholder="Search company info" title="Type in a name" style="margin-right: 5px;">
+        </div>
+        <div class="col-md-2 text-start">
+            <button type="button" class="btn btn-primary" onclick="search()">
+                Search
+            </button>
+        </div>
+        <div class="col-md-6"></div> <!-- Tao khoang trong -->
+        <div class="col-md-2 text-end">
+            <button type="button" class="btn btn-primary" onclick="add()">
+                Create
+            </button>
+        </div>
     </div>
 </div>
 
@@ -25,6 +36,11 @@
                     <th class="card-title text-center">Email</th>
                     <th class="card-title text-center">Address</th>
                     <th class="card-title text-center">Description</th>
+                    <th class="card-title text-center">PhoneNumber</th>
+                    <th class="card-title text-center">EstablishmentDate</th>
+                    <th class="card-title text-center">Location</th>
+                    <th class="card-title text-center">NumberOfEmployees</th>
+                    <th class="card-title text-center">Industry</th>
                     <th class="card-title text-center"></th>
                     <th class="card-title text-center"></th>
                 </tr>
@@ -63,6 +79,26 @@
                         <label for="email">Email:</label>
                         <input type="text" class="form-control" id="email" name="email" required>
                     </div>
+                    <div class="form-group">
+                        <label for="phoneNumber">PhoneNumber:</label>
+                        <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="establishmentDate">EstablishmentDate:</label>
+                        <input type="datetime-local" class="form-control" id="establishmentDate" name="establishmentDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location:</label>
+                        <input type="text" class="form-control" id="location" name="location" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="numberOfEmployees">NumberOfEmployees:</label>
+                        <input type="number" class="form-control" id="numberOfEmployees" name="numberOfEmployees" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="industry">Industry:</label>
+                        <input type="text" class="form-control" id="industry" name="industry" required>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button id="btSave" type="button" class="btn btn-primary">Save</button>
@@ -84,6 +120,11 @@
                     address: $("#address").val(),
                     description: $("#description").val(),
                     email: $("#email").val(),
+                    email: $("#phoneNumber").val(),
+                    email: $("#establishmentDate").val(),
+                    email: $("#location").val(),
+                    email: $("#numberOfEmployees").val(),
+                    email: $("#industry").val(),
                 };
 
                 if (companyId) {
@@ -126,7 +167,43 @@
                 }
             });
         });
-
+        function search() {
+            var searchInput = $('#searchInput').val().trim();
+            if (searchInput === '') {
+                loadData();
+            } else {
+                $.ajax({
+                    url: '@Url.Action("Search", "Company")',
+                    type: "GET",
+                    data: { search: searchInput },
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        var html = '';
+                        $.each(result, function (key, item) {
+                            html += '<tr>';
+                            html += '<td>' + item.companyId + '</td>';
+                            html += '<td>' + item.companyName + '</td>';
+                            html += '<td>' + item.address + '</td>';
+                            html += '<td>' + item.description + '</td>';
+                            html += '<td>' + item.email + '</td>';
+                            html += '<td>' + item.phoneNumber + '</td>';
+                            html += '<td>' + item.establishmentDate + '</td>';
+                            html += '<td>' + item.location + '</td>';
+                            html += '<td>' + item.numberOfEmployees + '</td>';
+                            html += '<td>' + item.industry + '</td>';
+                            html += '<td><button type="button" class="btn btn-primary" onclick="edit(' + item.companyId + ')">Edit</button></td>';
+                            html += '<td><button type="button" class="btn btn-danger" onclick="deleteCompany(' + item.companyId + ')">Delete</button></td>';
+                            html += '</tr>';
+                        });
+                        $('.tblCompanyList').html(html);
+                    },
+                    error: function (xhr, error) {
+                        alert(xhr.statusText);
+                    }
+                });
+            }
+        }
         function loadData() {
             $.ajax({
                 url: '@Url.Action("GetAll", "Company")',
@@ -142,6 +219,11 @@
                         html += '<td>' + item.address + '</td>';
                         html += '<td>' + item.description + '</td>';
                         html += '<td>' + item.email + '</td>';
+                        html += '<td>' + item.phoneNumber + '</td>';
+                        html += '<td>' + item.establishmentDate + '</td>';
+                        html += '<td>' + item.location + '</td>';
+                        html += '<td>' + item.numberOfEmployees + '</td>';
+                        html += '<td>' + item.industry + '</td>';
                         html += '<td><button type="button" class="btn btn-primary" onclick="edit(' + item.companyId + ')">Edit</button></td>';
                         html += '<td><button type="button" class="btn btn-danger" onclick="deleteCompany(' + item.companyId + ')">Delete</button></td>';
                         html += '</tr>';
@@ -161,6 +243,11 @@
             $('#address').val('');
             $('#description').val('');
             $('#email').val('');
+            $('#phoneNumber').val('');
+            $('#establishmentDate').val('');
+            $('#location').val('');
+            $('#numberOfEmployees').val('');
+            $('#industry').val('');
             $('#companyModal').modal('show');
         }
 
@@ -175,6 +262,11 @@
                     $('#address').val(result.address);
                     $('#description').val(result.description);
                     $('#email').val(result.email);
+                    $('#phoneNumber').val(result.email);
+                    $('#establishmentDate').val(result.email);
+                    $('#location').val(result.email);
+                    $('#numberOfEmployees').val(result.email);
+                    $('#industry').val(result.email);
                     $('#companyModalLabel').html('Edit Company');
                     $('#companyModal').modal('show');
                 },

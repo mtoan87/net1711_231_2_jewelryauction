@@ -178,6 +178,7 @@
                             html += '<td>' + item.isLive + '</td>';
 
                             html += '<td><button type="button" class="btn btn-primary" onclick="editAuction(' + item.joinAuctionId + ')">Edit</button></td>';
+                            html += '<td><button type="button" class="btn btn-primary" onclick="detailsAuction(' + item.joinAuctionId + ')">Details</button></td>';
                             html += '<td><button type="button" class="btn btn-danger" onclick="deleteAuction(' + item.joinAuctionId + ')">Delete</button></td>';
                             html += '</tr>';
                         });
@@ -212,6 +213,7 @@
                         html += '<td>' + item.isLive + '</td>';
 
                         html += '<td><button type="button" class="btn btn-primary" onclick="editAuction(' + item.joinAuctionId + ')">Edit</button></td>';
+                        html += '<td><button type="button" class="btn btn-primary" onclick="detailsAuction(' + item.joinAuctionId + ')">Details</button></td>';
                         html += '<td><button type="button" class="btn btn-danger" onclick="deleteAuction(' + item.joinAuctionId + ')">Delete</button></td>';
                         html += '</tr>';
                     });
@@ -224,12 +226,12 @@
         }
 
         function create() {
-            action = "Create"; // Đặt hành động là tạo mới
-            $("#joinAuctionId").val(0); // Đặt ID của thanh toán là 0
-            $('#frm')[0].reset(); // Đặt lại form
-            $('#joinAuctionModalLabel').html("Add New Auction"); // Đặt lại tiêu đề modal
-            $('#btSave').html("Save"); // Đặt lại văn bản của nút "Save"
-            $('#joinAuctionModal').modal('show'); // Hiển thị modal
+            action = "Create";
+            $("#joinAuctionId").val(0);
+            $('#frm')[0].reset();
+            $('#joinAuctionModalLabel').html("Add New Auction");
+            $('#btSave').html("Save");
+            $('#joinAuctionModal').modal('show');
         }
 
         function editAuction(joinAuctionId) {
@@ -280,5 +282,10 @@
                 });
             }
         }
+
+        function detailsAuction(joinAuctionId) {
+            window.location.href = '/Bids/Index?joinAuctionId=' + joinAuctionId;
+        }
+
     </script>
 }
