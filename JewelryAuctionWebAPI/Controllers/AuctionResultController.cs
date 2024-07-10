@@ -2,6 +2,7 @@
 using JewelryAuctionData.DTO.AuctionResult;
 using JewelryAuctionData.DTO.Jewelry;
 using JewelryAuctionData.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JewelryAuctionWebAPI.Controllers
@@ -17,6 +18,7 @@ namespace JewelryAuctionWebAPI.Controllers
             _auctionResultBusiness = new AuctionResultBusiness();
         }
 
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetAll")]
         public async Task<IActionResult> GetAll()
@@ -32,6 +34,8 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result.Message);
             }
         }
+
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetById")]
         public async Task<IActionResult> GetById(int id)
@@ -48,6 +52,8 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result?.Message);
             }
         }
+
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("CreateAuctionResult")]
         public async Task<IActionResult> CreateAuctionResult(CreateAuctionResultDTO createAuctionResult)
@@ -63,6 +69,8 @@ namespace JewelryAuctionWebAPI.Controllers
                 return BadRequest(result?.Message);
             }
         }
+
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("UpdateAuctionResult")]
         public async Task<IActionResult> UpdateJewelry(UpdateAuctionResultDTO updateAuctionResult)
@@ -77,6 +85,8 @@ namespace JewelryAuctionWebAPI.Controllers
                 return BadRequest(rs?.Message);
             }
         }
+
+        [Authorize(Roles = "Customer")]
         [HttpDelete]
         [Route("DeleteAuctionResult")]
         public async Task<IActionResult> DeleteAuctionResult(int AuctionResultId)

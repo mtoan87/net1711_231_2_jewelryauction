@@ -19,6 +19,7 @@ namespace JewelryAuctionWebAPI.Controllers
         {
             _companyBusiness = new CompanyBusiness();
         }
+
         [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetAll")]
@@ -35,6 +36,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result.Message);
             }
         }
+
         [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetById")]
@@ -52,6 +54,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result?.Message);
             }
         }
+
         [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("Search")]
@@ -69,6 +72,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result.Message);
             }
         }
+
         [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("CreateCompany")]
@@ -85,6 +89,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return BadRequest(result?.Message);
             }
         }
+
         [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("UpdateCompany")]
@@ -100,6 +105,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return BadRequest(rs?.Message);
             }
         }
+
         [Authorize(Roles = "Customer")]
         [HttpDelete]
         [Route("DeleteCompany")]

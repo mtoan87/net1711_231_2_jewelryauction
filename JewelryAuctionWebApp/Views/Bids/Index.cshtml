@@ -25,6 +25,24 @@
             Create
         </button>
     </div>
+
+    <div class="row mt-3">
+        <!--Filter-->
+        <div class="col-md-2 text-start">
+            <input type="number" id="bidAmountFilter" placeholder="Bid Amount" style="margin-right: 5px;">
+        </div>
+        <div class="col-md-3 text-start">
+            <input type="datetime-local" id="dateTimeFilter" placeholder="Date Time" style="margin-right: 5px;">
+        </div>
+        <div class="col-md-3 text-start">
+            <input type="number" id="jewelryIdFilter" placeholder="Jewelry ID" style="margin-right: 5px;">
+        </div>
+        <div class="col-md-2 text-start">
+            <button type="button" class="btn btn-primary" onclick="filter()">
+                Filter
+            </button>
+        </div>
+    </div>
 </div>
 
 <div class="row">
@@ -62,8 +80,7 @@
                     <h5 class="modal-title" id="bidModalLabel">Add New Bid</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <!--<div id="joinAuctionModalContent"></div>-->
+                <div class="modal-body">                 
                     <input type="hidden" id="bidId" name="bidId">
                     <div class="form-group">
                         <label for="customerId">Customer ID:</label>
@@ -195,6 +212,7 @@
                             html += '<td>' + item.isWining + '</td>';
 
                             html += '<td><button type="button" class="btn btn-primary" onclick="editBid(' + item.bidId + ')">Edit</button></td>';
+                            html += '<td><button type="button" class="btn btn-primary" onclick="detailsBid(' + item.bidId + ')">Details</button></td>';
                             html += '<td><button type="button" class="btn btn-danger" onclick="deleteBid(' + item.bidId + ')">Delete</button></td>';
                             html += '</tr>';
                         });
@@ -244,6 +262,7 @@
                         html += '<td>' + item.isWining + '</td>';
 
                         html += '<td><button type="button" class="btn btn-primary" onclick="editBid(' + item.bidId + ')">Edit</button></td>';
+                        html += '<td><button type="button" class="btn btn-primary" onclick="detailsBid(' + item.bidId + ')">Details</button></td>';
                         html += '<td><button type="button" class="btn btn-danger" onclick="deleteBid(' + item.bidId + ')">Delete</button></td>';
                         html += '</tr>';
                     });
@@ -313,5 +332,54 @@
                 });
             }
         }
+
+        function filter() {
+            var bidAmount = $('#bidAmountFilter').val();
+            var dateTime = $('#dateTimeFilter').val();
+            var jewelryId = $('#jewelryIdFilter').val();
+
+            $.ajax({
+                url: '@Url.Action("FilterBids", "Bids")',
+                type: "GET",
+                data: {
+                    bidAmount: bidAmount,
+                    dateTime: dateTime,
+                    jewelryId: jewelryId
+                },
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    var html = '';
+                    $.each(result, function (key, item) {
+                        html += '<tr>';
+                        html += '<td>' + item.bidId + '</td>';
+                        html += '<td>' + item.customerId + '</td>';
+                        html += '<td>' + item.joinAuctionId + '</td>';
+                        html += '<td>' + item.bidAmount + '</td>';
+                        html += '<td>' + item.dateTime + '</td>';
+                        html += '<td>' + item.jewelryId + '</td>';
+                        html += '<td>' + item.bidderName + '</td>';
+                        html += '<td>' + item.joinAuctionName + '</td>';
+                        html += '<td>' + item.joinAuctionDescription + '</td>';
+                        html += '<td>' + item.bidStatus + '</td>';
+                        html += '<td>' + item.isWining + '</td>';
+
+                        html += '<td><button type="button" class="btn btn-primary" onclick="editBid(' + item.bidId + ')">Edit</button></td>';
+                        html += '<td><button type="button" class="btn btn-primary" onclick="detailsBid(' + item.bidId + ')">Details</button></td>';
+                        html += '<td><button type="button" class="btn btn-danger" onclick="deleteBid(' + item.bidId + ')">Delete</button></td>';
+                        html += '</tr>';
+                    });
+                    $('.tblBids').html(html);
+                },
+                error: function (xhr, error) {
+                    alert(xhr.statusText);
+                }
+            });
+        }
+
+        function detailsBid(bidId) {
+            window.location.href = '@Url.Action("Details", "Bids")' + '?bidId=' + bidId;
+        }
+
     </script>
 }

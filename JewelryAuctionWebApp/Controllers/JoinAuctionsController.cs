@@ -102,6 +102,39 @@ namespace JewelryAuctionWebApp.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> FilterJoinAuctions(int? customerId, DateTime? startTime, DateTime? endTime)
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var queryParams = new List<string>();
+                    if (customerId.HasValue) queryParams.Add($"customerId={customerId.Value}");
+                    if (startTime.HasValue) queryParams.Add($"startTime={startTime.Value.ToString("o")}");
+                    if (endTime.HasValue) queryParams.Add($"endTime={endTime.Value.ToString("o")}");
+
+                    var queryString = string.Join("&", queryParams);
+
+                    var response = await httpClient.GetAsync(apiUrl + "Filter?" + queryString);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var joinAuctions = JsonConvert.DeserializeObject<List<JoinAuction>>(content);
+                        return Json(joinAuctions);
+                    }
+                    else
+                    {
+                        return Json(null);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] JoinAuction joinAuction)
         {

@@ -11,6 +11,7 @@
 </div>
 
 <div class="row">
+    <!--Search-->
     <div class="col-md-2 text-start">
         <input type="text" id="searchInput" placeholder="Search Auction" title="Type in a name" style="margin-right: 5px;">
     </div>
@@ -19,11 +20,32 @@
             Search
         </button>
     </div>
+
     <div class="col-md-6"></div> <!-- Tao khoang trong -->
+
+    <!--Create-->
     <div class="col-md-2 text-end">
         <button type="button" class="btn btn-primary" onclick="create()">
             Create
         </button>
+    </div>
+
+    <div class="row mt-3">
+        <!--Filter-->
+        <div class="col-md-2 text-start">
+            <input type="number" id="customerIdFilter" placeholder="Customer ID" style="margin-right: 5px;">
+        </div>
+        <div class="col-md-3 text-start">
+            <input type="datetime-local" id="startTimeFilter" placeholder="Start Time" style="margin-right: 5px;">
+        </div>
+        <div class="col-md-3 text-start">
+            <input type="datetime-local" id="endTimeFilter" placeholder="End Time" style="margin-right: 5px;">
+        </div>
+        <div class="col-md-2 text-start">
+            <button type="button" class="btn btn-primary" onclick="filter()">
+                Filter
+            </button>
+        </div>
     </div>
 </div>
 
@@ -62,7 +84,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!--<div id="joinAuctionModalContent"></div>-->
                     <input type="hidden" id="joinAuctionId" name="joinAuctionId">
                     <div class="form-group">
                         <label for="customerId">Customer ID:</label>
@@ -283,8 +304,72 @@
             }
         }
 
+            function filter() {
+                var customerId = $('#customerIdFilter').val();
+                var startTime = $('#startTimeFilter').val();
+                var endTime = $('#endTimeFilter').val();
+
+                $.ajax({
+                    url: '@Url.Action("FilterJoinAuctions", "JoinAuctions")',
+                    type: "GET",
+                    data: {
+                        customerId: customerId,
+                        startTime: startTime,
+                        endTime: endTime
+                    },
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        var html = '';
+                        $.each(result, function (key, item) {
+                            html += '<tr>';
+                            html += '<td>' + item.joinAuctionId + '</td>';
+                            html += '<td>' + item.customerId + '</td>';
+                            html += '<td>' + item.auctionDetailId + '</td>';
+                            html += '<td>' + item.startTime + '</td>';
+                            html += '<td>' + item.endTime + '</td>';
+                            html += '<td>' + item.host + '</td>';
+                            html += '<td>' + item.joinAuctionName + '</td>';
+                            html += '<td>' + item.joinAuctionDescription + '</td>';
+                            html += '<td>' + item.joinAuctionStatus + '</td>';
+                            html += '<td>' + item.isLive + '</td>';
+
+                            html += '<td><button type="button" class="btn btn-primary" onclick="editAuction(' + item.joinAuctionId + ')">Edit</button></td>';
+                            html += '<td><button type="button" class="btn btn-primary" onclick="detailsAuction(' + item.joinAuctionId + ')">Details</button></td>';
+                            html += '<td><button type="button" class="btn btn-danger" onclick="deleteAuction(' + item.joinAuctionId + ')">Delete</button></td>';
+                            html += '</tr>';
+                        });
+                        $('.tblJoinAuctions').html(html);
+                    },
+                    error: function (xhr, error) {
+                        alert(xhr.statusText);
+                    }
+                });
+            }
+
+        // function detailsAuction(joinAuctionId) {
+        //     window.location.href = '/Bids/Index?joinAuctionId=' + joinAuctionId;
+        // }
+
         function detailsAuction(joinAuctionId) {
-            window.location.href = '/Bids/Index?joinAuctionId=' + joinAuctionId;
+            var url = '@Url.Action("GetBidsByJoinAuctionId", "Bids")' + '?joinAuctionId=' + joinAuctionId;
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                success: function (result) {
+                    if (result.length === 0) {
+                        alert("There is no Bid with the corresponding JoinAuctionId");
+                    } else {                       
+                        window.location.href = '/Bids/Index?joinAuctionId=' + joinAuctionId;
+                    }
+                },
+                error: function (xhr, error) {
+                    alert(xhr.statusText);
+                }
+            });
         }
 
     </script>
