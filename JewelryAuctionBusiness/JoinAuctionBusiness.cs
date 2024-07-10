@@ -67,7 +67,8 @@ namespace JewelryAuctionBusiness
                 var joinAuctions = await _unitOfWork.joinAuctionRepository.GetByConditionAsync(
                     a => a.Host.Contains(search) ||
                     a.JoinAuctionName.Contains(search) || 
-                    a.JoinAuctionStatus.Contains(search));
+                    a.JoinAuctionStatus.Contains(search) ||
+                    a.IsLive.Contains(search));
 
                 if (joinAuctions == null || !joinAuctions.Any())
                 {
@@ -76,6 +77,30 @@ namespace JewelryAuctionBusiness
                 else
                 {
                     return new JewelryAuction(Const.SUCCESS_GET, "Auction search success", joinAuctions);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
+
+        public async Task<JewelryAuctionResult> FilterJoinAuctions(int? customerId, DateTime? startTime, DateTime? endTime)
+        {
+            try
+            {
+                var joinAuctions = await _unitOfWork.joinAuctionRepository.GetByConditionAsync(
+                    ja => (!customerId.HasValue || ja.CustomerId == customerId.Value) &&
+                          (!startTime.HasValue || ja.StartTime >= startTime.Value) &&
+                          (!endTime.HasValue || ja.EndTime <= endTime.Value));
+
+                if (joinAuctions == null || !joinAuctions.Any())
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No join auctions found with the given criteria");
+                }
+                else
+                {
+                    return new JewelryAuction(Const.SUCCESS_GET, "Join auctions filtered successfully", joinAuctions);
                 }
             }
             catch (Exception ex)

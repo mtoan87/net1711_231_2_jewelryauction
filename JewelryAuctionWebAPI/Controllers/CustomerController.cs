@@ -2,12 +2,8 @@
 using JewelryAuctionData.DTO.Customer;
 using JewelryAuctionData.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+
 
 namespace JewelryAuctionWebAPI.Controllers
 {
@@ -25,38 +21,40 @@ namespace JewelryAuctionWebAPI.Controllers
             _config = config;
             _customerBusiness = new CustomerBusiness();
         }
-        [HttpPost]
-        [Route("Login")]
-        public async Task<IActionResult> Login(LoginDTO login)
-        {
-            var cus = await _customerBusiness.LoginAsync(login.Email, login.Password);
-            if (cus == null)
-                return Unauthorized();
 
-            var token = GenerateJSONWebToken(cus);
-            return Ok(token);
-        }
+        //[HttpPost]
+        //[Route("Login")]
+        //public async Task<IActionResult> Login(LoginDTO login)
+        //{
+        //    var cus = await _customerBusiness.LoginAsync(login.Email, login.Password);
+        //    if (cus == null)
+        //        return Unauthorized();
 
-        private string GenerateJSONWebToken(Customer userInfo)
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        //    var token = GenerateJSONWebToken(cus);
+        //    return Ok(token);
+        //}
 
-            var token = new JwtSecurityToken(
-                _config["Jwt:Issuer"],
-                _config["Jwt:Audience"],
-                new Claim[]
-                {
-                    new(ClaimTypes.Email, userInfo.Email),
-                    new(ClaimTypes.Role, userInfo.Role),
-                    new("customerId", userInfo.CustomerId.ToString()),
-                },
-                expires: DateTime.Now.AddMinutes(120),
-                signingCredentials: credentials
-            );
+        //private string GenerateJSONWebToken(Customer userInfo)
+        //{
+        //    var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+        //    var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
+        //    var token = new JwtSecurityToken(
+        //        _config["Jwt:Issuer"],
+        //        _config["Jwt:Audience"],
+        //        new Claim[]
+        //        {
+        //            new(ClaimTypes.Email, userInfo.Email),
+        //            new(ClaimTypes.Role, userInfo.Role),
+        //            new("customerId", userInfo.CustomerId.ToString()),
+        //        },
+        //        expires: DateTime.Now.AddMinutes(120),
+        //        signingCredentials: credentials
+        //    );
+
+        //    return new JwtSecurityTokenHandler().WriteToken(token);
+        //}
+
         [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetAll")]
@@ -73,6 +71,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result.Message);
             }
         }
+
         [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetById")]
@@ -107,6 +106,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result.Message);
             }
         }
+
         [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("CreateCustomer")]
@@ -123,6 +123,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return BadRequest(result?.Message);
             }
         }
+
         [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("UpdateCustomer")]
@@ -138,6 +139,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return BadRequest(rs?.Message);
             }
         }
+
         [Authorize(Roles = "Customer")]
         [HttpDelete]
         [Route("DeleteCustomer")]

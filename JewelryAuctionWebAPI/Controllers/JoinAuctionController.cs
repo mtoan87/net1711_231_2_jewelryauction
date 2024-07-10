@@ -1,6 +1,7 @@
 ﻿using JewelryAuctionBusiness;
 using JewelryAuctionData.DTO.JoinAuction;
 using JewelryAuctionData.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JewelryAuctionWebAPI.Controllers
@@ -16,6 +17,7 @@ namespace JewelryAuctionWebAPI.Controllers
             joinAuctionBusiness = new JoinAuctionBusiness();
         }
 
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetAll")]
         public async Task<IActionResult> GetAll()
@@ -33,6 +35,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetById")]
         public async Task<IActionResult> GetById(int id)
@@ -49,6 +52,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("Search")]
         public async Task<IActionResult> Search(string search)
@@ -66,6 +70,25 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
+        [Authorize(Roles = "Customer")]
+        [HttpGet]
+        [Route("Filter")]
+        public async Task<IActionResult> FilterJoinAuctions(int? customerId, DateTime? startTime, DateTime? endTime)
+        {
+            var result = await joinAuctionBusiness.FilterJoinAuctions(customerId, startTime, endTime);
+
+            if (result.Status > 0 && result != null)
+            {
+                var joinAuctions = result.Data as List<JoinAuction>;
+                return Ok(joinAuctions);
+            }
+            else
+            {
+                return NotFound(result.Message);
+            }
+        }
+
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("Create")]
         public async Task<IActionResult> CreateJoinAuction(CreateJoinAuctionDTO createJoinAuction)
@@ -82,6 +105,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("Update")]
         public async Task<IActionResult> UpdateJoinAuction(UpdateJoinAuctionDTO updateJoinAuction)
@@ -98,6 +122,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
+        [Authorize(Roles = "Customer")]
         [HttpDelete]
         [Route("Delete")]
         public async Task<IActionResult> DeleteJoinAuction(int joinAuctionId)

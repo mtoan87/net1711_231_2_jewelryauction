@@ -1,6 +1,7 @@
 ﻿using JewelryAuctionBusiness;
 using JewelryAuctionData.DTO.Payment;
 using JewelryAuctionData.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JewelryAuctionWebAPI.Controllers
@@ -16,6 +17,7 @@ namespace JewelryAuctionWebAPI.Controllers
             _paymentBusiness = new PaymentBusiness();
         }
 
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetAll")]
         public async Task<IActionResult> GetAll()
@@ -31,6 +33,8 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result.Message);
             }
         }
+
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetById")]
         public async Task<IActionResult> GetById(int id)
@@ -47,6 +51,8 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result?.Message);
             }
         }
+
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("CreatePayment")]
         public async Task<IActionResult> CreatePaymennt(CreatePaymentDTO createPayment)
@@ -62,6 +68,8 @@ namespace JewelryAuctionWebAPI.Controllers
                 return BadRequest(result?.Message);
             }
         }
+
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("UpdatePayment")]
         public async Task<IActionResult> UpdatePayment(UpdatePaymentDTO updatePayment)
@@ -76,6 +84,8 @@ namespace JewelryAuctionWebAPI.Controllers
                 return BadRequest(rs?.Message);
             }
         }
+
+        [Authorize(Roles = "Customer")]
         [HttpDelete]
         [Route("DeletePayment")]
         public async Task<IActionResult> DeletePayment(int paymentId)

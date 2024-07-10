@@ -18,6 +18,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
 
 
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter" Version="8.0.4" />

@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using JewelryAuctionData.Models;
 using Newtonsoft.Json;
 using System.Text;
+using System.Security.Cryptography;
 
 namespace JewelryAuctionWebApp.Controllers
 {
@@ -77,6 +78,32 @@ namespace JewelryAuctionWebApp.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> Details(int bidId)
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var response = await httpClient.GetAsync(apiUrl + "GetById?id=" + bidId);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var bid = JsonConvert.DeserializeObject<Bid>(content);
+                        return View("Details", bid);
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
         public async Task<List<Bid>> GetBidsByJoinAuctionId(int joinAuctionId)
         {
             try
@@ -124,6 +151,39 @@ namespace JewelryAuctionWebApp.Controllers
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> FilterBids(double? bidAmount, DateTime? dateTime, int? jewelryId)
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var queryParams = new List<string>();
+                    if (bidAmount.HasValue) queryParams.Add($"bidAmount={bidAmount.Value}");
+                    if (dateTime.HasValue) queryParams.Add($"dateTime={dateTime.Value.ToString("o")}");
+                    if (jewelryId.HasValue) queryParams.Add($"jewelryId={jewelryId.Value}");
+
+                    var queryString = string.Join("&", queryParams);
+
+                    var response = await httpClient.GetAsync(apiUrl + "Filter?" + queryString);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var bids = JsonConvert.DeserializeObject<List<Bid>>(content);
+                        return Json(bids);
+                    }
+                    else
+                    {
+                        return Json(null);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 

@@ -105,6 +105,32 @@ namespace JewelryAuctionBusiness
             }
         }
 
+        public async Task<JewelryAuctionResult> FilterBids(double? bidAmount, DateTime? dateTime, int? jewelryId)
+        {
+            try
+            {
+                var bids = await _unitOfWork.bidRepository.GetByConditionAsync(
+                    ja => (!bidAmount.HasValue || ja.BidAmount == bidAmount.Value) &&
+                          (!dateTime.HasValue || ja.DateTime >= dateTime.Value) &&
+                          (!jewelryId.HasValue || ja.JewelryId <= jewelryId.Value));
+
+
+
+                if (bids == null || !bids.Any())
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No bids found with the given criteria");
+                }
+                else
+                {
+                    return new JewelryAuction(Const.SUCCESS_GET, "Bids filtered successfully", bids);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
+
         public async Task<JewelryAuctionResult> CreateBid(CreateBidDTO createBid)
         {
             try
