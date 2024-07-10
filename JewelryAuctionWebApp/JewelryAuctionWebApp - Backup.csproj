@@ -8,17 +8,13 @@
 
   <ItemGroup>
 
+    <PackageReference Include="FirebaseAuth" Version="1.0.5" />
 
-    <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.1.1" />
-    
     <PackageReference Include="FirebaseAuthentication.net" Version="4.1.0" />
 
     <PackageReference Include="FirebaseStorage.net" Version="1.0.3" />
 
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
-
-
-    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
 
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 

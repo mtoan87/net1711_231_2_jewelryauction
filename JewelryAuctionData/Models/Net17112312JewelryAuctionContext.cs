@@ -35,7 +35,7 @@ public partial class Net17112312JewelryAuctionContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=(local);uid=sa;pwd=1234567890;database=Net1711_231_2_JewelryAuction;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=(local);uid=sa;pwd=12345;database=Net1711_231_2_JewelryAuction;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -123,6 +123,8 @@ public partial class Net17112312JewelryAuctionContext : DbContext
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.Type).HasMaxLength(50);
             entity.Property(e => e.Weight).HasMaxLength(50);
+            entity.Property(e => e.Weight).HasMaxLength(50);
+            entity.Property(e => e.Picture).HasMaxLength(255);
         });
 
         modelBuilder.Entity<JoinAuction>(entity =>

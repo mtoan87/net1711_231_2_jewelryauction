@@ -1,10 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Web;
 
 namespace JewelryAuctionData.Models;
 
 public partial class Jewelry
+
+ 
 {
+
+    
+
     public int JewelryId { get; set; }
 
     public string? JewelryName { get; set; }
@@ -27,9 +34,15 @@ public partial class Jewelry
 
     public string? Status { get; set; }
 
+    public string? Picture { get; set; }
+
+
+
     public virtual ICollection<AuctionResult> AuctionResults { get; set; } = new List<AuctionResult>();
 
     public virtual ICollection<Bid> Bids { get; set; } = new List<Bid>();
 
     public virtual ICollection<RequestAuctionDetail> RequestAuctionDetails { get; set; } = new List<RequestAuctionDetail>();
+
+   
 }

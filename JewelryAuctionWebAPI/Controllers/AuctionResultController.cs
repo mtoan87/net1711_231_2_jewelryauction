@@ -53,7 +53,25 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
+
         [Authorize(Roles = "Customer")]
+        [HttpGet]
+        [Route("Search")]
+        public async Task<IActionResult> Search(string search)
+        {
+            var result = await _auctionResultBusiness.Search(search);
+
+            if (result.Status > 0 && result != null)
+            {
+                var joinAuctions = result.Data as List<AuctionResult>;
+                return Ok(joinAuctions);
+            }
+            else
+            {
+                return NotFound(result.Message);
+            }
+        }
+
         [HttpPost]
         [Route("CreateAuctionResult")]
         public async Task<IActionResult> CreateAuctionResult(CreateAuctionResultDTO createAuctionResult)
