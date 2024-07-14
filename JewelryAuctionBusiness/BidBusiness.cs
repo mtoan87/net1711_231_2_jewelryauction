@@ -28,11 +28,35 @@ namespace JewelryAuctionBusiness
 
                 if (bids == null)
                 {
-                    return new JewelryAuction(Const.WARINING_NO_DATA, "No join auction");
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No bid");
                 }
                 else
                 {
-                    return new JewelryAuction(Const.SUCCESS_GET, "Join auction success", bids);
+                    return new JewelryAuction(Const.SUCCESS_GET, "Get bid success", bids);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
+
+        public async Task<JewelryAuctionResult> GetPaged(int pageNumber, int pageSize)
+        {
+            try
+            {
+                var bids = await _unitOfWork.bidRepository.GetPagedAsync(pageNumber, pageSize);
+                var totalRecords = await _unitOfWork.bidRepository.CountAsync();
+
+                int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+
+                if (bids == null)
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No bid");
+                }
+                else
+                {
+                    return new JewelryAuction(Const.SUCCESS_GET, "Get bid success", bids, totalPages, pageNumber, pageSize);
                 }
             }
             catch (Exception ex)
@@ -111,8 +135,8 @@ namespace JewelryAuctionBusiness
             {
                 var bids = await _unitOfWork.bidRepository.GetByConditionAsync(
                     ja => (!bidAmount.HasValue || ja.BidAmount == bidAmount.Value) &&
-                          (!dateTime.HasValue || ja.DateTime >= dateTime.Value) &&
-                          (!jewelryId.HasValue || ja.JewelryId <= jewelryId.Value));
+                          (!dateTime.HasValue || ja.DateTime == dateTime.Value) &&
+                          (!jewelryId.HasValue || ja.JewelryId == jewelryId.Value));
 
 
 

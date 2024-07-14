@@ -9,6 +9,7 @@ using JewelryAuctionData.Models;
 using Newtonsoft.Json;
 using System.Text;
 using System.Security.Cryptography;
+using JewelryAuctionData.Paginate;
 
 namespace JewelryAuctionWebApp.Controllers
 {
@@ -16,9 +17,10 @@ namespace JewelryAuctionWebApp.Controllers
     {
         private string apiUrl = "https://localhost:7169/api/Bid/";
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 3)
         {
-            return View();
+            var pagedResult = await GetPaged(pageNumber, pageSize);
+            return View(pagedResult);
         }
 
         public BidsController()
@@ -26,20 +28,45 @@ namespace JewelryAuctionWebApp.Controllers
 
         }
 
+        //[HttpGet]
+        //public async Task<List<Bid>> GetAll()
+        //{
+        //    try
+        //    {
+        //        var result = new List<Bid>();
+        //        using (var httpClient = new HttpClient())
+        //        {
+        //            using (var response = await httpClient.GetAsync(apiUrl + "GetAll"))
+        //            {
+        //                if (response.IsSuccessStatusCode)
+        //                {
+        //                    var content = await response.Content.ReadAsStringAsync();
+        //                    result = JsonConvert.DeserializeObject<List<Bid>>(content);
+        //                }
+        //            }
+        //        }
+        //        return result;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception(ex.Message);
+        //    }
+        //}
+
         [HttpGet]
-        public async Task<List<Bid>> GetAll()
+        public async Task<PagedResult<Bid>> GetPaged(int pageNumber, int pageSize)
         {
             try
             {
-                var result = new List<Bid>();
+                var result = new PagedResult<Bid>();
                 using (var httpClient = new HttpClient())
                 {
-                    using (var response = await httpClient.GetAsync(apiUrl + "GetAll"))
+                    using (var response = await httpClient.GetAsync($"{apiUrl}GetPaged?pageNumber={pageNumber}&pageSize={pageSize}"))
                     {
                         if (response.IsSuccessStatusCode)
                         {
                             var content = await response.Content.ReadAsStringAsync();
-                            result = JsonConvert.DeserializeObject<List<Bid>>(content);
+                            result = JsonConvert.DeserializeObject<PagedResult<Bid>>(content);
                         }
                     }
                 }

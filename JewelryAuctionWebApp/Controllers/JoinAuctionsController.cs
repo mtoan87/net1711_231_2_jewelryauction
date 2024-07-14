@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using JewelryAuctionData.Models;
 using Newtonsoft.Json;
 using System.Text;
+using JewelryAuctionBusiness;
+using JewelryAuctionData.Paginate;
 
 namespace JewelryAuctionWebApp.Controllers
 {
@@ -15,9 +17,11 @@ namespace JewelryAuctionWebApp.Controllers
     {
         private string apiUrl = "https://localhost:7169/api/JoinAuction/";
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 3)
         {
-            return View();
+            var pagedResult = await GetPaged(pageNumber, pageSize);
+            return View(pagedResult);
+            //return View();
         }
 
         public JoinAuctionsController()
@@ -25,20 +29,45 @@ namespace JewelryAuctionWebApp.Controllers
 
         }
 
+        //[HttpGet]
+        //public async Task<List<JoinAuction>> GetAll()
+        //{
+        //    try
+        //    {
+        //        var result = new List<JoinAuction>();
+        //        using (var httpClient = new HttpClient())
+        //        {
+        //            using (var response = await httpClient.GetAsync(apiUrl + "GetAll"))
+        //            {
+        //                if (response.IsSuccessStatusCode)
+        //                {
+        //                    var content = await response.Content.ReadAsStringAsync();
+        //                    result = JsonConvert.DeserializeObject<List<JoinAuction>>(content);
+        //                }
+        //            }
+        //        }
+        //        return result;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception(ex.Message);
+        //    }
+        //}
+
         [HttpGet]
-        public async Task<List<JoinAuction>> GetAll()
+        public async Task<PagedResult<JoinAuction>> GetPaged(int pageNumber, int pageSize)
         {
             try
             {
-                var result = new List<JoinAuction>();
+                var result = new PagedResult<JoinAuction>();
                 using (var httpClient = new HttpClient())
                 {
-                    using (var response = await httpClient.GetAsync(apiUrl + "GetAll"))
+                    using (var response = await httpClient.GetAsync($"{apiUrl}GetPaged?pageNumber={pageNumber}&pageSize={pageSize}"))
                     {
                         if (response.IsSuccessStatusCode)
                         {
                             var content = await response.Content.ReadAsStringAsync();
-                            result = JsonConvert.DeserializeObject<List<JoinAuction>>(content);
+                            result = JsonConvert.DeserializeObject<PagedResult<JoinAuction>>(content);
                         }
                     }
                 }

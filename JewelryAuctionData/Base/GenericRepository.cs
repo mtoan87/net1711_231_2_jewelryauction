@@ -65,6 +65,7 @@ namespace JewelryAuctionData.Base
             return await _context.Set<T>().ToListAsync();
         }
 
+        //Add Paged
         public async Task<List<T>> GetPagedAsync(int pageNumber, int pageSize)
         {
             return await _context.Set<T>()

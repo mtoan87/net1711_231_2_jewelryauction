@@ -17,7 +17,7 @@ namespace JewelryAuctionWebAPI.Controllers
             joinAuctionBusiness = new JoinAuctionBusiness();
         }
 
-        [Authorize(Roles = "Customer")]
+        //[Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetAll")]
         public async Task<IActionResult> GetAll()
@@ -35,7 +35,24 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        [Authorize(Roles = "Customer")]
+        //[Authorize(Roles = "Customer")]
+        [HttpGet]
+        [Route("GetPaged")]
+        public async Task<IActionResult> GetPaged(int pageNumber = 1, int pageSize = 3)
+        {
+            var result = await joinAuctionBusiness.GetPaged(pageNumber, pageSize);
+
+            if (result.Status > 0 && result != null)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return NotFound(result.Message);
+            }
+        }
+
+        //[Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetById")]
         public async Task<IActionResult> GetById(int id)
@@ -52,7 +69,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        [Authorize(Roles = "Customer")]
+        //[Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("Search")]
         public async Task<IActionResult> Search(string search)
@@ -70,7 +87,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        [Authorize(Roles = "Customer")]
+        //[Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("Filter")]
         public async Task<IActionResult> FilterJoinAuctions(int? customerId, DateTime? startTime, DateTime? endTime)
@@ -88,7 +105,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        [Authorize(Roles = "Customer")]
+        //[Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("Create")]
         public async Task<IActionResult> CreateJoinAuction(CreateJoinAuctionDTO createJoinAuction)
@@ -105,7 +122,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        [Authorize(Roles = "Customer")]
+        //[Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("Update")]
         public async Task<IActionResult> UpdateJoinAuction(UpdateJoinAuctionDTO updateJoinAuction)
@@ -122,7 +139,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        [Authorize(Roles = "Customer")]
+        //[Authorize(Roles = "Customer")]
         [HttpDelete]
         [Route("Delete")]
         public async Task<IActionResult> DeleteJoinAuction(int joinAuctionId)
