@@ -40,6 +40,30 @@ namespace JewelryAuctionBusiness
             }
         }
 
+        public async Task<JewelryAuctionResult> GetPaged(int pageNumber, int pageSize)
+        {
+            try
+            {
+                var joinAuctions = await _unitOfWork.joinAuctionRepository.GetPagedAsync(pageNumber, pageSize);
+                var totalRecords = await _unitOfWork.joinAuctionRepository.CountAsync();
+
+                int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+
+                if (joinAuctions == null)
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No join auction");
+                }
+                else
+                {
+                    return new JewelryAuction(Const.SUCCESS_GET, "Join auction success", joinAuctions, totalPages, pageNumber, pageSize);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
+
         public async Task<JewelryAuctionResult> GetById(int id)
         {
             try
@@ -91,8 +115,8 @@ namespace JewelryAuctionBusiness
             {
                 var joinAuctions = await _unitOfWork.joinAuctionRepository.GetByConditionAsync(
                     ja => (!customerId.HasValue || ja.CustomerId == customerId.Value) &&
-                          (!startTime.HasValue || ja.StartTime >= startTime.Value) &&
-                          (!endTime.HasValue || ja.EndTime <= endTime.Value));
+                          (!startTime.HasValue || ja.StartTime == startTime.Value) &&
+                          (!endTime.HasValue || ja.EndTime == endTime.Value));
 
                 if (joinAuctions == null || !joinAuctions.Any())
                 {
@@ -113,6 +137,12 @@ namespace JewelryAuctionBusiness
         {
             try
             {
+                if ((createJoinAuction.JoinAuctionStatus == "Opened" && createJoinAuction.IsLive != "Yes") ||
+                    (createJoinAuction.JoinAuctionStatus == "Closed" && createJoinAuction.IsLive != "No"))
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "Invalid JoinAuctionStatus and IsLive combination");
+                }
+
                 var joinAuction = new JoinAuction()
                 {
                     CustomerId = createJoinAuction.CustomerId,
@@ -146,6 +176,12 @@ namespace JewelryAuctionBusiness
         {
             try
             {
+                if ((updateJoinAuction.JoinAuctionStatus == "Opened" && updateJoinAuction.IsLive != "Yes") ||
+                    (updateJoinAuction.JoinAuctionStatus == "Closed" && updateJoinAuction.IsLive != "No"))
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "Invalid JoinAuctionStatus and IsLive combination");
+                }
+
                 var joinAuction = await _unitOfWork.joinAuctionRepository.GetByIdAsync(updateJoinAuction.JoinAuctionId);
                 if (joinAuction == null)
                 {

@@ -1,4 +1,5 @@
-﻿@model IEnumerable<JewelryAuctionData.Models.JoinAuction>
+﻿@using JewelryAuctionData.Paginate
+@model PagedResult<JewelryAuctionData.Models.JoinAuction>
 
 @{
     ViewData["Title"] = "Index";
@@ -69,6 +70,40 @@
             <tbody class="tblJoinAuctions">
             </tbody>
         </table>
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { pageNumber = 1, pageSize = Model.PageSize })" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.CurrentPage - 1, pageSize = Model.PageSize })" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { pageNumber = i, pageSize = Model.PageSize })">@i</a>
+                    </li>
+                }
+                <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.CurrentPage + 1, pageSize = Model.PageSize })" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.TotalPages, pageSize = Model.PageSize })" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="page-search">
+                <input type="number" id="pageNumberInput" min="1" placeholder="Go to page..." />
+                <button type="button" onclick="goToPage()">Go</button>
+            </div>
+        </nav>
     </div>
 </div>
 
@@ -115,11 +150,17 @@
                     </div>
                     <div class="form-group">
                         <label for="joinAuctionStatus">Join Auction Status</label>
-                        <input type="text" class="form-control" id="joinAuctionStatus" name="joinAuctionStatus" required>
+                        <select class="form-control" id="joinAuctionStatus" name="joinAuctionStatus" required>
+                            <option value="Opened">Opened</option>
+                            <option value="Closed">Closed</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="isLive">Is Live</label>
-                        <input type="text" class="form-control" id="isLive" name="isLive" required>
+                        <select class="form-control" id="isLive" name="isLive" required>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -135,10 +176,19 @@
     <script type="text/javascript">
         var action = "Create"; // Mặc định là tạo mới
 
+        // Call loadData
         $(document).ready(function () {
             loadData();
 
             $("#btSave").click(function () {
+                var joinAuctionStatus = $("#joinAuctionStatus").val();
+                var isLive = $("#isLive").val();
+
+                if ((joinAuctionStatus === "Opened" && isLive !== "Yes") || (joinAuctionStatus === "Closed" && isLive !== "No")) {
+                    alert("Invalid JoinAuctionStatus and IsLive combination");
+                    return;
+                }
+
                 var joinAuction = {
                     JoinAuctionId: $("#joinAuctionId").val(),
                     CustomerId: $("#customerId").val(),
@@ -212,15 +262,58 @@
             }
         }
 
-        function loadData() {
+        // function loadData() {
+        //     $.ajax({
+        //         url: '@Url.Action("GetAll", "JoinAuctions")',
+        //         type: "GET",
+        //         contentType: "application/json;charset=utf-8",
+        //         dataType: "json",
+        //         success: function (result) {
+        //             var html = '';
+        //             $.each(result, function (key, item) {
+        //                 html += '<tr>';
+        //                 html += '<td>' + item.joinAuctionId + '</td>';
+        //                 html += '<td>' + item.customerId + '</td>';
+        //                 html += '<td>' + item.auctionDetailId + '</td>';
+        //                 html += '<td>' + item.startTime + '</td>';
+        //                 html += '<td>' + item.endTime + '</td>';
+        //                 html += '<td>' + item.host + '</td>';
+        //                 html += '<td>' + item.joinAuctionName + '</td>';
+        //                 html += '<td>' + item.joinAuctionDescription + '</td>';
+        //                 html += '<td>' + item.joinAuctionStatus + '</td>';
+        //                 html += '<td>' + item.isLive + '</td>';
+
+        //                 html += '<td><button type="button" class="btn btn-primary" onclick="editAuction(' + item.joinAuctionId + ')">Edit</button></td>';
+        //                 html += '<td><button type="button" class="btn btn-primary" onclick="detailsAuction(' + item.joinAuctionId + ')">Details</button></td>';
+        //                 html += '<td><button type="button" class="btn btn-danger" onclick="deleteAuction(' + item.joinAuctionId + ')">Delete</button></td>';
+        //                 html += '</tr>';
+        //             });
+        //             $('.tblJoinAuctions').html(html);
+        //         },
+        //         error: function (xhr, error) {
+        //             alert(xhr.statusText);
+        //         }
+        //     });
+        // }
+        
+        var totalPages;
+
+        function loadData(pageNumber = 1, pageSize = 3) {
             $.ajax({
-                url: '@Url.Action("GetAll", "JoinAuctions")',
+                url: '@Url.Action("GetPaged", "JoinAuctions")',
                 type: "GET",
                 contentType: "application/json;charset=utf-8",
                 dataType: "json",
+                data: { 
+                    pageNumber: pageNumber, 
+                    pageSize: pageSize 
+                },
                 success: function (result) {
                     var html = '';
-                    $.each(result, function (key, item) {
+                    //Update totalPages
+                    totalPages = result.totalPages;
+
+                    $.each(result.data, function (key, item) {
                         html += '<tr>';
                         html += '<td>' + item.joinAuctionId + '</td>';
                         html += '<td>' + item.customerId + '</td>';
@@ -239,11 +332,59 @@
                         html += '</tr>';
                     });
                     $('.tblJoinAuctions').html(html);
+
+                    // Update pagination
+                    var paginationHtml = '';
+                    if (result.currentPage > 1) {
+                        paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="loadData(1,' + result.pageSize + ')">&laquo;&laquo;</a></li>';
+                        paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="loadData(' + (result.currentPage - 1) + ',' + result.pageSize + ')">&laquo;</a></li>';
+                    }
+
+                    // Always show first three pages
+                    paginationHtml += '<li class="page-item ' + (result.currentPage == 1 ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(1,' + result.pageSize + ')">1</a></li>';
+                    paginationHtml += '<li class="page-item ' + (result.currentPage == 2 ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(2,' + result.pageSize + ')">2</a></li>';
+                    paginationHtml += '<li class="page-item ' + (result.currentPage == 3 ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(3,' + result.pageSize + ')">3</a></li>';
+
+                    // Logic to show ellipses and current page in between
+                    if (result.currentPage > 3 && result.currentPage < result.totalPages - 2) {
+                        paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
+                        paginationHtml += '<li class="page-item active"><a class="page-link" href="#">' + result.currentPage + '</a></li>';
+                        paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
+                    } else if (result.currentPage >= result.totalPages - 2) {
+                        paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
+                        for (var i = result.totalPages - 2; i < result.totalPages; i++) {
+                            paginationHtml += '<li class="page-item ' + (result.currentPage == i ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(' + i + ',' + result.pageSize + ')">' + i + '</a></li>';
+                        }
+                    } else if (result.totalPages > 3) {
+                        paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
+                    }
+
+                    // Always show last page
+                    if (result.totalPages > 3) {
+                        paginationHtml += '<li class="page-item ' + (result.currentPage == result.totalPages ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(' + result.totalPages + ',' + result.pageSize + ')">' + result.totalPages + '</a></li>';
+                    }
+
+                    if (result.currentPage < result.totalPages) {
+                        paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="loadData(' + (result.currentPage + 1) + ',' + result.pageSize + ')">&raquo;</a></li>';
+                        paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="loadData(' + result.totalPages + ',' + result.pageSize + ')">&raquo;&raquo;</a></li>';
+                    }
+
+                    $('.pagination').html(paginationHtml);
                 },
                 error: function (xhr, error) {
                     alert(xhr.statusText);
                 }
             });
+        }
+
+        function goToPage() {
+            var pageNumber = parseInt($('#pageNumberInput').val());
+            var pageSize = 3;
+            if (isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
+                alert('Please enter a valid page number.'); // Hiển thị thông báo lỗi
+            } else {
+                loadData(pageNumber, pageSize); // Gọi loadData với số trang hợp lệ
+            }
         }
 
         function create() {
@@ -304,7 +445,7 @@
             }
         }
 
-            function filter() {
+        function filter() {
                 var customerId = $('#customerIdFilter').val();
                 var startTime = $('#startTimeFilter').val();
                 var endTime = $('#endTimeFilter').val();
@@ -370,6 +511,10 @@
                     alert(xhr.statusText);
                 }
             });
+        }
+
+        function updatePagination(currentPage, totalPages) { 
+
         }
 
     </script>

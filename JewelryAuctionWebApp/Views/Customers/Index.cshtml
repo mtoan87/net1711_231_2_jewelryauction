@@ -24,6 +24,7 @@
             Create
         </button>
     </div>
+
 </div>
 
 <div class="row">
@@ -41,6 +42,7 @@
                     <th class="card-title text-center">Ocupation</th>
                     <th class="card-title text-center">Nationality</th>
                     <th class="card-title text-center">Password</th>
+                    <th class="card-title text-center"></th>
                     <th class="card-title text-center"></th>
                     <th class="card-title text-center"></th>
                 </tr>
@@ -228,6 +230,7 @@
                         html += '<td>' + item.password + '</td>';
                         html += '<td><button type="button" class="btn btn-primary" onclick="edit(' + item.customerId + ')">Edit</button></td>';
                         html += '<td><button type="button" class="btn btn-danger" onclick="deleteCustomer(' + item.customerId + ')">Delete</button></td>';
+                        html += '<td><button type="button" class="btn btn-primary" onclick="detailsCustomer(' + item.customerId + ')">Details</button></td>';
                         html += '</tr>';
                     });
                     $('.tblCustomerList').html(html);
@@ -300,6 +303,9 @@
                     }
                 });
             }
+        }
+        function detailsCustomer(customerId) {
+            window.location.href = '@Url.Action("Details", "Customers")' + '?CustomerId=' + customerId;
         }
     </script>
 }

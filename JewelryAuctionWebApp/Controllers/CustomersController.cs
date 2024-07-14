@@ -196,7 +196,31 @@ namespace JewelryAuctionWebApp.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [HttpGet]
+        public async Task<IActionResult> Details(int customerId)
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var response = await httpClient.GetAsync(apiUrl + "GetById?id=" + customerId);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var customer = JsonConvert.DeserializeObject<Customer>(content);
+                        return View("Details", customer);
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpDelete]
         public async Task<IActionResult> Delete(int customerId)
         {
