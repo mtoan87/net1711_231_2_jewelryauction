@@ -13,7 +13,7 @@
 
 <div class="row">
     <div class="col-md-2 text-start">
-        <input type="text" id="searchInput" placeholder="Search bid" title="Type in a name" style="margin-right: 5px;">
+        <input type="text" id="searchInput" placeholder="Search bids" title="Type in search terms" style="margin-right: 5px;">
     </div>
     <div class="col-md-2 text-start">
         <button type="button" class="btn btn-primary" onclick="search()">
@@ -115,7 +115,7 @@
                     <h5 class="modal-title" id="bidModalLabel">Add New Bid</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">                 
+                <div class="modal-body">
                     <input type="hidden" id="bidId" name="bidId">
                     <div class="form-group">
                         <label for="customerId">Customer ID:</label>
@@ -151,11 +151,17 @@
                     </div>
                     <div class="form-group">
                         <label for="bidStatus">Bid Status</label>
-                        <input type="text" class="form-control" id="bidStatus" name="bidStatus" required>
+                        <select class="form-control" id="bidStatus" name="bidStatus" required>
+                            <option value="Accpeted">Accpeted</option>
+                            <option value="Pending">Pending</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="isWining">Is Wining</label>
-                        <input type="text" class="form-control" id="isWining" name="isWining" required>
+                        <select class="form-control" id="isWining" name="isWining" required>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -167,14 +173,23 @@
     </div>
 </div>
 
+
 @section scripts {
     <script type="text/javascript">
-        var action = "Create"; 
+        var action = "Create";
 
         $(document).ready(function () {
             loadData();
 
             $("#btSave").click(function () {
+                var BidStatus = $("#bidStatus").val();
+                var isWining = $("#isWining").val();
+
+                if ((bidStatus === "Accpeted" && isLive !== "Yes") || (bidStatus === "Pending" && isWining !== "No")) {
+                    alert("Invalid BidStatus and IsWining combination");
+                    return;
+                }
+
                 var bid = {
                     BidId: $("#bidId").val(),
                     CustomerId: $("#customerId").val(),
@@ -222,25 +237,29 @@
                     dataType: "json",
                     success: function (result) {
                         var html = '';
-                        $.each(result, function (key, item) {
-                            html += '<tr>';
-                            html += '<td>' + item.bidId + '</td>';
-                            html += '<td>' + item.customerId + '</td>';
-                            html += '<td>' + item.joinAuctionId + '</td>';
-                            html += '<td>' + item.bidAmount + '</td>';
-                            html += '<td>' + item.dateTime + '</td>';
-                            html += '<td>' + item.jewelryId + '</td>';
-                            html += '<td>' + item.bidderName + '</td>';
-                            html += '<td>' + item.joinAuctionName + '</td>';
-                            html += '<td>' + item.joinAuctionDescription + '</td>';
-                            html += '<td>' + item.bidStatus + '</td>';
-                            html += '<td>' + item.isWining + '</td>';
+                        if (result && result.length > 0) {
+                            $.each(result, function (key, item) {
+                                html += '<tr>';
+                                html += '<td>' + item.bidId + '</td>';
+                                html += '<td>' + item.customerId + '</td>';
+                                html += '<td>' + item.joinAuctionId + '</td>';
+                                html += '<td>' + item.bidAmount + '</td>';
+                                html += '<td>' + item.dateTime + '</td>';
+                                html += '<td>' + item.jewelryId + '</td>';
+                                html += '<td>' + item.bidderName + '</td>';
+                                html += '<td>' + item.joinAuctionName + '</td>';
+                                html += '<td>' + item.joinAuctionDescription + '</td>';
+                                html += '<td>' + item.bidStatus + '</td>';
+                                html += '<td>' + item.isWining + '</td>';
 
-                            html += '<td><button type="button" class="btn btn-primary" onclick="editBid(' + item.bidId + ')">Edit</button></td>';
-                            html += '<td><button type="button" class="btn btn-primary" onclick="detailsBid(' + item.bidId + ')">Details</button></td>';
-                            html += '<td><button type="button" class="btn btn-danger" onclick="deleteBid(' + item.bidId + ')">Delete</button></td>';
-                            html += '</tr>';
-                        });
+                                html += '<td><button type="button" class="btn btn-primary" onclick="editBid(' + item.bidId + ')">Edit</button></td>';
+                                html += '<td><button type="button" class="btn btn-primary" onclick="detailsBid(' + item.bidId + ')">Details</button></td>';
+                                html += '<td><button type="button" class="btn btn-danger" onclick="deleteBid(' + item.bidId + ')">Delete</button></td>';
+                                html += '</tr>';
+                            });
+                        } else {
+                            html = '<tr><td colspan="13" class="text-center">No bid found with the given search terms.</td></tr>';
+                        }
                         $('.tblBids').html(html);
                     },
                     error: function (xhr, error) {
@@ -250,7 +269,7 @@
             }
         }
 
-        // Hàm để lấy giá trị từ query string
+        // Function to get value from query string
         function getParameterByName(name) {
             name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
             var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
@@ -258,18 +277,57 @@
             return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
         }
 
-        function loadData() {
-            var joinAuctionId = getParameterByName('joinAuctionId'); // Lấy joinAuctionId từ query string
-            var url = '@Url.Action("GetAll", "Bids")';
-            // if (joinAuctionId) {
-            //     url = '@Url.Action("GetBidsByJoinAuctionId", "Bids")' + '?joinAuctionId=' + joinAuctionId;
-            // }
+        // function loadData() {
+        //     var joinAuctionId = getParameterByName('joinAuctionId'); // Lấy joinAuctionId từ query string
+        //     var url = '@Url.Action("GetAll", "Bids")';
+        //     if (joinAuctionId) {
+        //         url = '@Url.Action("GetBidsByJoinAuctionId", "Bids")' + '?joinAuctionId=' + joinAuctionId;
+        //     }
 
-            // Add paginate
+        //     $.ajax({
+        //         url: url,
+        //         type: "GET",
+        //         contentType: "application/json;charset=utf-8",
+        //         dataType: "json",
+        //         success: function (result) {
+        //             var html = '';
+        //             $.each(result, function (key, item) {
+        //                 html += '<tr>';
+        //                 html += '<td>' + item.bidId + '</td>';
+        //                 html += '<td>' + item.customerId + '</td>';
+        //                 html += '<td>' + item.joinAuctionId + '</td>';
+        //                 html += '<td>' + item.bidAmount + '</td>';
+        //                 html += '<td>' + item.dateTime + '</td>';
+        //                 html += '<td>' + item.jewelryId + '</td>';
+        //                 html += '<td>' + item.bidderName + '</td>';
+        //                 html += '<td>' + item.joinAuctionName + '</td>';
+        //                 html += '<td>' + item.joinAuctionDescription + '</td>';
+        //                 html += '<td>' + item.bidStatus + '</td>';
+        //                 html += '<td>' + item.isWining + '</td>';
+
+        //                 html += '<td><button type="button" class="btn btn-primary" onclick="editBid(' + item.bidId + ')">Edit</button></td>';
+        //                 html += '<td><button type="button" class="btn btn-primary" onclick="detailsBid(' + item.bidId + ')">Details</button></td>';
+        //                 html += '<td><button type="button" class="btn btn-danger" onclick="deleteBid(' + item.bidId + ')">Delete</button></td>';
+        //                 html += '</tr>';
+        //             });
+        //             $('.tblBids').html(html);
+        //         },
+        //         error: function (xhr, error) {
+        //             alert(xhr.statusText);
+        //         }
+        //     });
+        // }
+
+        var totalPages;
+
+        function loadData(pageNumber = 1, pageSize = 3) {
+            var joinAuctionId = getParameterByName('joinAuctionId'); // Get joinAuctionId from query string
+            var url = '@Url.Action("GetPaged", "Bids")';
+            var isPaginated = true;
+
             if (joinAuctionId) {
-                url = '@Url.Action("GetBidsByJoinAuctionId", "Bids")' + '?joinAuctionId=' + joinAuctionId + '&pageNumber=' + pageNumber + '&pageSize=' + pageSize;
-            } else {
-                url = '@Url.Action("GetAll", "Bids")' + '?pageNumber=' + pageNumber + '&pageSize=' + pageSize;
+                url = '@Url.Action("GetBidsByJoinAuctionId", "Bids")' + '?joinAuctionId=' + joinAuctionId;
+                isPaginated = false; //No paging when getting Bid with the same joinAuctionId
             }
 
             $.ajax({
@@ -277,9 +335,15 @@
                 type: "GET",
                 contentType: "application/json;charset=utf-8",
                 dataType: "json",
+                data: isPaginated ? { pageNumber: pageNumber, pageSize: pageSize } : {},
                 success: function (result) {
                     var html = '';
-                    $.each(result, function (key, item) {
+
+                    if (isPaginated) {
+                        totalPages = result.totalPages;
+                    }
+
+                    $.each(isPaginated ? result.data : result, function (key, item) {
                         html += '<tr>';
                         html += '<td>' + item.bidId + '</td>';
                         html += '<td>' + item.customerId + '</td>';
@@ -292,13 +356,65 @@
                         html += '<td>' + item.joinAuctionDescription + '</td>';
                         html += '<td>' + item.bidStatus + '</td>';
                         html += '<td>' + item.isWining + '</td>';
-
                         html += '<td><button type="button" class="btn btn-primary" onclick="editBid(' + item.bidId + ')">Edit</button></td>';
                         html += '<td><button type="button" class="btn btn-primary" onclick="detailsBid(' + item.bidId + ')">Details</button></td>';
                         html += '<td><button type="button" class="btn btn-danger" onclick="deleteBid(' + item.bidId + ')">Delete</button></td>';
                         html += '</tr>';
                     });
                     $('.tblBids').html(html);
+
+                    if (isPaginated) {
+                        // Update pagination
+                        var paginationHtml = '';
+                        if (result.currentPage > 1) {
+                            paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="loadData(1,' + result.pageSize + ')">&laquo;&laquo;</a></li>';
+                            paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="loadData(' + (result.currentPage - 1) + ',' + result.pageSize + ')">&laquo;</a></li>';
+                        }
+
+                        // Show the first page
+                        paginationHtml += '<li class="page-item ' + (result.currentPage == 1 ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(1,' + result.pageSize + ')">1</a></li>';
+
+                        if (result.totalPages > 1) {
+                            if (result.totalPages <= 3) {
+                                // Show all pages if total pages <= 3
+                                for (var i = 2; i <= result.totalPages; i++) {
+                                    paginationHtml += '<li class="page-item ' + (result.currentPage == i ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(' + i + ',' + result.pageSize + ')">' + i + '</a></li>';
+                                }
+                            } else {
+                                // Show the first three pages and ellipsis if total pages > 3
+                                paginationHtml += '<li class="page-item ' + (result.currentPage == 2 ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(2,' + result.pageSize + ')">2</a></li>';
+                                paginationHtml += '<li class="page-item ' + (result.currentPage == 3 ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(3,' + result.pageSize + ')">3</a></li>';
+
+                                // Logic to display ellipsis and current page in the middle
+                                if (result.currentPage > 3 && result.currentPage < result.totalPages - 2) {
+                                    paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
+                                    paginationHtml += '<li class="page-item active"><a class="page-link" href="#">' + result.currentPage + '</a></li>';
+                                    paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
+                                } else if (result.currentPage >= result.totalPages - 2) {
+                                    paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
+                                    for (var i = result.totalPages - 2; i < result.totalPages; i++) {
+                                        paginationHtml += '<li class="page-item ' + (result.currentPage == i ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(' + i + ',' + result.pageSize + ')">' + i + '</a></li>';
+                                    }
+                                } else if (result.totalPages > 3) {
+                                    paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
+                                }
+
+                                // // Always show last page if total number of pages > 3
+                                if (result.totalPages > 3) {
+                                    paginationHtml += '<li class="page-item ' + (result.currentPage == result.totalPages ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(' + result.totalPages + ',' + result.pageSize + ')">' + result.totalPages + '</a></li>';
+                                }
+                            }
+                        }
+
+                        if (result.currentPage < result.totalPages) {
+                            paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="loadData(' + (result.currentPage + 1) + ',' + result.pageSize + ')">&raquo;</a></li>';
+                            paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="loadData(' + result.totalPages + ',' + result.pageSize + ')">&raquo;&raquo;</a></li>';
+                        }
+
+                        $('.pagination').html(paginationHtml);
+                    } else {
+                        $('.pagination').html('');
+                    }
                 },
                 error: function (xhr, error) {
                     alert(xhr.statusText);
@@ -306,9 +422,19 @@
             });
         }
 
+        function goToPage() {
+            var pageNumber = parseInt($('#pageNumberInput').val());
+            var pageSize = 3;
+            if (isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
+                alert('Please enter a valid page number.');
+            } else {
+                loadData(pageNumber, pageSize);
+            }
+        }
+
         function create() {
             action = "Create";
-            $("#bidId").val(0); 
+            $("#bidId").val(0);
             $('#frm')[0].reset();
             $('#bidModalLabel').html("Add New Bid");
             $('#btSave').html("Save");

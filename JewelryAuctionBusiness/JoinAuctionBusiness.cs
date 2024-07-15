@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JewelryAuctionData.DTO.JoinAuction;
+using Microsoft.EntityFrameworkCore;
 
 namespace JewelryAuctionBusiness
 {
@@ -88,19 +89,27 @@ namespace JewelryAuctionBusiness
         {
             try
             {
-                var joinAuctions = await _unitOfWork.joinAuctionRepository.GetByConditionAsync(
-                    a => a.Host.Contains(search) ||
-                    a.JoinAuctionName.Contains(search) || 
-                    a.JoinAuctionStatus.Contains(search) ||
-                    a.IsLive.Contains(search));
+                // Tách các tiêu chí tìm kiếm bằng dấu phẩy
+                var searchTerms = search.Split(',');
 
-                if (joinAuctions == null || !joinAuctions.Any())
+                // Lấy tất cả dữ liệu trước và thực hiện so sánh trong bộ nhớ
+                var allJoinAuctions = await _unitOfWork.joinAuctionRepository.GetAllAsync();
+
+                var filteredJoinAuctions = allJoinAuctions.Where(a =>
+                    searchTerms.Any(term =>
+                        a.Host.Contains(term.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                        a.JoinAuctionName.Contains(term.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                        a.JoinAuctionStatus.Contains(term.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                        a.IsLive.ToString().Contains(term.Trim(), StringComparison.OrdinalIgnoreCase)))
+                    .ToList();
+
+                if (!filteredJoinAuctions.Any())
                 {
                     return new JewelryAuction(Const.WARINING_NO_DATA, "No auction found with the given search term");
                 }
                 else
                 {
-                    return new JewelryAuction(Const.SUCCESS_GET, "Auction search success", joinAuctions);
+                    return new JewelryAuction(Const.SUCCESS_GET, "Auction search success", filteredJoinAuctions);
                 }
             }
             catch (Exception ex)
