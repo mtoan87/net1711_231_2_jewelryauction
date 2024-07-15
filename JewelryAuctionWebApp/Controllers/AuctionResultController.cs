@@ -45,13 +45,39 @@ namespace JewelryAuctionWebApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Search(string search)
+        public async Task<IActionResult> Details(int auctionResultId)
         {
             try
             {
                 using (var httpClient = new HttpClient())
                 {
-                    var response = await httpClient.GetAsync(apiUrl + "Search?search=" + search);
+                    var response = await httpClient.GetAsync(apiUrl + "GetById?id=" + auctionResultId);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var auctionResult = JsonConvert.DeserializeObject<AuctionResult>(content);
+                        return View("Details", auctionResult);
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Search(string searchInput1, string searchInput2, string searchInput3)
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var response = await httpClient.GetAsync(apiUrl + "Search?search1=" + searchInput1 + "&search2=" + searchInput2 + "&search3=" + searchInput3);
                     if (response.IsSuccessStatusCode)
                     {
                         var content = await response.Content.ReadAsStringAsync();
@@ -140,6 +166,7 @@ namespace JewelryAuctionWebApp.Controllers
                     {
                         var content = await response.Content.ReadAsStringAsync();
                         var AuctionResult = JsonConvert.DeserializeObject<AuctionResult>(content);
+                        Console.WriteLine();
                         return Json(AuctionResult);
                     }
                     else

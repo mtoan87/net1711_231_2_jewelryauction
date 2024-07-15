@@ -32,11 +32,38 @@ namespace JewelryAuctionWebApp.Controllers
                         {
                             var content = await response.Content.ReadAsStringAsync();
                             result = JsonConvert.DeserializeObject<List<Jewelry>>(content);
+                            Console.WriteLine(result);
                         }
                     }
                 }
 
                 return Json(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Detail(int jewrlryId)
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var response = await httpClient.GetAsync(apiUrl + "GetById?id=" + jewrlryId);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var jewelry = JsonConvert.DeserializeObject<Jewelry>(content);
+                        return View("Detail", jewelry);
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
+                }
             }
             catch (Exception ex)
             {

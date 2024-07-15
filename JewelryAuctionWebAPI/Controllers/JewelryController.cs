@@ -18,7 +18,7 @@ namespace JewelryAuctionWebAPI.Controllers
             _jewelryBusiness = new JewelryBusiness();
         }
 
-        [Authorize(Roles = "Customer")]
+        //[Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetAll")]
         public async Task<IActionResult> GetAll()
@@ -35,7 +35,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        [Authorize(Roles = "Customer")]
+       // [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetById")]
         public async Task<IActionResult> GetById(int id)
@@ -54,7 +54,7 @@ namespace JewelryAuctionWebAPI.Controllers
         }
 
 
-        [Authorize(Roles = "Customer")]
+        //[Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("Search")]
         public async Task<IActionResult> Search(string search1, string search2, string search3)
@@ -88,7 +88,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        [Authorize(Roles = "Customer")]
+        //[Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("UpdateJewelry")]
         public async Task<IActionResult> UpdateJewelry(UpdateJewelryDTO updateJewelry)
@@ -104,7 +104,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        [Authorize(Roles = "Customer")]
+        //[Authorize(Roles = "Customer")]
         [HttpDelete]
         [Route("DeleteJewelry")]
         public async Task<IActionResult> DeleteJewelry(int jewelryId)

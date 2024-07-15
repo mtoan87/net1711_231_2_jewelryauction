@@ -11,16 +11,30 @@
 </div>
 
 <div class="row">
-    <div class="col-md-2 text-start">
-        <input type="text" id="searchInput" placeholder="Search Auction Result" title="Type in a name" style="margin-right: 5px;">
+    <div class="col-md-2">
+        <div>
+            <input type="text" id="searchInputName" placeholder="Search by Jewelry Name" title="Type in a name">
+        </div>
+
     </div>
-    <div class="col-md-2 text-start">
+    <div class="col-md-2">
+        <div>
+            <input type="text" id="searchInputMaterial" placeholder="Search by Customer Name" title="Type in a name">
+        </div>
+
+    </div>
+    <div class="col-md-2">
+        <div>
+            <input type="text" id="searchInputType" placeholder="Search by Price" title="Type in a name">
+        </div>
+
+    </div>
+
+    <div class="col-md-3">
         <button type="button" class="btn btn-primary" onclick="search()">
             Search
         </button>
     </div>
-    <div class="col-md-6"></div> <!-- Tao khoang trong -->
-
     <div class="col-md-2 text-end">
         <button type="button" class="btn btn-primary" onclick="add();">
             Add
@@ -44,6 +58,7 @@
                     <th class="card-title text-center">StartingPrice</th>
                     <th class="card-title text-center">JewelryId</th>
                     <th class="card-title text-center">BidId</th>
+                    <th class="card-title text-center"></th>
                     <th class="card-title text-center"></th>
                     <th class="card-title text-center"></th>
                 </tr>
@@ -117,6 +132,8 @@
     </div>
 </div>
 
+
+
 @section scripts {
     <script type="text/javascript">
         $(document).ready(function () {
@@ -177,14 +194,43 @@
         });
 
         function search() {
-            var searchInput = $('#searchInput').val().trim();
-            if (searchInput === '') {
+
+            var tmp1 = $('#searchInputName').val().trim();
+
+
+            var tmp2 = $('#searchInputMaterial').val().trim();
+
+
+            var tmp3 = $('#searchInputType').val().trim();
+
+            var search1 = "###";
+            var search2 = "###";
+            var search3 = "###";
+
+            if (tmp1 !== '') {
+                search1 = tmp1;
+            }
+            if (tmp2 !== '') {
+                search2 = tmp2;
+            }
+            if (tmp3 !== '') {
+                search3 = tmp3;
+            }
+
+            if (tmp1 === '' && tmp2 === '' && tmp3 === '') {
                 loadData();
             } else {
                 $.ajax({
                     url: '@Url.Action("Search", "AuctionResult")',
                     type: "GET",
-                    data: { search: searchInput },
+                    data: {
+
+                        search1,
+                        search2,
+                        search3
+
+
+                    },
                     contentType: "application/json;charset=utf-8",
                     dataType: "json",
                     success: function (result) {
@@ -202,6 +248,7 @@
                             html += '<td>' + item.startingPrice + '</td>';
                             html += '<td>' + item.jewelryId + '</td>';
                             html += '<td>' + item.bidId + '</td>';
+                            html += '<td><button type="button" class="btn btn-primary" onclick="detailsAuctionResult(' + item.auctionResultId + ')">Detail</button></td>';
                             html += '<td><button type="button" class="btn btn-primary" onclick="edit(' + item.auctionResultId + ')">Edit</button></td>';
                             html += '<td><button type="button" class="btn btn-danger" onclick="deleteAuctionResult(' + item.auctionResultId + ')">Delete</button></td>';
                             html += '</tr>';
@@ -236,6 +283,7 @@
                         html += '<td>' + item.startingPrice + '</td>';
                         html += '<td>' + item.jewelryId + '</td>';
                         html += '<td>' + item.bidId + '</td>';
+                        html += '<td><button type="button" class="btn btn-primary" onclick="detailsAuctionResult(' + item.auctionResultId + ')">Detail</button></td>';
                         html += '<td><button type="button" class="btn btn-primary" onclick="edit(' + item.auctionResultId + ')">Edit</button></td>';
                         html += '<td><button type="button" class="btn btn-danger" onclick="deleteAuctionResult(' + item.auctionResultId + ')">Delete</button></td>';
                         html += '</tr>';
@@ -253,10 +301,15 @@
             $("#auctionResultModalLabel").html("Add New");
             // Clear form fields
             $('#auctionResultId').val('');
+            $('#status').val('');
+            $('#bidId').val('');
             $('#date').val('');
             $('#status').val('');
             $('#price').val('');
+            $('#description').val('');
+            $('#jewelryId').val('');
             $('#customerId').val('');
+            $('#startingPrice').val('');
             $('#joinAuctionId').val('');
             $('#auctionResultModal').modal('show');
         }
@@ -287,6 +340,16 @@
                 }
             });
         }
+
+        function detailsAuctionResult(auctionResultId) {
+            window.location.href = '@Url.Action("Details", "AuctionResult")' + '?auctionResultId=' + auctionResultId;
+        }
+       
+        function formatDateTime(dateTime) {
+            if (!dateTime) return '';
+            return new Date(dateTime).toLocaleString();
+        }
+
 
         function deleteAuctionResult(auctionResultId) {
             if (confirm('Are you sure you want to delete this Auction Result?')) {

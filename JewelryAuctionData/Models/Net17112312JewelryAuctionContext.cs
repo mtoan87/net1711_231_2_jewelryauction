@@ -124,7 +124,7 @@ public partial class Net17112312JewelryAuctionContext : DbContext
             entity.Property(e => e.Type).HasMaxLength(50);
             entity.Property(e => e.Weight).HasMaxLength(50);
             entity.Property(e => e.Weight).HasMaxLength(50);
-            entity.Property(e => e.Picture).HasMaxLength(255);
+           
         });
 
         modelBuilder.Entity<JoinAuction>(entity =>

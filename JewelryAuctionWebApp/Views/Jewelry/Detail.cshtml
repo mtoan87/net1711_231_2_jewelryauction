@@ -1,0 +1,45 @@
+﻿@model JewelryAuctionData.Models.Jewelry
+
+@{
+    ViewBag.Title = "Jewelry Detail";
+}
+
+<h2>Jewelry Details</h2>
+
+<dl class="row">
+    <dt class="col-sm-2">Jewelry ID</dt>
+    <dd class="col-sm-10">@Model.JewelryId</dd>
+
+    <dt class="col-sm-2">Customer ID</dt>
+    <dd class="col-sm-10">@Model.Customer.CustomerName</dd>
+
+    <dt class="col-sm-2">Jewelry Name</dt>
+    <dd class="col-sm-10">@Model.JewelryName</dd>
+
+    <dt class="col-sm-2">Material</dt>
+    <dd class="col-sm-10">@Model.Material</dd>
+
+    <dt class="col-sm-2">Size</dt>
+    <dd class="col-sm-10">@Model.Size</dd>
+
+    <dt class="col-sm-2">Weight</dt>
+    <dd class="col-sm-10">@Model.Weight</dd>
+
+    <dt class="col-sm-2">Type</dt>
+    <dd class="col-sm-10">@Model.Type</dd>
+
+    <dt class="col-sm-2">Quantitative</dt>
+    <dd class="col-sm-10">@Model.Quantitative</dd>
+
+    <dt class="col-sm-2">Description</dt>
+    <dd class="col-sm-10">@Model.Description</dd>
+
+    <dt class="col-sm-2">Status</dt>
+    <dd class="col-sm-10">@Model.Status</dd>
+
+    
+</dl>
+
+<div>
+    <a asp-action="Index" class="btn btn-primary">Back to List</a>
+</div>
