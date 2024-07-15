@@ -67,22 +67,53 @@ namespace JewelryAuctionBusiness
             }
 
         }
+        public async Task<JewelryAuctionResult> GetPaged(int pageNumber, int pageSize)
+        {
+            try
+            {
+                var bids = await _unitOfWork.CompanyRepository.GetPagedAsync(pageNumber, pageSize);
+                var totalRecords = await _unitOfWork.CompanyRepository.CountAsync();
+
+                int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+
+                if (bids == null)
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No bid");
+                }
+                else
+                {
+                    return new JewelryAuction(Const.SUCCESS_GET, "Get bid success", bids, totalPages, pageNumber, pageSize);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
         public async Task<JewelryAuctionResult> Search(string search)
         {
             try
             {
-                var customers = await _unitOfWork.CompanyRepository.GetByConditionAsync(
-                    a => a.CompanyName.Contains(search) ||
-                    a.Industry.Contains(search) ||
-                    a.Location.Contains(search));
+                // Split the search string by commas to get individual search criteria
+                string[] searchCriteria = search.Split(',');
 
-                if (customers == null || !customers.Any())
+                // Filter companies based on multiple search criteria
+                var companies = await _unitOfWork.CompanyRepository.GetByConditionAsync(
+                    company =>
+                        searchCriteria.Any(criteria =>
+                            company.CompanyName.Contains(criteria.Trim()) ||
+                            company.Industry.Contains(criteria.Trim()) ||
+                            company.Location.Contains(criteria.Trim())
+                        )
+                );
+
+                if (companies == null || !companies.Any())
                 {
-                    return new JewelryAuction(Const.WARINING_NO_DATA, "No company found with the given search term");
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No companies found with the given search criteria");
                 }
                 else
                 {
-                    return new JewelryAuction(Const.SUCCESS_GET, "Company search success", customers);
+                    return new JewelryAuction(Const.SUCCESS_GET, "Company search success", companies);
                 }
             }
             catch (Exception ex)

@@ -27,8 +27,61 @@ namespace JewelryAuctionBusiness
         {
             return await _unitOfWork.CustomerRepository.LoginAsync(email, password);
         }
-    
-        
+
+        public async Task<JewelryAuctionResult> GetPaged(int pageNumber, int pageSize)
+        {
+            try
+            {
+                var bids = await _unitOfWork.CustomerRepository.GetPagedAsync(pageNumber, pageSize);
+                var totalRecords = await _unitOfWork.CustomerRepository.CountAsync();
+
+                int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+
+                if (bids == null)
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No bid");
+                }
+                else
+                {
+                    return new JewelryAuction(Const.SUCCESS_GET, "Get bid success", bids, totalPages, pageNumber, pageSize);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
+        public async Task<JewelryAuctionResult> Search(string search)
+        {
+            try
+            {
+                var searchTerms = search.Split(',');
+
+                // Get all customers asynchronously
+                var allCustomers = await _unitOfWork.CustomerRepository.GetAllAsync();
+
+                // Perform in-memory filtering
+                var filteredCustomers = allCustomers.Where(customer =>
+                    searchTerms.Any(term =>
+                        customer.Address.Contains(term.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                        customer.CustomerName.Contains(term.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                        customer.Nationality.Contains(term.Trim(), StringComparison.OrdinalIgnoreCase)))
+                    .ToList();
+
+                if (!filteredCustomers.Any())
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No customers found with the given search terms");
+                }
+                else
+                {
+                    return new JewelryAuction(Const.SUCCESS_GET, "Customer search success", filteredCustomers);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
         public async Task<JewelryAuctionResult> GetAll()
         {
             try
@@ -66,30 +119,7 @@ namespace JewelryAuctionBusiness
 
             }
         
-        }
-        public async Task<JewelryAuctionResult> Search(string search)
-        {
-            try
-            {
-                var customers = await _unitOfWork.CustomerRepository.GetByConditionAsync(
-                    a => a.CustomerName.Contains(search) ||
-                    a.Email.Contains(search) ||
-                    a.Nationality.Contains(search));
-
-                if (customers == null || !customers.Any())
-                {
-                    return new JewelryAuction(Const.WARINING_NO_DATA, "No customer found with the given search term");
-                }
-                else
-                {
-                    return new JewelryAuction(Const.SUCCESS_GET, "Customer search success", customers);
-                }
-            }
-            catch (Exception ex)
-            {
-                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
-            }
-        }
+        }     
         public async Task<JewelryAuctionResult> CreateCustomer(CreateCustomerDTO createCustomer)
         {
             try

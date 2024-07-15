@@ -1,4 +1,5 @@
 ﻿using JewelryAuctionData.Models;
+using JewelryAuctionData.Paginate;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
@@ -9,9 +10,11 @@ namespace JewelryAuctionWebApp.Controllers
     {
         private string apiUrl = "https://localhost:7169/api/Company/";
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 3)
         {
-            return View();
+            var pagedResult = await GetPaged(pageNumber, pageSize);
+            return View(pagedResult);
+            //return View();
         }
 
         [HttpGet]
@@ -34,6 +37,55 @@ namespace JewelryAuctionWebApp.Controllers
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
+            }
+        }
+        [HttpGet]
+        public async Task<PagedResult<Company>> GetPaged(int pageNumber, int pageSize)
+        {
+            try
+            {
+                var result = new PagedResult<Company>();
+                using (var httpClient = new HttpClient())
+                {
+                    using (var response = await httpClient.GetAsync($"{apiUrl}GetPaged?pageNumber={pageNumber}&pageSize={pageSize}"))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var content = await response.Content.ReadAsStringAsync();
+                            result = JsonConvert.DeserializeObject<PagedResult<Company>>(content);
+                        }
+                    }
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> Details(int companyId)
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var response = await httpClient.GetAsync(apiUrl + "GetById?id=" + companyId);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var company = JsonConvert.DeserializeObject<Company>(content);
+                        return View("Details", company);
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
         [HttpGet]

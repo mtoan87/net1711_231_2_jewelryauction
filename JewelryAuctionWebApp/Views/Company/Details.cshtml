@@ -1,0 +1,44 @@
+﻿@model JewelryAuctionData.Models.Company
+
+@{
+    ViewData["Title"] = "Company Details";
+}
+
+<h1>Company Details</h1>
+
+<div>
+    <h4>Company Id: @Model.CompanyId</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Company Name:</dt>
+        <dd class="col-sm-10">@Model.CompanyName</dd>
+
+        <dt class="col-sm-2">Email:</dt>
+        <dd class="col-sm-10">@Model.Email</dd>
+
+        <dt class="col-sm-2">Address:</dt>
+        <dd class="col-sm-10">@Model.Address</dd>
+
+        <dt class="col-sm-2">Description:</dt>
+        <dd class="col-sm-10">@Model.Description</dd>
+
+        <dt class="col-sm-2">Phone Number:</dt>
+        <dd class="col-sm-10">@Model.PhoneNumber</dd>
+
+        <dt class="col-sm-2">Establishment Date:</dt>
+        <dd class="col-sm-10">@Model.EstablishmentDate</dd>
+
+        <dt class="col-sm-2">Location:</dt>
+        <dd class="col-sm-10">@Model.Location</dd>
+
+        <dt class="col-sm-2">Number of Employees:</dt>
+        <dd class="col-sm-10">@Model.NumberOfEmployees</dd>
+
+        <dt class="col-sm-2">Industry:</dt>
+        <dd class="col-sm-10">@Model.Industry</dd>
+    </dl>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

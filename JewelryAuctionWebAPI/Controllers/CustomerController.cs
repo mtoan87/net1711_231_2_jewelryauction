@@ -3,6 +3,7 @@ using JewelryAuctionData.DTO.Customer;
 using JewelryAuctionData.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace JewelryAuctionWebAPI.Controllers
@@ -14,10 +15,10 @@ namespace JewelryAuctionWebAPI.Controllers
     {
         private readonly CustomerBusiness _customerBusiness;
         private readonly IConfiguration _config;
-        
-        public CustomerController(IConfiguration config)
+        private readonly Net17112312JewelryAuctionContext _context;
+        public CustomerController(IConfiguration config,Net17112312JewelryAuctionContext context)
         {
-            
+            _context = context;
             _config = config;
             _customerBusiness = new CustomerBusiness();
         }
@@ -41,7 +42,21 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result.Message);
             }
         }
+        [HttpGet]
+        [Route("GetPaged")]
+        public async Task<IActionResult> GetPaged(int pageNumber = 1, int pageSize = 3)
+        {
+            var result = await _customerBusiness.GetPaged(pageNumber, pageSize);
 
+            if (result.Status > 0 && result != null)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return NotFound(result.Message);
+            }
+        }
         //[Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetById")]
