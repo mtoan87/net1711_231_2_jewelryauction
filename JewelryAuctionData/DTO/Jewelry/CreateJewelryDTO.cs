@@ -28,7 +28,7 @@ namespace JewelryAuctionData.DTO.Jewelry
 
         public string? Status { get; set; }
 
-        public string? Picture { get; set; }
+  
 
     }
 }

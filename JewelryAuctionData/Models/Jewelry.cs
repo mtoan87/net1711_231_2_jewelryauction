@@ -34,8 +34,7 @@ public partial class Jewelry
 
     public string? Status { get; set; }
 
-    public string? Picture { get; set; }
-
+    public virtual Customer? Customer { get; set; }
 
 
     public virtual ICollection<AuctionResult> AuctionResults { get; set; } = new List<AuctionResult>();

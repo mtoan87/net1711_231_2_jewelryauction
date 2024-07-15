@@ -62,14 +62,14 @@ namespace JewelryAuctionBusiness
 
         }
 
-        public async Task<JewelryAuctionResult> Search(string search)
+        public async Task<JewelryAuctionResult> Search(string search1, string search2, string search3)
         {
             try
             {
                 var joinAuctions = await _unitOfWork.AuctionResultRepository.GetByConditionAsync(
-                    a => a.Jewelry.JewelryName.Contains(search) ||
-                    a.Customer.CustomerName.Contains(search) ||
-                    a.StartingPrice.ToString().Contains(search));
+                    a => a.Jewelry.JewelryName.Contains(search1) ||
+                    a.Customer.CustomerName.Contains(search2) ||
+                    a.Price.ToString().Contains(search3));
 
                 if (joinAuctions == null || !joinAuctions.Any())
                 {

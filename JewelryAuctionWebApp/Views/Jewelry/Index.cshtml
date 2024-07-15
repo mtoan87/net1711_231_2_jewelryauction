@@ -68,6 +68,7 @@
                     <th class="card-title text-center">Picture</th>
                     <th class="card-title text-center"></th>
                     <th class="card-title text-center"></th>
+                    <th class="card-title text-center"></th>
                 </tr>
             </thead>
             <tbody class="tblJewelryList">
@@ -230,6 +231,7 @@
             var search1 = "###";
             var search2 = "###";
             var search3 = "###";
+
             if (tmp1 !== '') {
                 search1 = tmp1;
             }
@@ -270,8 +272,9 @@
                             html += '<td>' + item.quantitative + '</td>';
                             html += '<td>' + item.description + '</td>';
                             html += '<td>' + item.status + '</td>';
-                            html += '<td>' + "" + '</td>';
 
+                            html += '<td>' + "" + '</td>';
+                            html += '<td><button type="button" class="btn btn-primary" onclick="detailsJewelry(' + item.jewelryId + ')">Details</button></td>';
                             html += '<td><button type="button" class="btn btn-primary" onclick="editJewelry(' + item.jewelryId + ')">Edit</button></td>';
                             html += '<td><button type="button" class="btn btn-danger" onclick="deleteJewelry(' + item.jewelryId + ')">Delete</button></td>';
                             html += '</tr>';
@@ -308,6 +311,7 @@
                         html += '<td>' + item.status + '</td>';
                         html += '<td>' + "" + '</td>';
 
+                        html += '<td><button type="button" class="btn btn-primary" onclick="detailsJewelry(' + item.jewelryId + ')">Detail</button></td>';
                         html += '<td><button type="button" class="btn btn-primary" onclick="editJewelry(' + item.jewelryId + ')">Edit</button></td>';
                         html += '<td><button type="button" class="btn btn-danger" onclick="deleteJewelry(' + item.jewelryId + ')">Delete</button></td>';
                         html += '</tr>';
@@ -319,6 +323,8 @@
                 }
             });
         }
+
+       
 
         function add() {
             action = "Create"; // Đặt hành động là tạo mới
@@ -358,6 +364,9 @@
                 }
             });
         }
+        function detailsJewelry(jewelryId) {
+            window.location.href = '@Url.Action("Detail", "Jewelry")' + '?jewelryId=' + jewelryId;
+        }
 
         function deleteJewelry(JewelryId) {
             if (confirm('Are you sure you want to delete this Jewelry?')) {
@@ -378,5 +387,7 @@
                 });
             }
         }
+
+        
     </script>
 }

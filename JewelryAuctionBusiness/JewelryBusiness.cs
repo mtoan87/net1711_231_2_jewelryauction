@@ -107,7 +107,7 @@ namespace JewelryAuctionBusiness
                     Quantitative = createJewelry.Quantitative,
                     Description = createJewelry.Description,
                     Status = createJewelry.Status,
-                    Picture = createJewelry.Picture,
+                 
 
                 };
                 var jewelry = await _unitOfWork.JewelryRepository.CreateAsync(newJewelry);
@@ -166,7 +166,7 @@ namespace JewelryAuctionBusiness
                 jewelry.Quantitative = updateJewelry.Quantitative;
                 jewelry.Description = updateJewelry.Description;
                 jewelry.Status = updateJewelry?.Status;
-                jewelry.Picture = updateJewelry.Picture;
+                
 
 
                 _unitOfWork.JewelryRepository.UpdateAsync(jewelry);
