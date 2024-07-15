@@ -109,18 +109,27 @@ namespace JewelryAuctionBusiness
         {
             try
             {
-                var bids = await _unitOfWork.bidRepository.GetByConditionAsync(
-                    a => a.BidderName.Contains(search) ||
-                    a.BidStatus.Contains(search) ||
-                    a.IsWining.Contains(search));
+                var searchTerms = search.Split(',');
 
-                if (bids == null || !bids.Any())
+                // Lấy tất cả các bid trước
+                var allBids = await _unitOfWork.bidRepository.GetAllAsync();
+
+                // Thực hiện lọc trong bộ nhớ
+                var filteredBids = allBids.Where(b =>
+                    searchTerms.Any(term =>
+                        b.BidderName.Contains(term.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                        b.JoinAuctionName.Contains(term.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                        b.BidStatus.Contains(term.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                        b.IsWining.ToString().Contains(term.Trim(), StringComparison.OrdinalIgnoreCase)))
+                    .ToList();
+
+                if (!filteredBids.Any())
                 {
-                    return new JewelryAuction(Const.WARINING_NO_DATA, "No auction found with the given search term");
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No bids found with the given search terms");
                 }
                 else
                 {
-                    return new JewelryAuction(Const.SUCCESS_GET, "Auction search success", bids);
+                    return new JewelryAuction(Const.SUCCESS_GET, "Bid search success", filteredBids);
                 }
             }
             catch (Exception ex)
@@ -159,6 +168,12 @@ namespace JewelryAuctionBusiness
         {
             try
             {
+                if ((createBid.BidStatus == "Accpeted" && createBid.IsWining != "Yes") ||
+                    (createBid.BidStatus == "Pending" && createBid.IsWining != "No"))
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "Invalid BidStatus and IsWining combination");
+                }
+
                 var bid = new Bid()
                 {
                     CustomerId = createBid.CustomerId,
@@ -194,6 +209,12 @@ namespace JewelryAuctionBusiness
         {
             try
             {
+                if ((updateBid.BidStatus == "Accpeted" && updateBid.IsWining != "Yes") ||
+                    (updateBid.BidStatus == "Pending" && updateBid.IsWining != "No"))
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "Invalid BidStatus and IsWining combination");
+                }
+
                 var bid = await _unitOfWork.bidRepository.GetByIdAsync(updateBid.BidId);
                 if (bid == null)
                 {

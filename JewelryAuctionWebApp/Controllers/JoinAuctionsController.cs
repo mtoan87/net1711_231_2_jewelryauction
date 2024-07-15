@@ -112,18 +112,18 @@ namespace JewelryAuctionWebApp.Controllers
             {
                 using (var httpClient = new HttpClient())
                 {
-                    var response = await httpClient.GetAsync(apiUrl + "Search?search=" + search);           
-                        if (response.IsSuccessStatusCode)
-                        {
-                            var content = await response.Content.ReadAsStringAsync();
-                            var joinAuction = JsonConvert.DeserializeObject<List<JoinAuction>>(content);
-                            return Json(joinAuction);
-                        }
-                        else
-                        {
-                            return Json(null);
-                        }
+                    var response = await httpClient.GetAsync(apiUrl + "Search?search=" + search);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var joinAuction = JsonConvert.DeserializeObject<List<JoinAuction>>(content);
+                        return Json(joinAuction);
                     }
+                    else
+                    {
+                        return Json(null);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -193,7 +193,7 @@ namespace JewelryAuctionWebApp.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPut]
         public async Task<IActionResult> Update([FromBody] JoinAuction joinAuction)
         {
             try

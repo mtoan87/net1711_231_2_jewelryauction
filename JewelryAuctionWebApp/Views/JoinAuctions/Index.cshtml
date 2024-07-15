@@ -14,7 +14,7 @@
 <div class="row">
     <!--Search-->
     <div class="col-md-2 text-start">
-        <input type="text" id="searchInput" placeholder="Search Auction" title="Type in a name" style="margin-right: 5px;">
+        <input type="text" id="searchInput" placeholder="Search Auction (e.g., Host,Name,Status)" title="Type in a name" style="margin-right: 5px;">
     </div>
     <div class="col-md-2 text-start">
         <button type="button" class="btn btn-primary" onclick="search()">
@@ -174,7 +174,7 @@
 
 @section scripts {
     <script type="text/javascript">
-        var action = "Create"; // Mặc định là tạo mới
+        var action = "Create";
 
         // Call loadData
         $(document).ready(function () {
@@ -235,24 +235,27 @@
                     dataType: "json",
                     success: function (result) {
                         var html = '';
-                        $.each(result, function (key, item) {
-                            html += '<tr>';
-                            html += '<td>' + item.joinAuctionId + '</td>';
-                            html += '<td>' + item.customerId + '</td>';
-                            html += '<td>' + item.auctionDetailId + '</td>';
-                            html += '<td>' + item.startTime + '</td>';
-                            html += '<td>' + item.endTime + '</td>';
-                            html += '<td>' + item.host + '</td>';
-                            html += '<td>' + item.joinAuctionName + '</td>';
-                            html += '<td>' + item.joinAuctionDescription + '</td>';
-                            html += '<td>' + item.joinAuctionStatus + '</td>';
-                            html += '<td>' + item.isLive + '</td>';
-
-                            html += '<td><button type="button" class="btn btn-primary" onclick="editAuction(' + item.joinAuctionId + ')">Edit</button></td>';
-                            html += '<td><button type="button" class="btn btn-primary" onclick="detailsAuction(' + item.joinAuctionId + ')">Details</button></td>';
-                            html += '<td><button type="button" class="btn btn-danger" onclick="deleteAuction(' + item.joinAuctionId + ')">Delete</button></td>';
-                            html += '</tr>';
-                        });
+                        if (result && result.length > 0) {
+                            $.each(result, function (key, item) {
+                                html += '<tr>';
+                                html += '<td>' + item.joinAuctionId + '</td>';
+                                html += '<td>' + item.customerId + '</td>';
+                                html += '<td>' + item.auctionDetailId + '</td>';
+                                html += '<td>' + item.startTime + '</td>';
+                                html += '<td>' + item.endTime + '</td>';
+                                html += '<td>' + item.host + '</td>';
+                                html += '<td>' + item.joinAuctionName + '</td>';
+                                html += '<td>' + item.joinAuctionDescription + '</td>';
+                                html += '<td>' + item.joinAuctionStatus + '</td>';
+                                html += '<td>' + item.isLive + '</td>';
+                                html += '<td><button type="button" class="btn btn-primary" onclick="editAuction(' + item.joinAuctionId + ')">Edit</button></td>';
+                                html += '<td><button type="button" class="btn btn-primary" onclick="detailsAuction(' + item.joinAuctionId + ')">Details</button></td>';
+                                html += '<td><button type="button" class="btn btn-danger" onclick="deleteAuction(' + item.joinAuctionId + ')">Delete</button></td>';
+                                html += '</tr>';
+                            });
+                        } else {
+                            html = '<tr><td colspan="13" class="text-center">No auction found with the given search terms.</td></tr>';
+                        }
                         $('.tblJoinAuctions').html(html);
                     },
                     error: function (xhr, error) {
@@ -340,28 +343,39 @@
                         paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="loadData(' + (result.currentPage - 1) + ',' + result.pageSize + ')">&laquo;</a></li>';
                     }
 
-                    // Always show first three pages
+                    // Show the first page
                     paginationHtml += '<li class="page-item ' + (result.currentPage == 1 ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(1,' + result.pageSize + ')">1</a></li>';
-                    paginationHtml += '<li class="page-item ' + (result.currentPage == 2 ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(2,' + result.pageSize + ')">2</a></li>';
-                    paginationHtml += '<li class="page-item ' + (result.currentPage == 3 ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(3,' + result.pageSize + ')">3</a></li>';
 
-                    // Logic to show ellipses and current page in between
-                    if (result.currentPage > 3 && result.currentPage < result.totalPages - 2) {
-                        paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
-                        paginationHtml += '<li class="page-item active"><a class="page-link" href="#">' + result.currentPage + '</a></li>';
-                        paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
-                    } else if (result.currentPage >= result.totalPages - 2) {
-                        paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
-                        for (var i = result.totalPages - 2; i < result.totalPages; i++) {
-                            paginationHtml += '<li class="page-item ' + (result.currentPage == i ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(' + i + ',' + result.pageSize + ')">' + i + '</a></li>';
+                    if (result.totalPages > 1) {
+                        if (result.totalPages <= 3) {
+                            // Show all pages if total pages <= 3
+                            for (var i = 2; i <= result.totalPages; i++) {
+                                paginationHtml += '<li class="page-item ' + (result.currentPage == i ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(' + i + ',' + result.pageSize + ')">' + i + '</a></li>';
+                            }
+                        } else {
+                            // Show the first three pages and ellipsis if total pages > 3
+                            paginationHtml += '<li class="page-item ' + (result.currentPage == 2 ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(2,' + result.pageSize + ')">2</a></li>';
+                            paginationHtml += '<li class="page-item ' + (result.currentPage == 3 ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(3,' + result.pageSize + ')">3</a></li>';
+
+                            // Logic to display ellipsis and current page in the middle
+                            if (result.currentPage > 3 && result.currentPage < result.totalPages - 2) {
+                                paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
+                                paginationHtml += '<li class="page-item active"><a class="page-link" href="#">' + result.currentPage + '</a></li>';
+                                paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
+                            } else if (result.currentPage >= result.totalPages - 2) {
+                                paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
+                                for (var i = result.totalPages - 2; i < result.totalPages; i++) {
+                                    paginationHtml += '<li class="page-item ' + (result.currentPage == i ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(' + i + ',' + result.pageSize + ')">' + i + '</a></li>';
+                                }
+                            } else if (result.totalPages > 3) {
+                                paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
+                            }
+
+                            // Always show last page if total number of pages > 3
+                            if (result.totalPages > 3) {
+                                paginationHtml += '<li class="page-item ' + (result.currentPage == result.totalPages ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(' + result.totalPages + ',' + result.pageSize + ')">' + result.totalPages + '</a></li>';
+                            }
                         }
-                    } else if (result.totalPages > 3) {
-                        paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
-                    }
-
-                    // Always show last page
-                    if (result.totalPages > 3) {
-                        paginationHtml += '<li class="page-item ' + (result.currentPage == result.totalPages ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(' + result.totalPages + ',' + result.pageSize + ')">' + result.totalPages + '</a></li>';
                     }
 
                     if (result.currentPage < result.totalPages) {
@@ -381,9 +395,9 @@
             var pageNumber = parseInt($('#pageNumberInput').val());
             var pageSize = 3;
             if (isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
-                alert('Please enter a valid page number.'); // Hiển thị thông báo lỗi
+                alert('Please enter a valid page number.');
             } else {
-                loadData(pageNumber, pageSize); // Gọi loadData với số trang hợp lệ
+                loadData(pageNumber, pageSize);
             }
         }
 
@@ -511,10 +525,6 @@
                     alert(xhr.statusText);
                 }
             });
-        }
-
-        function updatePagination(currentPage, totalPages) { 
-
         }
 
     </script>

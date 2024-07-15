@@ -21,6 +21,7 @@ namespace JewelryAuctionWebApp.Controllers
         {
             var pagedResult = await GetPaged(pageNumber, pageSize);
             return View(pagedResult);
+            //return View();
         }
 
         public BidsController()
@@ -28,30 +29,30 @@ namespace JewelryAuctionWebApp.Controllers
 
         }
 
-        //[HttpGet]
-        //public async Task<List<Bid>> GetAll()
-        //{
-        //    try
-        //    {
-        //        var result = new List<Bid>();
-        //        using (var httpClient = new HttpClient())
-        //        {
-        //            using (var response = await httpClient.GetAsync(apiUrl + "GetAll"))
-        //            {
-        //                if (response.IsSuccessStatusCode)
-        //                {
-        //                    var content = await response.Content.ReadAsStringAsync();
-        //                    result = JsonConvert.DeserializeObject<List<Bid>>(content);
-        //                }
-        //            }
-        //        }
-        //        return result;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception(ex.Message);
-        //    }
-        //}
+        [HttpGet]
+        public async Task<List<Bid>> GetAll()
+        {
+            try
+            {
+                var result = new List<Bid>();
+                using (var httpClient = new HttpClient())
+                {
+                    using (var response = await httpClient.GetAsync(apiUrl + "GetAll"))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var content = await response.Content.ReadAsStringAsync();
+                            result = JsonConvert.DeserializeObject<List<Bid>>(content);
+                        }
+                    }
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
         [HttpGet]
         public async Task<PagedResult<Bid>> GetPaged(int pageNumber, int pageSize)

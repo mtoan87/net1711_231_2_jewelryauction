@@ -150,6 +150,12 @@ namespace JewelryAuctionData.Base
             return await _context.Set<T>().Where(expression).ToListAsync();
         }
 
+        //Use for paginate
+        public IQueryable<T> GetByCondition(Expression<Func<T, bool>> expression)
+        {
+            return _context.Set<T>().Where(expression);
+        }
+
         public async Task<List<Bid>> GetBidsByJoinAuctionIdAsync(int joinAuctionId)
         {
             return await _context.Bids.Where(b => b.JoinAuctionId == joinAuctionId).ToListAsync();
