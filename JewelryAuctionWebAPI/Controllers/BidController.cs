@@ -19,7 +19,7 @@ namespace JewelryAuctionWebAPI.Controllers
             bidBusiness = new BidBusiness();
         }
 
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetAll")]
         public async Task<IActionResult> GetAll()
@@ -37,7 +37,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetPaged")]
         public async Task<IActionResult> GetPaged(int pageNumber = 1, int pageSize = 3)
@@ -54,7 +54,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetById")]
         public async Task<IActionResult> GetById(int id)
@@ -71,7 +71,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetBidsByJoinAuctionId")]
         public async Task<IActionResult> GetBidsByJoinAuctionId(int joinAuctionId)
@@ -84,7 +84,7 @@ namespace JewelryAuctionWebAPI.Controllers
             return NotFound(result.Message);
         }
 
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("Search")]
         public async Task<IActionResult> Search(string search)
@@ -102,7 +102,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("Filter")]
         public async Task<IActionResult> FilterBids(double? bidAmount, DateTime? dateTime, int? jewelryId)
@@ -120,7 +120,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("Create")]
         public async Task<IActionResult> CreateBid(CreateBidDTO createBid)
@@ -137,7 +137,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("Update")]
         public async Task<IActionResult> UpdateBid(UpdateBidDTO updateBid)
@@ -154,7 +154,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpDelete]
         [Route("Delete")]
         public async Task<IActionResult> DeleteBid(int bidId)

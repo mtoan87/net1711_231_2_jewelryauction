@@ -320,7 +320,7 @@
 
         var totalPages;
 
-        function loadData(pageNumber = 1, pageSize = 3) {
+        function loadData(pageNumber = 1, pageSize = 5) {
             var joinAuctionId = getParameterByName('joinAuctionId'); // Get joinAuctionId from query string
             var url = '@Url.Action("GetPaged", "Bids")';
             var isPaginated = true;

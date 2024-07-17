@@ -176,7 +176,6 @@
     <script type="text/javascript">
         var action = "Create";
 
-        // Call loadData
         $(document).ready(function () {
             loadData();
 
@@ -216,7 +215,8 @@
                     },
                     error: function (xhr, status, error) {
                         console.error("An error occurred while saving the Auction:", error);
-                        alert("An error occurred while saving the Auction.");
+                        console.error("Response:", xhr.responseText);
+                        alert("An error occurred while saving the Auction." + xhr.responseText);
                     }
                 });
             });
@@ -301,7 +301,7 @@
         
         var totalPages;
 
-        function loadData(pageNumber = 1, pageSize = 3) {
+        function loadData(pageNumber = 1, pageSize = 5) {
             $.ajax({
                 url: '@Url.Action("GetPaged", "JoinAuctions")',
                 type: "GET",
@@ -526,6 +526,16 @@
                 }
             });
         }
+
+        // function formatDateTime(dateTime) {
+        //     const date = new Date(dateTime);
+        //     const year = date.getFullYear();
+        //     const month = ("0" + (date.getMonth() + 1)).slice(-2);
+        //     const day = ("0" + date.getDate()).slice(-2);
+        //     const hours = ("0" + date.getHours()).slice(-2);
+        //     const minutes = ("0" + date.getMinutes()).slice(-2);
+        //     return `${year}-${month}-${day}T${hours}:${minutes}`;
+        // }
 
     </script>
 }
