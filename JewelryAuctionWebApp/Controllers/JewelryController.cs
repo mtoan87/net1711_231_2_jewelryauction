@@ -1,4 +1,5 @@
 ﻿using JewelryAuctionData.Models;
+using JewelryAuctionData.Paginate;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -12,13 +13,40 @@ namespace JewelryAuctionWebApp.Controllers
 
         private readonly string apiUrl = "https://localhost:7169/api/Jewelry/";
 
-     
-        public IActionResult Index()
+
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 3)
         {
-            return View();
+            var pagedResult = await GetPaged(pageNumber, pageSize);
+            return View(pagedResult);
+            //return View();
         }
 
         [HttpGet]
+        public async Task<PagedResult<Jewelry>> GetPaged(int pageNumber, int pageSize)
+        {
+            try
+            {
+                var result = new PagedResult<Jewelry>();
+                using (var httpClient = new HttpClient())
+                {
+                    using (var response = await httpClient.GetAsync($"{apiUrl}GetPaged?pageNumber={pageNumber}&pageSize={pageSize}"))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var content = await response.Content.ReadAsStringAsync();
+                            result = JsonConvert.DeserializeObject<PagedResult<Jewelry>>(content);
+                        }
+                    }
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        /*[HttpGet]
         public async Task<IActionResult> GetAll()
         {
             try
@@ -43,7 +71,7 @@ namespace JewelryAuctionWebApp.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }
+        }*/
 
         [HttpGet]
         public async Task<IActionResult> Detail(int jewrlryId)
