@@ -8,9 +8,11 @@ namespace JewelryAuctionWebApp.Controllers
     public class PaymentsController : Controller
     {
         private readonly string apiUrl = "https://localhost:7169/api/Payment/";
+        private readonly IHttpClientFactory _clientFactory;
 
-        public PaymentsController()
+        public PaymentsController(IHttpClientFactory clientFactory)
         {
+            _clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
         }
 
         public IActionResult Index()
@@ -19,14 +21,37 @@ namespace JewelryAuctionWebApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(string search = "", string status = "", string paymentMethod = "", float? minPrice = null, float? maxPrice = null, int pageNumber = 1, int pageSize = 10)
         {
             try
             {
                 var result = new List<Payment>();
                 using (var httpClient = new HttpClient())
                 {
-                    using (var response = await httpClient.GetAsync(apiUrl + "GetAll"))
+                    // Build the URL with query parameters for filtering and paging
+                    var apiUrlWithParams = $"{apiUrl}GetAll?search={search}&pageNumber={pageNumber}&pageSize={pageSize}";
+
+                    if (!string.IsNullOrEmpty(status))
+                    {
+                        apiUrlWithParams += $"&status={status}";
+                    }
+
+                    if (!string.IsNullOrEmpty(paymentMethod))
+                    {
+                        apiUrlWithParams += $"&paymentMethod={paymentMethod}";
+                    }
+
+                    if (minPrice != null)
+                    {
+                        apiUrlWithParams += $"&minPrice={minPrice}";
+                    }
+                        
+                    if (maxPrice != null)
+                    {
+                        apiUrlWithParams += $"&maxPrice={maxPrice}";
+                    }
+
+                    using (var response = await httpClient.GetAsync(apiUrlWithParams))
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -43,6 +68,8 @@ namespace JewelryAuctionWebApp.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Payment newPayment)
@@ -151,5 +178,74 @@ namespace JewelryAuctionWebApp.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Filter(int? price, DateTime? date, int? jewelryId)
+        {
+            try
+            {
+                var queryParams = new List<string>();
+                if (price.HasValue)
+                    queryParams.Add($"price={price.Value}");
+                if (date.HasValue)
+                    queryParams.Add($"date={date.Value}");
+                if (jewelryId.HasValue)
+                    queryParams.Add($"jewelryId={jewelryId.Value}");
+
+                var queryString = string.Join("&", queryParams);
+                var apiUrlWithQuery = apiUrl + "Filter";
+                if (!string.IsNullOrEmpty(queryString))
+                    apiUrlWithQuery += "?" + queryString;
+
+                var result = new List<Payment>();
+                using (var httpClient = _clientFactory.CreateClient())
+                {
+                    using (var response = await httpClient.GetAsync(apiUrlWithQuery))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var content = await response.Content.ReadAsStringAsync();
+                            result = JsonConvert.DeserializeObject<List<Payment>>(content);
+                        }
+                        else
+                        {
+                            throw new HttpRequestException($"Failed to retrieve filtered data: {response.ReasonPhrase}");
+                        }
+                    }
+                }
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error filtering payments: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> Search(string search)
+        {
+            try
+            {
+                var result = new List<Payment>();
+                using (var httpClient = _clientFactory.CreateClient())
+                {
+                    using (var response = await httpClient.GetAsync(apiUrl + "Search?search=" + search))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var content = await response.Content.ReadAsStringAsync();
+                            result = JsonConvert.DeserializeObject<List<Payment>>(content);
+                        }
+                        else
+                        {
+                            throw new HttpRequestException($"Failed to retrieve search results: {response.ReasonPhrase}");
+                        }
+                    }
+                }
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error searching payments: {ex.Message}");
+            }
+        }
     }
 }

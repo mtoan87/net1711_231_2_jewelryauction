@@ -14,7 +14,29 @@
         <button type="button" class="btn btn-primary" onclick="add();">
             Add
         </button>
-    </div>
+    </div> 
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-10">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search by PRICE, STATUS and TOTAL">
+        <select id="statusInput">
+            <option value="">Filter by Status</option>
+            <option value="Paid">Paid</option>
+            <option value="Pending">Pending</option>
+            <option value="Completed">Completed</option>
+            <!-- Add more options as needed -->
+        </select>
+        <select id="paymentMethodInput">
+            <option value="">Filter by Payment Method</option>
+            <option value="Credit Card">Credit Card</option>
+            <option value="Bank Transfer">Bank Transfer</option>
+            <option value="Momo">Momo</option>
+        </select>
+        <input type="number" id="minPriceInput" placeholder="Min Price">
+        <input type="number" id="maxPriceInput" placeholder="Max Price">
+        <button type="button" onclick="filter()">Apply Filter</button>
+    </div>  
 </div>
 
 <div class="row">
@@ -42,6 +64,53 @@
         </table>
     </div>
 </div>
+
+
+<div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailModalLabel">Payment Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-2">
+                            <strong>Payment ID:</strong> <span id="detailPaymentId"></span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Customer ID:</strong> <span id="detailCustomerId"></span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Auction Result ID:</strong> <span id="detailAuctionResultId"></span>
+                        </div>
+                        <!-- Add other fields as needed -->
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-2">
+                            <strong>Status:</strong> <span id="detailStatus"></span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Payment Method:</strong> <span id="detailPaymentMethod"></span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Date:</strong> <span id="detailDate"></span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Jewelry ID:</strong> <span id="detailJewelryId"></span>
+                        </div>
+                        <!-- Add other fields as needed -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="modal fade" id="topUpModal" tabindex="-1" aria-labelledby="topUpModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -107,12 +176,13 @@
 
 @section scripts {
     <script type="text/javascript">
-        var action = "Create"; // Mặc định là tạo mới
+        var action = "Create"; // Default action is to create new payment
 
         $(document).ready(function () {
-            loadData();
+            loadData(); // Initial data load on page load
 
             $("#btSave").click(function () {
+                // Handle save button click to create or update payment
                 var newPayment = {
                     paymentId: $("#paymentId").val(),
                     customerId: $("#customerId").val(),
@@ -128,14 +198,14 @@
                 };
 
                 $.ajax({
-                    type: action === "Create" ? 'POST' : 'POST',
+                    type: action === "Create" ? 'POST' : 'POST', // Adjust method type for create/update
                     url: action === "Create" ? '@Url.Action("Create", "Payments")' : '@Url.Action("Update", "Payments")',
                     contentType: 'application/json',
                     data: JSON.stringify(newPayment),
                     success: function (result) {
                         if (result.status === 1) {
                             $('#topUpModal').modal('hide');
-                            loadData();
+                            loadData(); // Reload data after successful save
                         }
                         alert(result.message);
                     },
@@ -145,17 +215,51 @@
                     }
                 });
             });
+
+            // Initialize the page with pagination
+            loadPage(1);
         });
 
-        function loadData() {
+
+        function showDetails(paymentId) {
             $.ajax({
-                url: '@Url.Action("GetAll", "Payments")',
+                url: '@Url.Action("GetPaymentById", "Payments")' + '?paymentId=' + paymentId,
+                type: "GET",
+                contentType: 'application/json',
+                success: function (result) {
+                    // Populate detail modal with payment data
+                    $('#detailPaymentId').text(result.paymentId);
+                    $('#detailCustomerId').text(result.customerId);
+                    $('#detailAuctionResultId').text(result.auctionResultId);
+                    $('#detailStatus').text(result.status);
+                    $('#detailPaymentMethod').text(result.paymentMethod);
+                    $('#detailDate').text(result.date);
+                    $('#detailJewelryId').text(result.jewelryId);
+                    // Update other fields as needed
+
+                    $('#detailModal').modal('show'); // Show detail modal
+                },
+                error: function (xhr, status, error) {
+                    console.error("An error occurred while fetching payment details:", error);
+                    alert("An error occurred while fetching payment details.");
+                }
+            });
+        }
+
+        // Function to load data with optional filters and pagination
+        function loadData(searchTerm = "", status = "", paymentMethod = "", minPrice = null, maxPrice = null, pageNumber = 1, pageSize = 10) {
+            var apiUrl = '@Url.Action("GetAll", "Payments")';
+            var queryString = `?search=${searchTerm}&status=${status}&paymentMethod=${paymentMethod}&minPrice=${minPrice}&maxPrice=${maxPrice}&pageNumber=${pageNumber}&pageSize=${pageSize}`;
+
+            $.ajax({
+                url: apiUrl + queryString,
                 type: "GET",
                 contentType: "application/json;charset=utf-8",
                 dataType: "json",
                 success: function (result) {
                     var html = '';
                     $.each(result, function (key, item) {
+                        // Construct HTML table rows from JSON data
                         html += '<tr>';
                         html += '<td>' + item.paymentId + '</td>';
                         html += '<td>' + item.customerId + '</td>';
@@ -170,9 +274,12 @@
                         html += '<td>' + item.totalPrice + '</td>';
                         html += '<td><button type="button" class="btn btn-primary" onclick="editPayment(' + item.paymentId + ')">Edit</button></td>';
                         html += '<td><button type="button" class="btn btn-danger" onclick="deletePayment(' + item.paymentId + ')">Delete</button></td>';
+                        html += '<td><button type="button" class="btn btn-info" onclick="showDetails(' +  item.paymentId + ')">Details</button></td>';
                         html += '</tr>';
                     });
-                    $('.tblPaymentList').html(html);
+                    $('.tblPaymentList').html(html); // Populate table body with generated HTML
+
+                    updatePagination(result.pageNumber, result.totalPages); // Update pagination based on returned data
                 },
                 error: function (xhr, error) {
                     alert(xhr.statusText);
@@ -180,22 +287,63 @@
             });
         }
 
-        function add() {
-            action = "Create"; // Đặt hành động là tạo mới
-            $("#paymentId").val(0); // Đặt ID của thanh toán là 0
-            $('#frm')[0].reset(); // Đặt lại form
-            $('#topUpModalLabel').html("Add New Payment"); // Đặt lại tiêu đề modal
-            $('#btSave').html("Save"); // Đặt lại văn bản của nút "Save"
-            $('#topUpModal').modal('show'); // Hiển thị modal
+        // Function to update pagination links
+        function updatePagination(currentPage, totalPages) {
+            var paginationHtml = '';
+            if (totalPages > 1) {
+                paginationHtml += '<ul class="pagination">';
+                paginationHtml += '<li class="page-item ' + (currentPage === 1 ? 'disabled' : '') + '"><a class="page-link" href="#" onclick="loadPage(' + (currentPage - 1) + ')">Previous</a></li>';
+                for (var i = 1; i <= totalPages; i++) {
+                    paginationHtml += '<li class="page-item ' + (currentPage === i ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadPage(' + i + ')">' + i + '</a></li>';
+                }
+                paginationHtml += '<li class="page-item ' + (currentPage === totalPages ? 'disabled' : '') + '"><a class="page-link" href="#" onclick="loadPage(' + (currentPage + 1) + ')">Next</a></li>';
+                paginationHtml += '</ul>';
+            }
+            $('#pagination').html(paginationHtml); // Update HTML with generated pagination links
         }
 
+        // Function to load specific page of data based on page number
+        function loadPage(pageNumber) {
+            var searchTerm = $("#searchInput").val();
+            var status = $("#statusInput").val();
+            var paymentMethod = $("#paymentMethodInput").val();
+            var minPrice = $("#minPriceInput").val();
+            var maxPrice = $("#maxPriceInput").val();
+            var pageSize = 10; // Number of items per page
+
+            loadData(searchTerm, status, paymentMethod, minPrice, maxPrice, pageNumber, pageSize);
+        }
+
+        // Function to apply filter and reload first page of data
+        function filter() {
+            loadPage(1); // Load the first page when filtering
+        }
+
+        // Function to handle search based on search input
+        function search() {
+            var searchTerm = $("#searchInput").val();
+            loadData(searchTerm);
+        }
+
+        // Function to initialize the add new payment modal
+        function add() {
+            action = "Create"; // Set action to create new payment
+            $("#paymentId").val(0); // Reset payment ID to 0
+            $('#frm')[0].reset(); // Reset form fields
+            $('#topUpModalLabel').html("Add New Payment"); // Set modal title
+            $('#btSave').html("Save"); // Set save button text
+            $('#topUpModal').modal('show'); // Show modal
+        }
+
+        // Function to handle editing a payment
         function editPayment(paymentId) {
-            action = "Update"; // Đặt hành động là cập nhật
+            action = "Update"; // Set action to update payment
             $.ajax({
                 url: '@Url.Action("GetPaymentById", "Payments")' + '?paymentId=' + paymentId,
                 type: "GET",
                 contentType: 'application/json',
                 success: function (result) {
+                    // Populate form fields with payment data
                     $('#paymentId').val(result.paymentId);
                     $('#customerId').val(result.customerId);
                     $('#auctionResultId').val(result.auctionResultId);
@@ -208,9 +356,9 @@
                     $('#price').val(result.price);
                     $('#totalPrice').val(result.totalPrice);
 
-                    $('#topUpModalLabel').html("Edit Payment"); // Đặt lại tiêu đề modal
-                    $('#btSave').html("Save"); // Đặt lại văn bản của nút "Save"
-                    $('#topUpModal').modal('show'); // Hiển thị modal
+                    $('#topUpModalLabel').html("Edit Payment"); // Set modal title
+                    $('#btSave').html("Save"); // Set save button text
+                    $('#topUpModal').modal('show'); // Show modal
                 },
                 error: function (xhr, status, error) {
                     console.error("An error occurred while fetching payment details:", error);
@@ -219,6 +367,7 @@
             });
         }
 
+        // Function to handle deletion of a payment
         function deletePayment(paymentId) {
             if (confirm('Are you sure you want to delete this payment?')) {
                 $.ajax({
@@ -227,7 +376,7 @@
                     contentType: 'application/json',
                     success: function (result) {
                         if (result.status === 1) {
-                            loadData();
+                            loadData(); // Reload data after successful deletion
                         }
                         alert(result.message);
                     },
@@ -240,3 +389,4 @@
         }
     </script>
 }
+

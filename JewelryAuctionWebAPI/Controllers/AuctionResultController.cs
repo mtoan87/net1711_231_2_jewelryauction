@@ -34,8 +34,23 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result.Message);
             }
         }
+        [HttpGet]
+        [Route("GetPaged")]
+        public async Task<IActionResult> GetPaged(int pageNumber = 1, int pageSize = 3)
+        {
+            var result = await _auctionResultBusiness.GetPaged(pageNumber, pageSize);
 
-       // [Authorize(Roles = "Customer")]
+            if (result.Status > 0 && result != null)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return NotFound(result.Message);
+            }
+        }
+
+        // [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetById")]
         public async Task<IActionResult> GetById(int id)
