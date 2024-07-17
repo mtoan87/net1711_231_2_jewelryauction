@@ -19,26 +19,38 @@ namespace JewelryAuctionBusiness
         {
             _unitOfWork = new UnitOfWork();
         }
-        public async Task<JewelryAuctionResult> GetAll()
+        public async Task<JewelryAuctionResult> GetAll(string search)
         {
             try
             {
-                var payment = await _unitOfWork.PaymentRepository.GetAllAsync();
+                var payments = await _unitOfWork.PaymentRepository.GetAllAsync();
 
-                if (payment == null)
+                if (!string.IsNullOrEmpty(search))
                 {
-                    return new JewelryAuction(Const.WARINING_NO_DATA, "Get payment list fail!");
+                    payments = payments.Where(p =>
+                        p.PaymentMethod.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                        p.Status.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                        p.TotalPrice.ToString().Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                        p.Price.ToString().Contains(search, StringComparison.OrdinalIgnoreCase)
+                    ).ToList();
+                }
+               
+
+                if (payments == null || !payments.Any())
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No payments found.", null);
                 }
                 else
                 {
-                    return new JewelryAuction(Const.SUCCESS_GET, "Get payment list success", payment);
+                    return new JewelryAuction(Const.SUCCESS_GET, "Payments retrieved successfully.", payments);
                 }
             }
             catch (Exception ex)
             {
-                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
+                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message, null);
             }
         }
+
         public async Task<JewelryAuctionResult> GetById(int code)
         {
             try
@@ -141,5 +153,56 @@ namespace JewelryAuctionBusiness
                 return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
             }
         }
+
+        public async Task<JewelryAuctionResult> Search(string search)
+        {
+            try
+            {
+                var payments = await _unitOfWork.PaymentRepository.GetByConditionAsync(
+                payment => payment.Status.Contains(search) ||
+               payment.PaymentMethod.Contains(search) ||
+               payment.Price.ToString().Contains(search) ||
+               payment.TotalPrice.ToString().Contains(search));
+
+                if (payments == null || !payments.Any())
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No customer found with the given search term");
+                }
+                else
+                {
+                    return new JewelryAuction(Const.SUCCESS_GET, "Customer search success", payments);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
+
+        public async Task<JewelryAuctionResult> FilterPayments(double? price, DateTime? date, int? jewelryId)
+        {
+            try
+            {
+                var payments = await _unitOfWork.PaymentRepository.GetByConditionAsync(
+                    p => (!price.HasValue || p.Price == price.Value) &&
+                         (!date.HasValue || p.Date >= date.Value) &&
+                         (!jewelryId.HasValue || p.JewelryId == jewelryId.Value));
+
+                if (payments == null || !payments.Any())
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No payments found with the given criteria");
+                }
+                else
+                {
+                    return new JewelryAuction(Const.SUCCESS_GET, "Payments filtered successfully", payments);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
+
+
     }
 }
