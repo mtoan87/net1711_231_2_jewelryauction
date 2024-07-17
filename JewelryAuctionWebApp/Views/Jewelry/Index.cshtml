@@ -21,22 +21,11 @@
 <div class="row">
     <div class="col-md-2">
         <div>
-            <input type="text" id="searchInputName" placeholder="Search Jewelry Name" title="Type in a name">
+            <input type="text" id="searchInputName" placeholder="Search" title="Type in a name">
         </div>
         
     </div>
-    <div class="col-md-2">
-        <div>
-            <input type="text" id="searchInputMaterial" placeholder="Search Jewelry Material" title="Type in a name">
-        </div>
-
-    </div>
-    <div class="col-md-2">
-        <div>
-            <input type="text" id="searchInputType" placeholder="Search Jewelry Type" title="Type in a name">
-        </div>
-
-    </div>
+    
     
     <div class="col-md-3">
         <button type="button" class="btn btn-primary" onclick="search()">
@@ -127,14 +116,72 @@
                         <input type="text" class="form-control" id="status" name="status" required>
                     </div>
 
-                    <div class="form-group">
-                        <input type="file" class="form-control" name="pictureData" id="pictureData">
-                        <img id="previewImage" src="" alt="Ảnh được chọn" style="height: 200px; width: 200px; margin: 10px">
-                    </div>
+                    
 
                 </div>
                 <div class="modal-footer">
                     <button id="btSave" type="button" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="topUpModalDetail" tabindex="-1" aria-labelledby="topUpModalLabelDetail" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "frm2", id = "frm2", enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="topUpModalLabel">Jewelry Detail</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">                
+
+                    <div class="form-group">
+                        <label for="jewelryName2">Jewelry Name:</label>
+                        <input type="text" class="form-control" id="jewelryName2" name="jewelryName" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="material2">Material:</label>
+                        <input type="text" class="form-control" id="material2" name="material" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="size2">Size:</label>
+                        <input type="text" class="form-control" id="size2" name="size" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="weight2">Weight:</label>
+                        <input type="text" class="form-control" id="weight2" name="weight" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="customerId2">Customer ID:</label>
+                        <input type="number" class="form-control" id="customerId2" name="customerId" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="type2">Type:</label>
+                        <input type="text" class="form-control" id="type2" name="type" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantitative2">Quantitative:</label>
+                        <input type="text" class="form-control" id="quantitative2" name="quantitative" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="description2">Description:</label>
+                        <input type="text" class="form-control" id="description2" name="description" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="status2">Status:</label>
+                        <input type="text" class="form-control" id="status2" name="status" readonly>
+                    </div>
+
+                    
+
+                </div>
+                <div class="modal-footer">
+                  
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             }
@@ -223,39 +270,14 @@
             var tmp1 = $('#searchInputName').val().trim();
 
 
-            var tmp2 = $('#searchInputMaterial').val().trim();
 
-
-            var tmp3 = $('#searchInputType').val().trim();
-
-            var search1 = "###";
-            var search2 = "###";
-            var search3 = "###";
-
-            if (tmp1 !== '') {
-                search1 = tmp1;
-            }
-            if (tmp2 !== '') {
-                search2 = tmp2;
-            }
-            if (tmp3 !== '') {
-                search3 = tmp3;
-            }
-
-            if (tmp1 === '' && tmp2 === '' && tmp3 === '') {
+            if (tmp1 === '') {
                 loadData();
             } else {
                 $.ajax({
                     url: '@Url.Action("Search", "Jewelry")',
                     type: "GET",
-                    data: {
-
-                        search1,
-                        search2,
-                        search3
-                          
-                        
-                    },
+                    data: { search: tmp1 },
                     contentType: "application/json;charset=utf-8",
                     dataType: "json",
                     success: function (result) {
@@ -364,8 +386,33 @@
                 }
             });
         }
-        function detailsJewelry(jewelryId) {
-            window.location.href = '@Url.Action("Detail", "Jewelry")' + '?jewelryId=' + jewelryId;
+        function detailsJewelry(JewelryId) {
+
+            $.ajax({
+                url: '@Url.Action("GetJewelryById", "Jewelry")' + '?jewelryId=' + JewelryId,
+                type: "GET",
+                contentType: 'application/json',
+                success: function (result) {
+                    $('#jewelryId2').val(result.jewelryId);
+                    $('#jewelryName2').val(result.jewelryName);
+                    $('#material2').val(result.material);
+                    $('#size2').val(result.size);
+                    $('#weight2').val(result.weight);
+                    $('#customerId2').val(result.customerId);
+                    $('#pictureData2').val(result.pictureData);
+                    $('#type2').val(result.type);
+                    $('#quantitative2').val(result.quantitative);
+                    $('#description2').val(result.description);
+                    $('#status2').val(result.status);
+
+                    $('#topUpModalLabelDetail').html("Detail Jewelry"); // Đặt lại tiêu đề modal
+                    $('#topUpModalDetail').modal('show'); // Hiển thị modal
+                },
+                error: function (xhr, status, error) {
+                    console.error("An error occurred while fetching Jewelrys details:", error);
+                    alert("An error occurred while fetching Jewelrys details.");
+                }
+            });
         }
 
         function deleteJewelry(JewelryId) {

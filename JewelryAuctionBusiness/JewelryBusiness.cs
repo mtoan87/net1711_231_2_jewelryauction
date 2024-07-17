@@ -63,26 +63,33 @@ namespace JewelryAuctionBusiness
 
         }
 
-        public async Task<JewelryAuctionResult> Search(string search1, string search2, string search3)
+        public async Task<JewelryAuctionResult> Search(string search)
         {
             try
             {
-                var joinAuctions = await _unitOfWork.JewelryRepository.GetByConditionAsync(
-                    a => a.JewelryName.Contains(search1) ||
-                    a.Material.Contains(search2) ||
-                    a.Type.Contains(search3));
                 
 
-                
+                var searchTerms = search.Split(',');
+
+                var allJewelrys = await _unitOfWork.JewelryRepository.GetAllAsync();
+
+                var filteredJewelrys = allJewelrys.Where(a =>
+                    searchTerms.Any(term =>
+                       
+                        a.JewelryName.Contains(term.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                        a.Material.Contains(term.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                        a.Type.ToString().Contains(term.Trim(), StringComparison.OrdinalIgnoreCase)))
+                    .ToList();
 
 
-                if (joinAuctions == null || !joinAuctions.Any())
+
+                if (filteredJewelrys == null || !filteredJewelrys.Any())
                 {
                     return new JewelryAuction(Const.WARINING_NO_DATA, "No auction found with the given search term");
                 }
                 else
                 {
-                    return new JewelryAuction(Const.SUCCESS_GET, "Auction search success", joinAuctions);
+                    return new JewelryAuction(Const.SUCCESS_GET, "Auction search success", filteredJewelrys);
                 }
             }
             catch (Exception ex)
