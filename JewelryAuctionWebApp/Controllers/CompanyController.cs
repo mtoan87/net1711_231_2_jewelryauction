@@ -2,6 +2,7 @@
 using JewelryAuctionData.Paginate;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace JewelryAuctionWebApp.Controllers
@@ -9,22 +10,30 @@ namespace JewelryAuctionWebApp.Controllers
     public class CompanyController : Controller
     {
         private string apiUrl = "https://localhost:7169/api/Company/";
-
+        private readonly IHttpClientFactory _httpClientFactory;
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 3)
         {
             var pagedResult = await GetPaged(pageNumber, pageSize);
             return View(pagedResult);
             //return View();
         }
-
+        public CompanyController(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
         [HttpGet]
         public async Task<List<Company>> GetAll()
         {
             try
             {
                 var result = new List<Company>();
-                using (var httpClient = new HttpClient())
+                using (var httpClient = _httpClientFactory.CreateClient())
                 {
+                    var token = HttpContext.Session.GetString("JWToken");
+                    if (token != null)
+                    {
+                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    }
                     var response = await httpClient.GetAsync(apiUrl + "GetAll");
                     if (response.IsSuccessStatusCode)
                     {
@@ -45,8 +54,13 @@ namespace JewelryAuctionWebApp.Controllers
             try
             {
                 var result = new PagedResult<Company>();
-                using (var httpClient = new HttpClient())
+                using (var httpClient = _httpClientFactory.CreateClient())
                 {
+                    var token = HttpContext.Session.GetString("JWToken");
+                    if (token != null)
+                    {
+                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    }
                     using (var response = await httpClient.GetAsync($"{apiUrl}GetPaged?pageNumber={pageNumber}&pageSize={pageSize}"))
                     {
                         if (response.IsSuccessStatusCode)
@@ -68,8 +82,14 @@ namespace JewelryAuctionWebApp.Controllers
         {
             try
             {
-                using (var httpClient = new HttpClient())
+                using (var httpClient = _httpClientFactory.CreateClient())
                 {
+                    var token = HttpContext.Session.GetString("JWToken");
+                    if (token != null)
+                    {
+                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    }
+
                     var response = await httpClient.GetAsync(apiUrl + "GetById?id=" + companyId);
                     if (response.IsSuccessStatusCode)
                     {
@@ -93,8 +113,13 @@ namespace JewelryAuctionWebApp.Controllers
         {
             try
             {
-                using (var httpClient = new HttpClient())
+                using (var httpClient = _httpClientFactory.CreateClient())
                 {
+                    var token = HttpContext.Session.GetString("JWToken");
+                    if (token != null)
+                    {
+                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    }
                     var response = await httpClient.GetAsync(apiUrl + "Search?search=" + search);
                     if (response.IsSuccessStatusCode)
                     {
@@ -118,8 +143,13 @@ namespace JewelryAuctionWebApp.Controllers
         {
             try
             {
-                using (var httpClient = new HttpClient())
+                using (var httpClient = _httpClientFactory.CreateClient())
                 {
+                    var token = HttpContext.Session.GetString("JWToken");
+                    if (token != null)
+                    {
+                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    }
                     var jsonContent = new StringContent(JsonConvert.SerializeObject(newCompany), Encoding.UTF8, "application/json");
                     var response = await httpClient.PostAsync(apiUrl + "CreateCompany", jsonContent);
                     if (response.IsSuccessStatusCode)
@@ -143,8 +173,13 @@ namespace JewelryAuctionWebApp.Controllers
         {
             try
             {
-                using (var httpClient = new HttpClient())
+                using (var httpClient = _httpClientFactory.CreateClient())
                 {
+                    var token = HttpContext.Session.GetString("JWToken");
+                    if (token != null)
+                    {
+                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    }
                     var jsonContent = new StringContent(JsonConvert.SerializeObject(updatedCompany), Encoding.UTF8, "application/json");
                     var response = await httpClient.PostAsync(apiUrl + "UpdateCompany", jsonContent);
                     if (response.IsSuccessStatusCode)
@@ -168,8 +203,14 @@ namespace JewelryAuctionWebApp.Controllers
         {
             try
             {
-                using (var httpClient = new HttpClient())
+
+                using (var httpClient = _httpClientFactory.CreateClient())
                 {
+                    var token = HttpContext.Session.GetString("JWToken");
+                    if (token != null)
+                    {
+                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    }
                     var response = await httpClient.GetAsync(apiUrl + "GetById?id=" + companyId);
                     if (response.IsSuccessStatusCode)
                     {
@@ -194,8 +235,13 @@ namespace JewelryAuctionWebApp.Controllers
         {
             try
             {
-                using (var httpClient = new HttpClient())
+                using (var httpClient = _httpClientFactory.CreateClient())
                 {
+                    var token = HttpContext.Session.GetString("JWToken");
+                    if (token != null)
+                    {
+                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    }
                     var response = await httpClient.DeleteAsync(apiUrl + "DeleteCompany?companyId=" + companyId);
                     if (response.IsSuccessStatusCode)
                     {

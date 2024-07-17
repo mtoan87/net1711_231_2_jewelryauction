@@ -25,5 +25,6 @@ namespace JewelryAuctionData.DTO.Customer
         public string? Nationality { get; set; }
 
         public string? Password { get; set; }
+        public string? Role { get; set; }
     }
 }

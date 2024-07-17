@@ -20,7 +20,7 @@ namespace JewelryAuctionWebAPI.Controllers
             _companyBusiness = new CompanyBusiness();
         }
 
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetAll")]
         public async Task<IActionResult> GetAll()
@@ -37,7 +37,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetById")]
         public async Task<IActionResult> GetById(int id)
@@ -55,7 +55,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("Search")]
         public async Task<IActionResult> Search(string search)
@@ -73,7 +73,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("CreateCompany")]
         public async Task<IActionResult> CreateCustomer(CreateCompanyDTO createCompany)
@@ -90,7 +90,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("UpdateCompany")]
         public async Task<IActionResult> UpdateCompany(UpdateCompanyDTO updateCompany)
@@ -105,6 +105,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return BadRequest(rs?.Message);
             }
         }
+        
         [HttpGet]
         [Route("GetPaged")]
         public async Task<IActionResult> GetPaged(int pageNumber = 1, int pageSize = 3)
@@ -121,7 +122,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpDelete]
         [Route("DeleteCompany")]
         public async Task<IActionResult> DeleteCompany(int companyId)

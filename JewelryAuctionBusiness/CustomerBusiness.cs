@@ -135,7 +135,9 @@ namespace JewelryAuctionBusiness
                     DoB = createCustomer.DoB,
                     Ocupation = createCustomer.Ocupation,
                     Nationality = createCustomer.Nationality,
-                    Password = createCustomer.Password
+                    Password = createCustomer.Password,
+                    Role = "Customer"
+                    
                 };
                var customer = await _unitOfWork.CustomerRepository.CreateAsync(newCustomer);
                 

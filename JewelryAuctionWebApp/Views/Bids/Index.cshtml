@@ -277,46 +277,7 @@
             return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
         }
 
-        // function loadData() {
-        //     var joinAuctionId = getParameterByName('joinAuctionId'); // Lấy joinAuctionId từ query string
-        //     var url = '@Url.Action("GetAll", "Bids")';
-        //     if (joinAuctionId) {
-        //         url = '@Url.Action("GetBidsByJoinAuctionId", "Bids")' + '?joinAuctionId=' + joinAuctionId;
-        //     }
-
-        //     $.ajax({
-        //         url: url,
-        //         type: "GET",
-        //         contentType: "application/json;charset=utf-8",
-        //         dataType: "json",
-        //         success: function (result) {
-        //             var html = '';
-        //             $.each(result, function (key, item) {
-        //                 html += '<tr>';
-        //                 html += '<td>' + item.bidId + '</td>';
-        //                 html += '<td>' + item.customerId + '</td>';
-        //                 html += '<td>' + item.joinAuctionId + '</td>';
-        //                 html += '<td>' + item.bidAmount + '</td>';
-        //                 html += '<td>' + item.dateTime + '</td>';
-        //                 html += '<td>' + item.jewelryId + '</td>';
-        //                 html += '<td>' + item.bidderName + '</td>';
-        //                 html += '<td>' + item.joinAuctionName + '</td>';
-        //                 html += '<td>' + item.joinAuctionDescription + '</td>';
-        //                 html += '<td>' + item.bidStatus + '</td>';
-        //                 html += '<td>' + item.isWining + '</td>';
-
-        //                 html += '<td><button type="button" class="btn btn-primary" onclick="editBid(' + item.bidId + ')">Edit</button></td>';
-        //                 html += '<td><button type="button" class="btn btn-primary" onclick="detailsBid(' + item.bidId + ')">Details</button></td>';
-        //                 html += '<td><button type="button" class="btn btn-danger" onclick="deleteBid(' + item.bidId + ')">Delete</button></td>';
-        //                 html += '</tr>';
-        //             });
-        //             $('.tblBids').html(html);
-        //         },
-        //         error: function (xhr, error) {
-        //             alert(xhr.statusText);
-        //         }
-        //     });
-        // }
+        
 
         var totalPages;
 

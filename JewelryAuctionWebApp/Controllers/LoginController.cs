@@ -36,7 +36,7 @@ namespace JewelryAuctionWebApp.Controllers
                     var responseContent = await response.Content.ReadAsStringAsync();
                     var loginResponse = JsonConvert.DeserializeObject<LoginResponse>(responseContent);
 
-                    // Store token to session
+                   
                     HttpContext.Session.SetString("JWToken", loginResponse.Token);
 
                     

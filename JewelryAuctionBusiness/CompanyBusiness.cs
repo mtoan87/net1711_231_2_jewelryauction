@@ -95,25 +95,23 @@ namespace JewelryAuctionBusiness
             try
             {
                 // Split the search string by commas to get individual search criteria
-                string[] searchCriteria = search.Split(',');
-
+                var searchTerms = search.Split(',');
+                var allCustomers = await _unitOfWork.CompanyRepository.GetAllAsync();
                 // Filter companies based on multiple search criteria
-                var companies = await _unitOfWork.CompanyRepository.GetByConditionAsync(
-                    company =>
-                        searchCriteria.Any(criteria =>
-                            company.CompanyName.Contains(criteria.Trim()) ||
-                            company.Industry.Contains(criteria.Trim()) ||
-                            company.Location.Contains(criteria.Trim())
-                        )
-                );
+                var filteredCustomers = allCustomers.Where(customer =>
+                    searchTerms.Any(term =>
+                        customer.Address.Contains(term.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                        customer.CompanyName.Contains(term.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                        customer.Email.Contains(term.Trim(), StringComparison.OrdinalIgnoreCase)))
+                    .ToList();
 
-                if (companies == null || !companies.Any())
+                if (!filteredCustomers.Any())
                 {
-                    return new JewelryAuction(Const.WARINING_NO_DATA, "No companies found with the given search criteria");
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No customers found with the given search terms");
                 }
                 else
                 {
-                    return new JewelryAuction(Const.SUCCESS_GET, "Company search success", companies);
+                    return new JewelryAuction(Const.SUCCESS_GET, "Customer search success", filteredCustomers);
                 }
             }
             catch (Exception ex)

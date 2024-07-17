@@ -247,15 +247,23 @@
                 results = regex.exec(location.search);
             return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
         }
-        function loadData(pageNumber = 1, pageSize = 3) {
+        var totalPages;
+
+        function loadData(pageNumber = 1, pageSize = 5) {
+            var url = '@Url.Action("GetPaged", "Company")';
+            var isPaginated = true;
             $.ajax({
-                url: '@Url.Action("GetAll", "Company")',
+                url: url,
                 type: "GET",
                 contentType: "application/json;charset=utf-8",
                 dataType: "json",
+                data: isPaginated ? { pageNumber: pageNumber, pageSize: pageSize } : {},
                 success: function (result) {
                     var html = '';
-                    $.each(result, function (key, item) {
+                    if (isPaginated) {
+                        totalPages = result.totalPages;
+                    }
+                    $.each(isPaginated ? result.data : result, function (key, item) {
                         html += '<tr>';
                         html += '<td>' + item.companyId + '</td>';
                         html += '<td>' + item.companyName + '</td>';
@@ -273,6 +281,58 @@
                         html += '</tr>';
                     });
                     $('.tblCompanyList').html(html);
+                    if (isPaginated) {
+                        // Update pagination
+                        var paginationHtml = '';
+                        if (result.currentPage > 1) {
+                            paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="loadData(1,' + result.pageSize + ')">&laquo;&laquo;</a></li>';
+                            paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="loadData(' + (result.currentPage - 1) + ',' + result.pageSize + ')">&laquo;</a></li>';
+                        }
+
+                        // Show the first page
+                        paginationHtml += '<li class="page-item ' + (result.currentPage == 1 ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(1,' + result.pageSize + ')">1</a></li>';
+
+                        if (result.totalPages > 1) {
+                            if (result.totalPages <= 3) {
+                                // Show all pages if total pages <= 3
+                                for (var i = 2; i <= result.totalPages; i++) {
+                                    paginationHtml += '<li class="page-item ' + (result.currentPage == i ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(' + i + ',' + result.pageSize + ')">' + i + '</a></li>';
+                                }
+                            } else {
+                                // Show the first three pages and ellipsis if total pages > 3
+                                paginationHtml += '<li class="page-item ' + (result.currentPage == 2 ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(2,' + result.pageSize + ')">2</a></li>';
+                                paginationHtml += '<li class="page-item ' + (result.currentPage == 3 ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(3,' + result.pageSize + ')">3</a></li>';
+
+                                // Logic to display ellipsis and current page in the middle
+                                if (result.currentPage > 3 && result.currentPage < result.totalPages - 2) {
+                                    paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
+                                    paginationHtml += '<li class="page-item active"><a class="page-link" href="#">' + result.currentPage + '</a></li>';
+                                    paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
+                                } else if (result.currentPage >= result.totalPages - 2) {
+                                    paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
+                                    for (var i = result.totalPages - 2; i < result.totalPages; i++) {
+                                        paginationHtml += '<li class="page-item ' + (result.currentPage == i ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(' + i + ',' + result.pageSize + ')">' + i + '</a></li>';
+                                    }
+                                } else if (result.totalPages > 3) {
+                                    paginationHtml += '<li class="page-item disabled"><a class="page-link" href="#">...</a></li>';
+                                }
+
+                                // // Always show last page if total number of pages > 3
+                                if (result.totalPages > 3) {
+                                    paginationHtml += '<li class="page-item ' + (result.currentPage == result.totalPages ? 'active' : '') + '"><a class="page-link" href="#" onclick="loadData(' + result.totalPages + ',' + result.pageSize + ')">' + result.totalPages + '</a></li>';
+                                }
+                            }
+                        }
+
+                        if (result.currentPage < result.totalPages) {
+                            paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="loadData(' + (result.currentPage + 1) + ',' + result.pageSize + ')">&raquo;</a></li>';
+                            paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="loadData(' + result.totalPages + ',' + result.pageSize + ')">&raquo;&raquo;</a></li>';
+                        }
+
+                        $('.pagination').html(paginationHtml);
+                    } else {
+                        $('.pagination').html('');
+                    }
                 },
                 error: function (xhr, error) {
                     alert(xhr.statusText);
@@ -349,7 +409,7 @@
             }
         }
         function detailsCompany(companyId) {
-            window.location.href = '@Url.Action("Details", "Company")' + '?CompanyId=' + companyId;
+            window.location.href = '@Url.Action("Details", "Company")' + '?companyId=' + companyId;
         }
     </script>
 }

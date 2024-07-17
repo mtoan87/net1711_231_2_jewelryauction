@@ -26,7 +26,7 @@ namespace JewelryAuctionWebAPI.Controllers
        
 
 
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetAll")]
         public async Task<IActionResult> GetAll()
@@ -42,6 +42,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result.Message);
             }
         }
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetPaged")]
         public async Task<IActionResult> GetPaged(int pageNumber = 1, int pageSize = 3)
@@ -57,7 +58,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result.Message);
             }
         }
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("GetById")]
         public async Task<IActionResult> GetById(int id)
@@ -74,7 +75,7 @@ namespace JewelryAuctionWebAPI.Controllers
                 return NotFound(result?.Message);
             }
         }
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         [Route("Search")]
         public async Task<IActionResult> Search(string search)
@@ -92,7 +93,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("CreateCustomer")]
         public async Task<IActionResult> CreateCustomer(CreateCustomerDTO createCustomer)
@@ -109,7 +110,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [Route("UpdateCustomer")]
         public async Task<IActionResult> UpdateCustomer(UpdateCustomerDTO updateCustomer)
@@ -125,7 +126,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        //[Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer")]
         [HttpDelete]
         [Route("DeleteCustomer")]
         public async Task<IActionResult> DeleteCustomer(int customerId)
