@@ -72,7 +72,7 @@ namespace JewelryAuctionWebApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Search(string searchInput1, string searchInput2, string searchInput3)
+        public async Task<IActionResult> Search(string searchInput)
 
         {
             
@@ -80,7 +80,7 @@ namespace JewelryAuctionWebApp.Controllers
             {
                 using (var httpClient = new HttpClient())
                 {
-                    var response = await httpClient.GetAsync(apiUrl + "Search?search1=" + searchInput1 + "&search2=" + searchInput2 + "&search3="+ searchInput3);
+                    var response = await httpClient.GetAsync(apiUrl + "Search?search=" + searchInput);
                     
                     if (response.IsSuccessStatusCode)
                     {
