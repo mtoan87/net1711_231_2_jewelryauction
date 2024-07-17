@@ -40,6 +40,31 @@ namespace JewelryAuctionBusiness
                 return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
             }
         }
+
+        public async Task<JewelryAuctionResult> GetPaged(int pageNumber, int pageSize)
+        {
+            try
+            {
+                var auctionResult  = await _unitOfWork.AuctionResultRepository.GetPagedAsync(pageNumber, pageSize);
+                var totalRecords = await _unitOfWork.AuctionResultRepository.CountAsync();
+
+                int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+
+                if (auctionResult == null)
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No Auction Result");
+                }
+                else
+                {
+                    return new JewelryAuction(Const.SUCCESS_GET, "Auction Result success", auctionResult, totalPages, pageNumber, pageSize);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
+
         public async Task<JewelryAuctionResult> GetById(int code)
         {
             try
