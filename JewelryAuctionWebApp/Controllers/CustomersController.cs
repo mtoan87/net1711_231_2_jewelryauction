@@ -38,31 +38,32 @@ namespace JewelryAuctionWebApp.Controllers
             return View(pagedResult);
             //return View();
         }
-        [HttpPost]
-        public async Task<IActionResult> Login(LoginDTO loginData)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(loginData);
-            }
-            var httpClient = new HttpClient();
-            var response = await httpClient.PostAsJsonAsync(apiUrl+ "Login", loginData);
+        //[HttpPost]
+        //public async Task<IActionResult> Login(LoginDTO loginData)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return View(loginData);
+        //    }
+        //    var httpClient = new HttpClient();
+        //    var response = await httpClient.PostAsJsonAsync(apiUrl+ "Login", loginData);
 
-            if (response.IsSuccessStatusCode)
-            {
-                var token = await response.Content.ReadAsStringAsync();
+        //    if (response.IsSuccessStatusCode)
+        //    {
+        //        var token = await response.Content.ReadAsStringAsync();
 
                 
-                HttpContext.Session.SetString("JWToken", token);
+        //        HttpContext.Session.SetString("JWToken", token);
 
-                return RedirectToAction("Index", "Home");
-            }
-            else
-            {
-                ViewBag.ErrorMessage = "Invalid login attempt.";
-                return View(loginData);
-            }
-        }
+        //        return RedirectToAction("Index", "Home");
+        //    }
+        //    else
+        //    {
+        //        ViewBag.ErrorMessage = "Invalid login attempt.";
+        //        return View(loginData);
+        //    }
+        //}
+
         [HttpGet]
         public async Task<List<Customer>> GetAll()
         {

@@ -151,10 +151,10 @@ namespace JewelryAuctionData.Base
         }
 
         //Use for paginate
-        public IQueryable<T> GetByCondition(Expression<Func<T, bool>> expression)
-        {
-            return _context.Set<T>().Where(expression);
-        }
+        //public IQueryable<T> GetByCondition(Expression<Func<T, bool>> expression)
+        //{
+        //    return _context.Set<T>().Where(expression);
+        //}
 
         public async Task<List<Bid>> GetBidsByJoinAuctionIdAsync(int joinAuctionId)
         {

@@ -1,44 +1,54 @@
-﻿using JewelryAuctionData.DTO.Customer;
+﻿using JewelryAuctionWebAPI.Contracts.Login;
+using JewelryAuctionWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace JewelryAuctionWebApp.Controllers
 {
     public class LoginController : Controller
     {
-        private readonly HttpClient _httpClient;
-        public LoginController(HttpClient httpClient)
+        private readonly IHttpClientFactory _httpClientFactory;
+
+        public LoginController(IHttpClientFactory httpClientFactory)
         {
-            _httpClient = httpClient;
+            _httpClientFactory = httpClientFactory;
         }
+
+        [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginDTO loginData)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return View(loginData);
+                var client = _httpClientFactory.CreateClient();
+                var loginRequest = new { Email = model.Email, Password = model.Password };
+                var content = new StringContent(JsonConvert.SerializeObject(loginRequest), Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync("https://localhost:7169/login", content);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    var loginResponse = JsonConvert.DeserializeObject<LoginResponse>(responseContent);
+
+                    // Store token to session
+                    HttpContext.Session.SetString("JWToken", loginResponse.Token);
+
+                    
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                }
             }
 
-            var response = await _httpClient.PostAsJsonAsync("https://localhost:7169/api/Customer/Login", loginData);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var token = await response.Content.ReadAsStringAsync();
-
-                
-                HttpContext.Session.SetString("JWToken", token);
-
-                return RedirectToAction("Index", "Home");
-            }
-            else
-            {
-                ViewBag.ErrorMessage = "Invalid login attempt.";
-                return View(loginData);
-            }
+            return View(model);
         }
     }
 }
