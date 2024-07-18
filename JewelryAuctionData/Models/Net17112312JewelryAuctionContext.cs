@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace JewelryAuctionData.Models;
 
@@ -33,10 +34,18 @@ public partial class Net17112312JewelryAuctionContext : DbContext
 
     public virtual DbSet<RequestAuctionDetail> RequestAuctionDetails { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=(local);uid=sa;pwd=12345;database=Net1711_231_2_JewelryAuction;TrustServerCertificate=True;");
+    public static string GetConnectionString(string connectionStringName)
+    {
+        var config = new ConfigurationBuilder()
+            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+            .AddJsonFile("appsettings.json")
+            .Build();
 
+        string connectionString = config.GetConnectionString(connectionStringName);
+        return connectionString;
+    }
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseSqlServer(GetConnectionString("DBDefault"));
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AuctionResult>(entity =>
@@ -123,8 +132,6 @@ public partial class Net17112312JewelryAuctionContext : DbContext
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.Type).HasMaxLength(50);
             entity.Property(e => e.Weight).HasMaxLength(50);
-            entity.Property(e => e.Weight).HasMaxLength(50);
-           
         });
 
         modelBuilder.Entity<JoinAuction>(entity =>
@@ -161,8 +168,10 @@ public partial class Net17112312JewelryAuctionContext : DbContext
         {
             entity.ToTable("RequestAuction");
 
+            entity.Property(e => e.ApprovedAt).HasColumnType("datetime");
             entity.Property(e => e.AuctionName).HasMaxLength(50);
             entity.Property(e => e.EndTime).HasColumnType("datetime");
+            entity.Property(e => e.FinalEstimateSentAt).HasColumnType("datetime");
             entity.Property(e => e.StartTime).HasColumnType("datetime");
             entity.Property(e => e.Status).HasMaxLength(50);
 
@@ -174,6 +183,14 @@ public partial class Net17112312JewelryAuctionContext : DbContext
         modelBuilder.Entity<RequestAuctionDetail>(entity =>
         {
             entity.ToTable("RequestAuctionDetail");
+
+            entity.Property(e => e.ApprovedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.JewelryDescription).HasMaxLength(255);
+            entity.Property(e => e.JewelryName).HasMaxLength(100);
+            entity.Property(e => e.ReceivedAt).HasColumnType("datetime");
+            entity.Property(e => e.Status).HasMaxLength(50);
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.Jewelry).WithMany(p => p.RequestAuctionDetails)
                 .HasForeignKey(d => d.JewelryId)

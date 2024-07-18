@@ -18,7 +18,7 @@ namespace JewelryAuctionWebAPI.Controllers
             _requestAuctionBusiness = new RequestAuctionBusiness();
         }
 
-        [Authorize(Roles = "Customer")]
+        
         [HttpGet]
         [Route("GetAll")]
         public async Task<IActionResult> GetAll()
@@ -34,7 +34,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        [Authorize(Roles = "Customer")]
+        
         [HttpGet]
         [Route("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -50,7 +50,22 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult> Search(string search)
+        {
+            var result = await _requestAuctionBusiness.Search(search);
+
+            if (result.Status > 0 && result != null)
+            {
+                var auctions = result.Data as List<RequestAuction>;
+                return Ok(auctions);
+            }
+            else
+            {
+                return NotFound(result.Message);
+            }
+        }
+
+        
         [HttpPost]
         [Route("")]
         public async Task<IActionResult> Create([FromBody] CreateRequestAuctionDTO createAuction)
@@ -66,7 +81,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        [Authorize(Roles = "Customer")]
+        
         [HttpPut]
         [Route("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateRequestAuctionDTO updateAuction)
@@ -87,7 +102,7 @@ namespace JewelryAuctionWebAPI.Controllers
             }
         }
 
-        [Authorize(Roles = "Customer")]
+        
         [HttpDelete]
         [Route("{id}")]
         public async Task<IActionResult> Delete(int id)

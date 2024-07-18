@@ -22,7 +22,91 @@
         <label for="RequestAuctionId">RequestAuctionId</label>
         @Html.EditorFor(model => model.RequestAuctionId, new { htmlAttributes = new { @class = "form-control" } })
     </div>
+    <div class="col-md-6">
+        <label for="JewelryName">JewelryName</label>
+        @Html.EditorFor(model => model.JewelryName, new { htmlAttributes = new { @class = "form-control" } })
+    </div>
+    <div class="col-md-6">
+        <label for="JewelryDescription">JewelryDescription</label>
+        @Html.EditorFor(model => model.JewelryDescription, new { htmlAttributes = new { @class = "form-control" } })
+    </div>
+    <div class="col-md-6">
+        <label for="InitialEstimate">InitialEstimate</label>
+        @Html.EditorFor(model => model.InitialEstimate, new { htmlAttributes = new { @class = "form-control" } })
+    </div>
+    <div class="col-md-6">
+        <label for="FinalEstimate">FinalEstimate</label>
+        @Html.EditorFor(model => model.FinalEstimate, new { htmlAttributes = new { @class = "form-control" } })
+    </div>
+    <div class="col-md-6">
+        <label for="Status">Status</label>
+        @Html.EditorFor(model => model.Status, new { htmlAttributes = new { @class = "form-control" } })
+    </div>
+    <div class="col-md-6">
+        <label for="ReceivedAt">ReceivedAt</label>
+        <div class="input-group date" id="receivedPicker">
+            @Html.EditorFor(model => model.ReceivedAt, new { htmlAttributes = new { @class = "form-control", @id = "ReceivedAt" } })
+            <div class="input-group-append">
+                <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <label for="ApprovedAt">ApprovedAt</label>
+        <div class="input-group date" id="approvedPicker">
+            @Html.EditorFor(model => model.ApprovedAt, new { htmlAttributes = new { @class = "form-control", @id = "ApprovedAt" } })
+            <div class="input-group-append">
+                <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <label for="CreatedAt">CreatedAt</label>
+        <div class="input-group date" id="createdPicker">
+            @Html.EditorFor(model => model.CreatedAt, new { htmlAttributes = new { @class = "form-control", @id = "CreatedAt" } })
+            <div class="input-group-append">
+                <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <label for="UpdatedAt">UpdatedAt</label>
+        <div class="input-group date" id="updatedPicker">
+            @Html.EditorFor(model => model.UpdatedAt, new { htmlAttributes = new { @class = "form-control", @id = "UpdatedAt" } })
+            <div class="input-group-append">
+                <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+            </div>
+        </div>
+    </div>
 </div>
 
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#receivedPicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            });
 
+            $('#approvedPicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            });
+
+            $('#createdPicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            });
+
+            $('#updatedPicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            });
+        });
+    </script>
+}
 

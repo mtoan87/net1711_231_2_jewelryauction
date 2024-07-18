@@ -57,6 +57,37 @@ namespace JewelryAuctionBusiness
             }
         }
 
+        public async Task<JewelryAuctionResult> Search(string search)
+        {
+            try
+            {
+                var searchTerms = search.Split(',');
+
+                var allAuctions = await _unitOfWork.RequestAuctionRepository.GetAllAsync();
+
+                // Thực hiện lọc trong bộ nhớ
+                var filteredAuction = allAuctions.Where(a =>
+                    searchTerms.Any(term =>
+                        a.AuctionName.Contains(term.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                        a.Status.Contains(term.Trim(), StringComparison.OrdinalIgnoreCase) ||
+                        a.CustomerId.ToString().Contains(term.Trim(), StringComparison.OrdinalIgnoreCase)))
+                    .ToList();
+
+                if (!filteredAuction.Any())
+                {
+                    return new JewelryAuction(Const.WARINING_NO_DATA, "No auctions found with the given search terms");
+                }
+                else
+                {
+                    return new JewelryAuction(Const.SUCCESS_GET, "Auction search success", filteredAuction);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JewelryAuction(Const.ERROR_EXCEPTION, ex.Message);
+            }
+        }
+
         public async Task<JewelryAuctionResult> Create(CreateRequestAuctionDTO createAuction)
         {
             try
@@ -68,6 +99,10 @@ namespace JewelryAuctionBusiness
                     Status = createAuction.Status,
                     StartTime = createAuction.StartTime,
                     EndTime = createAuction.EndTime,
+                    JewelryReceived = createAuction.JewelryReceived,
+                    ApprovedAt = createAuction.ApprovedAt,
+                    SellerConfirmation = createAuction.SellerConfirmation,
+                    FinalEstimateSentAt = createAuction.FinalEstimateSentAt
                 };
                 var result = await _unitOfWork.RequestAuctionRepository.CreateAsync(newAuction);
                 if (result > 0)
@@ -95,6 +130,10 @@ namespace JewelryAuctionBusiness
                 auction.Status = updateAuction.Status;
                 auction.StartTime = updateAuction.StartTime;
                 auction.EndTime = updateAuction.EndTime;
+                auction.JewelryReceived = updateAuction.JewelryReceived;
+                auction.ApprovedAt = updateAuction.ApprovedAt;
+                auction.SellerConfirmation = updateAuction.SellerConfirmation;
+                auction.FinalEstimateSentAt = updateAuction.FinalEstimateSentAt;
                 await _unitOfWork.RequestAuctionRepository.UpdateAsync(auction);
                 return new JewelryAuction(Const.SUCCESS_GET, "Update request auction success", auction);
             }

@@ -2,12 +2,14 @@
 using JewelryAuctionData.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace JewelryAuctionWebApp.Controllers
 {
     public class RequestAuctionDetailController : Controller
     {
+        private readonly IHttpClientFactory _httpClientFactory;
         private string apiUrl = "https://localhost:7169/api/RequestAuctionDetail/";
         public RequestAuctionDetailController()
         {
@@ -156,6 +158,38 @@ namespace JewelryAuctionWebApp.Controllers
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int auctionId)
+        {
+            try
+            {
+                using (var httpClient = _httpClientFactory.CreateClient())
+                {
+                    var token = HttpContext.Session.GetString("JWToken");
+                    if (token != null)
+                    {
+                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    }
+
+                    var response = await httpClient.GetAsync(apiUrl + "GetById?id=" + auctionId);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var auction = JsonConvert.DeserializeObject<RequestAuctionDetail>(content);
+                        return View("details", auction);
+                    }
+                    else
+                    {
+                        return NotFound();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

@@ -40,6 +40,32 @@
             </div>
         </div>
     </div>
+    <div class="col-md-6">
+        <label for="JewelryReceived">JewelryReceived</label>
+        @Html.EditorFor(model => model.JewelryReceived, new { htmlAttributes = new { @class = "form-control" } })
+    </div>
+    <div class="col-md-6">
+        <label for="ApprovedAt">ApprovedAt</label>
+        <div class="input-group date" id="approvedPicker">
+            @Html.EditorFor(model => model.ApprovedAt, new { htmlAttributes = new { @class = "form-control", @id = "ApprovedAt" } })
+            <div class="input-group-append">
+                <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <label for="SellerConfirmation">SellerConfirmation</label>
+        @Html.EditorFor(model => model.SellerConfirmation, new { htmlAttributes = new { @class = "form-control" } })
+    </div>
+    <div class="col-md-6">
+        <label for="FinalEstimateSentAt">FinalEstimateSentAt</label>
+        <div class="input-group date" id="finalPicker">
+            @Html.EditorFor(model => model.FinalEstimateSentAt, new { htmlAttributes = new { @class = "form-control", @id = "FinalEstimateSentAt" } })
+            <div class="input-group-append">
+                <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section scripts {
@@ -52,6 +78,18 @@
             });
 
             $('#endTimePicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            });
+
+            $('#approvedPicker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                todayHighlight: true
+            });
+
+            $('#finalPicker').datepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true,
                 todayHighlight: true

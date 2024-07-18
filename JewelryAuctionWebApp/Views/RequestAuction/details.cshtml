@@ -1,0 +1,43 @@
+﻿@model JewelryAuctionData.Models.RequestAuction
+
+@{
+    ViewBag.Title = "Request Auction Details";
+}
+
+<h2>Request Auction Details</h2>
+
+<dl class="row">
+    <dt class="col-sm-2">Request Auction ID</dt>
+    <dd class="col-sm-10">@Model.RequestAuctionId</dd>
+
+    <dt class="col-sm-2">Auction Name</dt>
+    <dd class="col-sm-10">@Model.AuctionName</dd>
+
+    <dt class="col-sm-2">Customer Id</dt>
+    <dd class="col-sm-10">@Model.CustomerId</dd>
+
+    <dt class="col-sm-2">Status</dt>
+    <dd class="col-sm-10">@Model.Status</dd>
+
+    <dt class="col-sm-2">Start Time</dt>
+    <dd class="col-sm-10">@Model.StartTime</dd>
+
+    <dt class="col-sm-2">End Time</dt>
+    <dd class="col-sm-10">@Model.EndTime</dd>
+
+    <dt class="col-sm-2">Jewelry Received</dt>
+    <dd class="col-sm-10">@Model.JewelryReceived</dd>
+
+    <dt class="col-sm-2">Approved At</dt>
+    <dd class="col-sm-10">@Model.ApprovedAt</dd>
+
+    <dt class="col-sm-2">Seller Confirmation</dt>
+    <dd class="col-sm-10">@Model.SellerConfirmation</dd>
+
+    <dt class="col-sm-2">Final Estimate Sent At</dt>
+    <dd class="col-sm-10">@Model.FinalEstimateSentAt</dd>
+</dl>
+
+<div>
+    <a asp-action="Index" class="btn btn-primary">Back to List</a>
+</div>

@@ -17,6 +17,14 @@ public partial class RequestAuction
 
     public DateTime? EndTime { get; set; }
 
+    public int? JewelryReceived { get; set; }
+
+    public DateTime? ApprovedAt { get; set; }
+
+    public int? SellerConfirmation { get; set; }
+
+    public DateTime? FinalEstimateSentAt { get; set; }
+
     public virtual Customer? Customer { get; set; }
 
     public virtual ICollection<RequestAuctionDetail> RequestAuctionDetails { get; set; } = new List<RequestAuctionDetail>();

@@ -15,6 +15,14 @@
             Add
         </button>
     </div>
+    <div class="col-md-2 text-start">
+        <input type="text" id="searchInput" placeholder="Name, Status, CustomerID" title="Type in search terms" style="margin-right: 5px;">
+    </div>
+    <div class="col-md-2 text-start">
+        <button type="button" class="btn btn-primary" onclick="search()">
+            Search
+        </button>
+    </div>
 </div>
 
 <div class="row">
@@ -28,6 +36,10 @@
                     <th class="card-title text-center">Status</th>
                     <th class="card-title text-center">StartTime</th>
                     <th class="card-title text-center">EndTime</th>
+                    <th class="card-title text-center">JewelryReceived</th>
+                    <th class="card-title text-center">ApprovedAt</th>
+                    <th class="card-title text-center">SellerConfirmation</th>
+                    <th class="card-title text-center">FinalEstimateSentAt</th>
                     <th class="card-title text-center">Actions</th>
                 </tr>
             </thead>
@@ -82,7 +94,14 @@
                             html += '<td>' + item.status + '</td>';
                             html += '<td>' + item.startTime + '</td>';
                             html += '<td>' + item.endTime + '</td>';
-                            html += '<td><a href="#" onclick="return edit(' + item.requestAuctionId + ')">Edit</a> | <a href="#" onclick="delele(' + item.requestAuctionId + ')">Delete</a></td>';
+                            html += '<td>' + item.jewelryReceived + '</td>';
+                            html += '<td>' + item.approvedAt + '</td>';
+                            html += '<td>' + item.sellerConfirmation + '</td>';
+                            html += '<td>' + item.finalEstimateSentAt + '</td>';
+
+                            html += '<td><button type="button" class="btn btn-primary" onclick="edit(' + item.requestAuctionId + ')">Edit</button> <button type="button" class="btn btn-primary" onclick="details(' + item.requestAuctionId + ')">Details</button>  <button type="button" class="btn btn-danger" onclick="delete(' + item.requestAuctionId + ')">Delete</button></td>';
+                            
+
                             html += '</tr>';
                         });
                         $('.tblRequestAuction').html(html);
@@ -160,6 +179,10 @@
                     Status: $("#Status").val(),
                     StartTime: $("#StartTime").val(),
                     EndTime: $("#EndTime").val(),
+                    JewelryReceived: $("#JewelryReceived").val(),
+                    ApprovedAt: $("#ApprovedAt").val(),
+                    SellerConfirmation: $("#SellerConfirmation").val(),
+                    FinalEstimateSentAt: $("#FinalEstimateSentAt").val(),
                 };
 
                 $.ajax({
@@ -188,6 +211,10 @@
                     Status: $("#Status").val(),
                     StartTime: $("#StartTime").val(),
                     EndTime: $("#EndTime").val(),
+                    JewelryReceived: $("#JewelryReceived").val(),
+                    ApprovedAt: $("#ApprovedAt").val(),
+                    SellerConfirmation: $("#SellerConfirmation").val(),
+                    FinalEstimateSentAt: $("#FinalEstimateSentAt").val(),
                 };
 
                 $.ajax({
@@ -207,6 +234,53 @@
                     }
                 });
             }
+
+        function search() {
+            var searchInput = $('#searchInput').val().trim();
+            if (searchInput === '') {
+                loadData();
+            } else {
+                $.ajax({
+                    url: '@Url.Action("Search", "RequestAuction")',
+                    type: "GET",
+                    data: { search: searchInput },
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    success: function (result) {
+                        var html = '';
+                        if (result && result.length > 0) {
+                            $.each(result, function (key, item) {
+                                html += '<tr>';
+                                html += '<td>' + item.requestAuctionId + '</td>';
+                                html += '<td>' + item.auctionName + '</td>';
+                                html += '<td>' + item.customerId + '</td>';
+                                html += '<td>' + item.status + '</td>';
+                                html += '<td>' + item.startTime + '</td>';
+                                html += '<td>' + item.endTime + '</td>';
+                                html += '<td>' + item.jewelryReceived + '</td>';
+                                html += '<td>' + item.approvedAt + '</td>';
+                                html += '<td>' + item.sellerConfirmation + '</td>';
+                                html += '<td>' + item.finalEstimateSentAt + '</td>';
+
+                                html += '<td><button type="button" class="btn btn-primary" onclick="edit(' + item.requestAuctionId + ')">Edit</button>  <button type="button" class="btn btn-primary" onclick="details(' + item.requestAuctionId + ')">Details</button>  <button type="button" class="btn btn-danger" onclick="delete(' + item.requestAuctionId + ')">Delete</button></td>';
+                                html += '</tr>';
+                            });
+                        } else {
+                            html = '<tr><td colspan="13" class="text-center">No auction found with the given search terms.</td></tr>';
+                        }
+                        $('.tblRequestAuction').html(html);
+                    },
+                    error: function (xhr, error) {
+                        alert(xhr.statusText);
+                    }
+                });
+            }
+        }
+
+        function details(auctionId
+        .) {
+            window.location.href = '@Url.Action("Details", "RequestAuction")' + '?auctionId=' + auctionId;
+        }
 
     </script>
 }

@@ -1,0 +1,52 @@
+﻿@model JewelryAuctionData.Models.RequestAuctionDetail
+
+@{
+    ViewBag.Title = "Request Auction Details";
+}
+
+<h2>Request Auction Details</h2>
+
+<dl class="row">
+    <dt class="col-sm-2">Request Auction Detail Id</dt>
+    <dd class="col-sm-10">@Model.RequestAuctionDetailId</dd>
+
+    <dt class="col-sm-2">Customer Id</dt>
+    <dd class="col-sm-10">@Model.CustomerId</dd>
+
+    <dt class="col-sm-2">Jewelry Id</dt>
+    <dd class="col-sm-10">@Model.JewelryId</dd>
+
+    <dt class="col-sm-2">Request Auction Id</dt>
+    <dd class="col-sm-10">@Model.RequestAuctionId</dd>
+
+    <dt class="col-sm-2">Jewelry Name</dt>
+    <dd class="col-sm-10">@Model.JewelryName</dd>
+
+    <dt class="col-sm-2">Jewelry Description</dt>
+    <dd class="col-sm-10">@Model.JewelryDescription</dd>
+
+    <dt class="col-sm-2">Initial Estimate</dt>
+    <dd class="col-sm-10">@Model.InitialEstimate</dd>
+
+    <dt class="col-sm-2">Final Estimate</dt>
+    <dd class="col-sm-10">@Model.FinalEstimate</dd>
+
+    <dt class="col-sm-2">Status</dt>
+    <dd class="col-sm-10">@Model.Status</dd>
+
+    <dt class="col-sm-2">Received At</dt>
+    <dd class="col-sm-10">@Model.ReceivedAt</dd>
+
+    <dt class="col-sm-2">Approved At</dt>
+    <dd class="col-sm-10">@Model.ApprovedAt</dd>
+
+    <dt class="col-sm-2">Created At</dt>
+    <dd class="col-sm-10">@Model.ReceivedAt</dd>
+
+    <dt class="col-sm-2">Updated At</dt>
+    <dd class="col-sm-10">@Model.UpdatedAt</dd>
+</dl>
+
+<div>
+    <a asp-action="Index" class="btn btn-primary">Back to List</a>
+</div>
